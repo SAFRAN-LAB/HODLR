@@ -36,8 +36,6 @@ The following files must be found inside the directory:
 
 		make -f makefile_HODLR_Solver.mk
 
-The code should now run.
-
 5. To run some tests for a wide range of system sizes, key in the following command in the terminal:
 
 		make -f makefile_HODLR_Solver_Tests.mk

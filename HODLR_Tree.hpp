@@ -22,6 +22,7 @@ private:
 	unsigned nLeaf;
 	double lowRankTolerance;
 	double determinant;
+	double diagonal;
 
 	void create_Tree(HODLR_Node*& node);
 	void assemble_Matrix(HODLR_Node*& node);
@@ -33,7 +34,7 @@ private:
 
 public:
 	HODLR_Tree(unsigned N, unsigned nLeaf);
-	void assemble_Matrix(double lowRankTolerance);
+	void assemble_Matrix(double diagonal, double lowRankTolerance);
 	void matMatProduct(MatrixXd& x, MatrixXd& b);
 	void compute_Factor();
 	void solve(MatrixXd& b, MatrixXd& x);

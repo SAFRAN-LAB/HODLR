@@ -40,7 +40,7 @@ public:
 
 	HODLR_Node(unsigned levelNumber, unsigned nodeNumber, unsigned nStart, unsigned nSize);
 
-	void assemble_Matrices(double lowRankTolerance);
+	void assemble_Matrices(double lowRankTolerance, double diagonal);
 
 	void matrix_Matrix_Product(MatrixXd& x, MatrixXd& b);
 

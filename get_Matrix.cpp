@@ -27,16 +27,21 @@ void set_Locations(unsigned N) {
 /****************************************************************/
 double get_Matrix_Entry(const unsigned i, const unsigned j) {
 	double R	=	fabs(Theta(i)-Theta(j));
-//		return exp(-R);
-//	return sin(R)/R;
+#ifdef	GAUSSIAN
 	return exp(-R*R);
-	//		return exp(-sqrt(R2));
-	//		return 1.0/(1.0+R2);
-	
-	//		double R	=	fabs(Theta(i)-Theta(j));
-	//		return exp(-R);
-	//		return sin(R)/R;
-	//		return 1.0/R;
+#elif	EXPONENTIAL
+	return exp(-R);
+#elif	SINC
+	return sin(R)/R;
+#elif	QUADRIC
+	return 1.0+R*R;
+#elif	INVERSEQUADRIC
+	return 1.0/(1.0+R*R);
+#elif	MULTIQUADRIC
+	return sqrt(1.0+R*R);
+#elif	INVERSEMULTIQUADRIC
+	return 1.0/sqrt(1.0+R*R);
+#endif
 }
 
 

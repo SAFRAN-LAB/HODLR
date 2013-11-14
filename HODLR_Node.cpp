@@ -26,12 +26,11 @@ HODLR_Node::HODLR_Node(unsigned levelNumber, unsigned nodeNumber, unsigned nStar
 	this->child[1]		=	NULL;
 }
 
-void HODLR_Node::assemble_Matrices(double lowRankTolerance) {
+void HODLR_Node::assemble_Matrices(double lowRankTolerance, double diagonal) {
 	if (isLeaf	==	true) {
 		get_Matrix(nStart, nStart, nSize, nSize, K);
-		//	This is the diagonal term of I+C.	This needs to be changed for different kernels.
 		for (unsigned k=0; k<nSize; ++k) {
-			K(k,k)	=	2.0;
+			K(k,k)	=	diagonal;
 		}
 	}
 	else if (isLeaf	==	false) {

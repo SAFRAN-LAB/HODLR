@@ -40,7 +40,8 @@ int main() {
 
 	cout << endl << "Assembling the matrix in HODLR form..." << endl;
 	start		=	clock();
-	A->assemble_Matrix(tolerance);
+	double diagonal	=	2.0;
+	A->assemble_Matrix(diagonal, tolerance);
 	end		=	clock();
 	cout << "Time taken is: " << double(end-start)/double(CLOCKS_PER_SEC)<< endl;
 

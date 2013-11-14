@@ -1,9 +1,8 @@
 #HODLR_SOLVER  
 
-This is the first public release of the HODLR_SOLVER  library.  
-Date: July 31st, 2013
+Date: November 14th, 2013
 
-**Version 3.1 - First external release.**
+**Version 3.14**
 
 %% Copyleft 2013: Sivaram Ambikasaran
 %% Developed by Sivaram Ambikasaran
@@ -16,13 +15,17 @@ Date: July 31st, 2013
 
 The following files must be found inside the directory:
 
-1. HODLR_Solver.hpp
-2. HODLR_Solver.cpp
-3. HODLR_Solver_Input.cpp
-4. HODLR_Solver_Tests.cpp
-5. makefile_HODLR_Solver.mk
-6. makefile_HODLR_Solver_Tests.mk
-7. README.md
+1. HODLR_Node.cpp
+2. HODLR_Node.hpp
+3. HODLR_Tree.cpp
+4. HODLR_Tree.hpp
+5. HODLR_Test.cpp
+6. get_Matrix.cpp
+7. get_Matrix.hpp
+8. partial_Piv_LU.cpp
+9. partial_Piv_LU.hpp
+10. makefile_HODLR_Test.mk
+11. README.md
 
 ###SETTING THINGS UP:
 
@@ -34,14 +37,10 @@ The following files must be found inside the directory:
 
 4. Go to the directory where Makefile is in, then key in the following command in the terminal:
 
-		make -f makefile_HODLR_Solver.mk
+		make -f makefile_HODLR_Test.mk
 
-5. To run some tests for a wide range of system sizes, key in the following command in the terminal:
+5. To change the matrices, go and change the files get_Matrix.cpp.
 
-		make -f makefile_HODLR_Solver_Tests.mk
-
-6. Some default matrices are provided in the HODLR_Solver.hpp. The appropriate matrix can be enabled by changing the makefile
-
-7. Read through the comments in the file HODLR_Solver.hpp, which should be self-explanatory.
+7. Read through the comments in all the files, which should be self-explanatory.
 
 8. More details will be added later.

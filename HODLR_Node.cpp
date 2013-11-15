@@ -74,7 +74,6 @@ void HODLR_Node::compute_K() {
 		K.block(0, m1, m1, m0)	=	Vinverse[1]*Uinverse[1];
 		K.block(m1, 0, m0, m1)	=	Vinverse[0]*Uinverse[0];
 	}
-
 }
 
 void HODLR_Node::compute_Inverse() {

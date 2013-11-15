@@ -19,9 +19,9 @@ using namespace Eigen;
 HODLR_Node::HODLR_Node(unsigned levelNumber, unsigned nodeNumber, unsigned nStart, unsigned nSize) {
 	this->levelNumber	=	levelNumber;
 	this->nodeNumber	=	nodeNumber;
-	this->nStart			=	nStart;
-	this->nSize				=	nSize;
-	this->parent			=	NULL;
+	this->nStart		=	nStart;
+	this->nSize		=	nSize;
+	this->parent		=	NULL;
 	this->child[0]		=	NULL;
 	this->child[1]		=	NULL;
 }
@@ -91,7 +91,7 @@ void HODLR_Node::apply_Inverse(MatrixXd& matrix, unsigned mStart) {
 
 		MatrixXd temp(nRank[0]+nRank[1], n);
 
-		temp.block(0, 0, nRank[0] , n)			=	Vinverse[1]*matrix.block(start+child[0]->nSize, 0 , child[1]->nSize, n);
+		temp.block(0, 0, nRank[0] , n)		=	Vinverse[1]*matrix.block(start+child[0]->nSize, 0 , child[1]->nSize, n);
 
 		temp.block(nRank[0], 0, nRank[1] , n)	=	Vinverse[0]*matrix.block(start, 0 , child[0]->nSize, n);
 		

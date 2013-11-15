@@ -33,14 +33,14 @@ The following files must be found inside the directory:
 
 2. Download Eigen from here: <http://eigen.tuxfamily.org/index.php?title=Main_Page>
 
-3. There is a sample input file named "HODLR_Solver_Input.cpp" and another file named "HODLR_Solver_Tests.cpp", which runs the solver for a wide range of system sizes.
+3. There is a sample input file named "HODLR_Test.cpp". This calls the features the code can handle.
 
 4. Go to the directory where Makefile is in, then key in the following command in the terminal:
 
 		make -f makefile_HODLR_Test.mk
 
-5. To change the matrices, go and change the files get_Matrix.cpp.
+5. The makefile provides you with different kernels, you can change. If you want to add more kernels, go and change the files get_Matrix.cpp.
 
-7. Read through the comments in all the files, which should be self-explanatory.
+6. Read through the comments in all the files, which should be self-explanatory.
 
-8. More details will be added later.
+7. More details will be added later.

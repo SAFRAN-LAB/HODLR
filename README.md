@@ -1,8 +1,8 @@
-#HODLR SOLVER: A blazingly fast direct solver for dense linear systems.
+#HODLR SOLVER: A blazingly fast and accurate direct solver for dense linear systems.
 
 This is an implementation of a blazingly fast direct solver for dense linear systems discussed in the article: "An O(N log (N))  Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices". The solver has been optimized and the running times of the solver and now orders of magnitude faster than the running times reported in the article. The solver has also been extended to matrices not necessarily arising out of kernels. Further, the low-rank approximation of the appropriate blocks are obtained using partial pivoted LU algorithm. The solver is highly general and works for systems where the off-diagonal blocks can be efficiently represented as a low-rank matrix in a hierarchical fashion.
 
-To give a rough idea of the running time, the solver takes 23 seconds (this is time taken from the time you press the enter key on the keyboard to run your code and to get the final result) for a system size of 1 million, where the matrix is of the form
+To give a rough idea of the running time, the solver takes 23 seconds (this is time taken from the time you press the enter key on the keyboard to run your code and to get the final result) for a system size of 1 million. The matrix is of the form
 
 		A	=	s^2 I + B
 
@@ -10,20 +10,20 @@ where
 
 		B(i,j) = sin(R(i,j))/R(i,j)
 
-where R(i,j) is the distance between the points x(i) and x(j), where x(i), x(j) are distributed on a 1D manifold.
+where R(i,j) is the distance between the points x(i) and x(j), where x(i), x(j) are distributed on a 1D manifold. The computed answer is accurate upto 13 digits.
 
 <table>
     <tr>
-        <td>System size</td> <td>Time taken in seconds</td>
+        <td>System size</td> <td>Time taken in seconds</td> <td>Accuracy, i.e., number of correct digits obtained</td>
     </tr>
     <tr>
-	<td>10 thousand</td> <td>0.2</td>
+	<td>10 thousand</td> <td>0.2</td> <td>13</td>
     </tr>
     <tr>
-	<td>100 thousand</td> <td>2.1</td>
+	<td>100 thousand</td> <td>2.1</td> <td>13</td>
     </tr>
     <tr>
-	<td>1 Million</td> <td>22.9</td>
+	<td>1 Million</td> <td>22.9</td> <td>13</td>
     </tr>
 </table>
 

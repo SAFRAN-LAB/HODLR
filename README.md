@@ -1,6 +1,6 @@
 #HODLR_SOLVER  
 
-Date: November 14th, 2013
+**Date:
 
 **Author**
 
@@ -8,15 +8,15 @@ Sivaram Ambikasaran <siva.1985@gmail.com>
 
 **Version 3.14**
 
-%% Copyleft 2013: Sivaram Ambikasaran
+Date: November 14th, 2013
 
-%% Developed by Sivaram Ambikasaran
+Copyleft 2013: Sivaram Ambikasaran
 
-%% Contact: <siva.1985@gmail.com> (Sivaram)
+Developed by Sivaram Ambikasaran
 
-%% This program is free software; you can redistribute it and/or modify it under the terms of MPL2 license.
+**License**
 
-%% The Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not %% distributed with this file, You can obtain one at <http://mozilla.org/MPL/2.0/.>  
+This program is free software; you can redistribute it and/or modify it under the terms of MPL2 license. The Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at <http://mozilla.org/MPL/2.0/.>
 
 ###FILES:
 

@@ -1,7 +1,5 @@
 #HODLR_SOLVER  
 
-**Date:
-
 **Author**
 
 Sivaram Ambikasaran <siva.1985@gmail.com>

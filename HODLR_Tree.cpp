@@ -74,7 +74,6 @@ void HODLR_Tree::compute_Factor() {
 
 void HODLR_Tree::compute_Factor(HODLR_Node*& node) {
 	if (node) {
-//		cout << "node->levelNumber: " << node->levelNumber << endl;
 		for (unsigned k=0; k<2; ++k) {
 			compute_Factor(node->child[k]);
 		}
@@ -83,16 +82,11 @@ void HODLR_Tree::compute_Factor(HODLR_Node*& node) {
 		HODLR_Node*& mynode	=	node->parent;
 		unsigned number		=	node->nodeNumber;
 		unsigned mStart		=	node->nStart;
-//		cout << "mynode->levelNumber: " << mynode->levelNumber << endl;
-//		cout << "Here" << endl;
 		while (mynode) {
-//			cout << "Entered" << endl;
 			node->apply_Inverse(mynode->Uinverse[number], mStart);
-//			cout << "mynode->levelNumber: " << mynode->levelNumber << endl;
 			number		=	mynode->nodeNumber;
 			mStart		=	mynode->nStart;
 			mynode		=	mynode->parent;
-//			cout << "Exited" << endl;
 		}
 	}
 }

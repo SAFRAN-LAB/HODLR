@@ -78,10 +78,8 @@ void partial_Piv_LU(const unsigned start_Row, const unsigned start_Col, const un
 
     //  Repeat till the desired tolerance is obtained
     do {
-//	    cout << endl << "Done: " << computed_Rank << endl;
         //  Generation of the row
         get_Matrix_Row(start_Col, n_Cols, start_Row+rowIndex.back(), a);
-//	    cout << endl << "Done: " << computed_Rank << endl;
         //  Row of the residuum and the pivot column
         row =   a;
         for (unsigned l=0; l<computed_Rank; ++l) {

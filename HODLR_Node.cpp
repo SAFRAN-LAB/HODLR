@@ -59,7 +59,6 @@ void HODLR_Node::matrix_Matrix_Product(MatrixXd& x, MatrixXd& b) {
 }
 
 void HODLR_Node::set_UV_Inversion() {
-//	cout << "set_UV_Inversion()" << endl;
 	for (unsigned k=0; k<2; ++k) {
 		Uinverse[k]	=	U[k];
 		Vinverse[k]	=	V[k];
@@ -67,7 +66,6 @@ void HODLR_Node::set_UV_Inversion() {
 }
 
 void HODLR_Node::compute_K() {
-//	cout << "compute_K()" << endl;
 	if (isLeaf	==	false) {
 		unsigned m0	=	V[0].rows();
 		unsigned m1	=	V[1].rows();
@@ -80,13 +78,10 @@ void HODLR_Node::compute_K() {
 }
 
 void HODLR_Node::compute_Inverse() {
-//	cout << "compute_Inverse()" << endl;
 	Kinverse.compute(K);
 }
 
 void HODLR_Node::apply_Inverse(MatrixXd& matrix, unsigned mStart) {
-//	cout << "apply_Inverse()" << endl;
-//	cout << nodeNumber << endl;
 	unsigned n	=	matrix.cols();
 	unsigned start	=	nStart-mStart;
 	if (isLeaf	==	true) {

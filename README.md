@@ -1,6 +1,8 @@
 #HODLR_SOLVER
 
-This is an implementation of a blazingly fast direct solver for dense linear systems discussed in the article: "An O(N log (N))  Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices". The solver has been optimized and the running times of the solver and now orders faster than the running times reported in the article. To give a rough idea of the running time, the solver takes 23 seconds (this is time taken from the time you press the enter key on the keyboard to run your code and to get the final result) for a system size of 1 million, where the entries in the matrix are of the form
+This is an implementation of a blazingly fast direct solver for dense linear systems discussed in the article: "An O(N log (N))  Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices". The solver has been optimized and the running times of the solver and now orders of magnitude faster than the running times reported in the article.
+
+To give a rough idea of the running time, the solver takes 23 seconds (this is time taken from the time you press the enter key on the keyboard to run your code and to get the final result) for a system size of 1 million, where the entries in the matrix are of the form
 		$A(i,j) = \delta(i,j) + sin(R_{ij})/R_{ij}$
 where $R_{ij} = \Vert x_i - x_j \Vert_2$ and $x_i$'s are distributed on a 1D manifold.
 
@@ -9,13 +11,13 @@ where $R_{ij} = \Vert x_i - x_j \Vert_2$ and $x_i$'s are distributed on a 1D man
         <td>System size</td> <td>Time taken in seconds</td>
     </tr>
     <tr>
-	<td>10000</td> <td>0.2</td>
+	<td>10 thousand</td> <td>0.2</td>
     </tr>
     <tr>
-	<td>100000</td> <td>2.1</td>
+	<td>100 thousand</td> <td>2.1</td>
     </tr>
     <tr>
-	<td>100000</td> <td>22.9</td>
+	<td>1 Million</td> <td>22.9</td>
     </tr>
 </table>
 

@@ -11,7 +11,7 @@ using namespace std;
 /*	PURPOSE OF EXISTENCE	*/
 /********************************/
 
-//	Obtains the low-rank decomposition of the matrix to a desired tolerance using the partial pivoting LU algorithm, i.e., given a sub-matrix 'A' and tolerance 'epsilon', computes matrices 'U' and 'V' such that ||A-UV||_F < epsilon.
+//	Obtains the low-rank decomposition of the matrix to a desired tolerance using the partial pivoting LU algorithm, i.e., given a sub-matrix 'A' and tolerance 'epsilon', computes matrices 'U' and 'V' such that ||A-UV||_F < epsilon. The norm is Frobenius norm.
 
 /************************/
 /*	INPUTS          */

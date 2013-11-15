@@ -136,7 +136,7 @@ The following files must be found inside the directory:
 
 		make -f makefile_HODLR_Test.mk
 
-5. You can change the kernels in the makefile. More kernels can be added by editing the function
+5. You can change the kernels in the makefile by changing KERNEL. More kernels can be added by editing the function
 
 		double get_Matrix_Entry(const unsigned i, const unsigned j)
 
@@ -144,6 +144,8 @@ The following files must be found inside the directory:
 
 		get_Matrix.cpp
 
-6. Read through the comments in all the files. Most of the function/class/method/variable names are self-explanatory.
+6. The dimension of can be changed by changing DIM in the makefile.
 
-7. More details will be added later.
+7. Read through the comments in all the files. Most of the function/class/method/variable names are self-explanatory.
+
+8. More details will be added later.

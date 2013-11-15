@@ -57,6 +57,14 @@ double get_Matrix_Entry(const unsigned i, const unsigned j) {
 		return sqrt(1.0+R*R);
 	#elif	INVERSEMULTIQUADRIC
 		return 1.0/sqrt(1.0+R*R);
+	#elif	R2LOGR
+	        return R*R*log(R);
+	#elif	LOGR
+        	return log(R);
+	#elif	ONEOVERR
+        	return 1.0/R;
+	#elif	LOG1R
+        	return log(1+R);
 	#endif
 #else
 	double R2	=	(Theta(i,0)-Theta(j,0))*(Theta(i,0)-Theta(j,0));
@@ -78,6 +86,14 @@ double get_Matrix_Entry(const unsigned i, const unsigned j) {
 		return sqrt(1.0+R2);
 	#elif	INVERSEMULTIQUADRIC
 		return 1.0/sqrt(1.0+R2);
+	#elif	R2LOGR
+        	return 0.5*R2*log(R2);
+	#elif	LOGR
+        	return 0.5*log(R2);
+	#elif	ONEOVERR
+        	return 1.0/sqrt(R2);
+	#elif	LOG1R
+	        return log(1+sqrt(R2));
 	#endif
 #endif
 }

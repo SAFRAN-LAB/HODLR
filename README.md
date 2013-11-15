@@ -7,8 +7,11 @@ where $R_{ij} = \Vert x_i - x_j \Vert_2$ and $x_i$'s are distributed on a 1D man
 <table>
     <tr>
         <td>System size</td> <td>Time taken in seconds</td>
+
 	<td>10000</td> <td>0.2</td>
+
 	<td>100000</td> <td>2.1</td>
+
 	<td>100000</td> <td>22.9</td>
     </tr>
 </table>

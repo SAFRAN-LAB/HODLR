@@ -94,7 +94,7 @@ The following files must be found inside the directory:
 
 		make -f makefile_HODLR_Test.mk
 
-5. The makefile provides you with different kernels, you can change. If you want to add more kernels, go and change the files get_Matrix.cpp.
+5. You can change the kernels in the make. If you want to add more kernels, go and change the files get_Matrix.cpp.
 
 6. Read through the comments in all the files, which should be self-explanatory.
 

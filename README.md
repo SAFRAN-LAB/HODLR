@@ -1,4 +1,12 @@
-#HODLR_SOLVER  
+#HODLR_SOLVER
+
+This is an implementation of the fast direct solver discussed in the article: "An O(N log (N))  Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices". The solver has been optimized and the running times of the solver and now orders faster than the running times reported in the article. To give a rough idea of the running time, look at the table below:
+
+<table>
+    <tr>
+        <td>Foo</td>
+    </tr>
+</table>
 
 **Author**
 

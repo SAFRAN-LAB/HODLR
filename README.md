@@ -2,9 +2,15 @@
 
 This is an implementation of a blazingly fast direct solver for dense linear systems discussed in the article: "An O(N log (N))  Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices". The solver has been optimized and the running times of the solver and now orders of magnitude faster than the running times reported in the article.
 
-To give a rough idea of the running time, the solver takes 23 seconds (this is time taken from the time you press the enter key on the keyboard to run your code and to get the final result) for a system size of 1 million, where the entries in the matrix are of the form
-		$A(i,j) = \delta(i,j) + sin(R_{ij})/R_{ij}$
-where $R_{ij} = \Vert x_i - x_j \Vert_2$ and $x_i$'s are distributed on a 1D manifold.
+To give a rough idea of the running time, the solver takes 23 seconds (this is time taken from the time you press the enter key on the keyboard to run your code and to get the final result) for a system size of 1 million, where the matrix is of the form
+
+		A	=	I + B
+
+where
+
+		B(i,j) = sin(R(i,j))/R(i,j)
+
+where R(i,j) is the distance between the points x(i) and x(j), where x(i), x(j) are distributed on a 1D manifold.
 
 <table>
     <tr>

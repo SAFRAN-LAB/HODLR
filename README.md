@@ -90,12 +90,12 @@ The following files must be found inside the directory:
 
 3. There is a sample input file named "HODLR_Test.cpp". This calls the features the code can handle.
 
-4. Go to the directory where Makefile is in, then key in the following command in the terminal:
+4. Go to the directory where makefile is in, then key in the following command in the terminal:
 
 		make -f makefile_HODLR_Test.mk
 
-5. You can change the kernels in the make. If you want to add more kernels, go and change the files get_Matrix.cpp.
+5. You can change the kernels in the makefile. More kernels can be added by editing the function double get_Matrix_Entry(const unsigned i, const unsigned j) in the file get_Matrix.cpp.
 
-6. Read through the comments in all the files, which should be self-explanatory.
+6. Read through the comments in all the files. Most of the function/class/method/variable names are self-explanatory.
 
 7. More details will be added later.

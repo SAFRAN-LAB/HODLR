@@ -2,6 +2,10 @@
 
 Date: November 14th, 2013
 
+**Author**
+
+Sivaram Ambikasaran <siva.1985@gmail.com>
+
 **Version 3.14**
 
 %% Copyleft 2013: Sivaram Ambikasaran

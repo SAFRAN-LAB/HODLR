@@ -21,7 +21,7 @@ using namespace Eigen;
 int main() {
     srand (time(NULL));
 	
-	unsigned N	=	100000;
+	unsigned N	=	500000;
 	unsigned nRhs	=	1;
 	unsigned nLeaf	=	50;
 	double tolerance=	1e-14;

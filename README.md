@@ -94,7 +94,13 @@ The following files must be found inside the directory:
 
 		make -f makefile_HODLR_Test.mk
 
-5. You can change the kernels in the makefile. More kernels can be added by editing the function <td>double get_Matrix_Entry(const unsigned i, const unsigned j)</td> in the file <td>get_Matrix.cpp</td>.
+5. You can change the kernels in the makefile. More kernels can be added by editing the function
+
+		double get_Matrix_Entry(const unsigned i, const unsigned j)
+
+ in the file
+
+		get_Matrix.cpp
 
 6. Read through the comments in all the files. Most of the function/class/method/variable names are self-explanatory.
 

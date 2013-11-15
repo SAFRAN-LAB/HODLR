@@ -1,6 +1,6 @@
 #HODLR SOLVER: Blazingly fast and accurate direct solver for dense linear systems
 
-This is an implementation of a blazingly fast direct solver for dense linear systems discussed in the article: "An O(N log (N)) Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices". The solver has been optimized and the running times of the solver is now massively (a few orders of magnitude) faster than the running times reported in the article. The solver has also been extended to matrices not necessarily arising out of kernels and also to higher dimensions. Low-rank approximation of the appropriate blocks are obtained using partial pivoted LU algorithm. The solver is highly general and works for systems, where the off-diagonal blocks can be efficiently represented as a low-rank matrix in a hierarchical fashion.
+This is an implementation of a blazingly fast direct solver for dense linear systems discussed in the article: "An O(N log (N)) Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices". The solver has been optimized and the running times of the solver is now massively (a few orders of magnitude) faster than the running times reported in the article. The solver has also been extended to matrices not necessarily arising out of kernels and also to higher dimensions. Low-rank approximation of the appropriate blocks are obtained using partial pivoted LU algorithm. The domain is sub-divided based on a KDTree. The solver is fairly general and works with minimal restrictions.
 
 To give a rough idea of the running time, the solver takes 23 seconds (this is time taken from the time you press the return key on the keyboard to run your code and to get the final result) for a system size of 1 million. The matrix is of the form
 
@@ -121,8 +121,10 @@ The following files must be found inside the directory:
 7. get_Matrix.hpp
 8. partial_Piv_LU.cpp
 9. partial_Piv_LU.hpp
-10. makefile_HODLR_Test.mk
-11. README.md
+10. KDTree.cpp
+11. KDTree.hpp
+12. makefile_HODLR_Test.mk
+13. README.md
 
 ###SETTING THINGS UP:
 

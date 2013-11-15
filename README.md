@@ -5,10 +5,13 @@ Date: November 14th, 2013
 **Version 3.14**
 
 %% Copyleft 2013: Sivaram Ambikasaran
+
 %% Developed by Sivaram Ambikasaran
+
 %% Contact: <siva.1985@gmail.com> (Sivaram)
-%%    
-%% This program is free software; you can redistribute it and/or modify it under the terms of MPL2 license.      
+
+%% This program is free software; you can redistribute it and/or modify it under the terms of MPL2 license.
+
 %% The Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not %% distributed with this file, You can obtain one at <http://mozilla.org/MPL/2.0/.>  
 
 ###FILES:

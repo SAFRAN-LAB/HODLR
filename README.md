@@ -1,4 +1,4 @@
-#HODLR SOLVER: A blazingly fast and accurate direct solver for dense linear systems.
+#HODLR SOLVER: Blazingly fast and accurate direct solver for dense linear systems
 
 This is an implementation of a blazingly fast direct solver for dense linear systems discussed in the article: "An O(N log (N))  Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices". The solver has been optimized and the running times of the solver and now orders of magnitude faster than the running times reported in the article. The solver has also been extended to matrices not necessarily arising out of kernels. Low-rank approximation of the appropriate blocks are obtained using partial pivoted LU algorithm. The solver is highly general and works for systems where the off-diagonal blocks can be efficiently represented as a low-rank matrix in a hierarchical fashion.
 

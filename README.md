@@ -12,7 +12,7 @@ where
 
 where R(i,j) is the distance between the points x(i) and x(j). The computed answer is accurate upto 13 digits. It is to be noted that even for higher dimensions (2D and 3D), the solver is still way faster than the conventional direct solvers, though the scaling may no longer be almost linear. The scaling depends on the smoothness of the kernel near the diagonal of the matrix.
 
-**In 1D**
+***In 1D***
 <table>
     <tr>
         <td>System size</td> <td>Time taken</td> <td>Accuracy</td>

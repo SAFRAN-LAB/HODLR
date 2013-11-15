@@ -2,7 +2,7 @@
 
 This is an implementation of a blazingly fast direct solver for dense linear systems discussed in the article: "An O(N log (N)) Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices". The solver has been optimized and the running times of the solver is now massively (a few orders of magnitude) faster than the running times reported in the article. The solver has also been extended to matrices not necessarily arising out of kernels and also to higher dimensions. Low-rank approximation of the appropriate blocks are obtained using partial pivoted LU algorithm. The domain is sub-divided based on a KDTree. The solver is fairly general and works with minimal restrictions.
 
-To give a rough idea of the running time, the solver takes 23 seconds (this is time taken from the time you press the return key on the keyboard to run your code and to get the final result) for a system size of 1 million. The matrix is of the form
+To give a rough idea of the running time, for a system size of 1 million the solver takes 23 seconds for a 1D problem and 86 seconds for a 2D problem (this is time taken from the time you press the return key on the keyboard to run your code and to get the final result). The matrix is of the form
 
 		A	=	s^2 I + B
 
@@ -10,7 +10,7 @@ where
 
 		B(i,j) = sin(R(i,j))/R(i,j)
 
-where R(i,j) is the distance between the points x(i) and x(j). The computed answer is accurate upto 13 digits. It is to be noted that even for higher dimensions (2D and 3D), the solver is still way faster than the conventional direct solvers, though the scaling may no longer be almost linear. The scaling depends on the smoothness of the kernel near the diagonal of the matrix. For instance, if the kernel is sin(R)/R, the timings indicate that the scaling is linear in all dimensions.
+where R(i,j) is the distance between the points x(i) and x(j). The computed answer is accurate upto 13 digits. It is to be noted that even for higher dimensions (2D and 3D), the solver is still way faster than the conventional direct solvers, though the scaling may no longer be almost linear. The scaling depends on the smoothness of the kernel near the diagonal of the matrix. For instance, if the kernel is sin(R)/R, the timings seem to indicate that the scaling is linear in all dimensions.
 
 ***In 1D***
 <table>

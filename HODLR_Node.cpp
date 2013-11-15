@@ -17,6 +17,7 @@ using namespace std;
 using namespace Eigen;
 
 HODLR_Node::HODLR_Node(unsigned levelNumber, unsigned nodeNumber, unsigned nStart, unsigned nSize) {
+<<<<<<< HEAD
 	this->levelNumber	=	levelNumber;
 	this->nodeNumber	=	nodeNumber;
 	this->nStart		=	nStart;
@@ -24,6 +25,15 @@ HODLR_Node::HODLR_Node(unsigned levelNumber, unsigned nodeNumber, unsigned nStar
 	this->parent		=	NULL;
 	this->child[0]		=	NULL;
 	this->child[1]		=	NULL;
+=======
+this->levelNumber=	levelNumber;
+this->nodeNumber=	nodeNumber;
+this->nStart	=	nStart;
+this->nSize	=	nSize;
+this->parent	=	NULL;
+this->child[0]	=	NULL;
+this->child[1]	=	NULL;
+>>>>>>> a0e338c76beceb489cef4b4aa2895556f583c6a9
 }
 
 void HODLR_Node::assemble_Matrices(double lowRankTolerance, double diagonal) {

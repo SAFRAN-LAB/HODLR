@@ -1,6 +1,6 @@
 #HODLR SOLVER: A blazingly fast direct solver for dense linear systems.
 
-This is an implementation of a blazingly fast direct solver for dense linear systems discussed in the article: "An O(N log (N))  Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices". The solver has been optimized and the running times of the solver and now orders of magnitude faster than the running times reported in the article. The solver has also been extended to matrices not necessarily arising out of kernels. Further, the low-rank approximation of the appropriate blocks are obtained using partial pivoted LU algorithm.
+This is an implementation of a blazingly fast direct solver for dense linear systems discussed in the article: "An O(N log (N))  Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices". The solver has been optimized and the running times of the solver and now orders of magnitude faster than the running times reported in the article. The solver has also been extended to matrices not necessarily arising out of kernels. Further, the low-rank approximation of the appropriate blocks are obtained using partial pivoted LU algorithm. The solver is highly general and works for systems where the off-diagonal blocks can be efficiently represented as a low-rank matrix in a hierarchical fashion.
 
 To give a rough idea of the running time, the solver takes 23 seconds (this is time taken from the time you press the enter key on the keyboard to run your code and to get the final result) for a system size of 1 million, where the matrix is of the form
 
@@ -30,6 +30,29 @@ where R(i,j) is the distance between the points x(i) and x(j), where x(i), x(j) 
 **Author**
 
 Sivaram Ambikasaran <siva.1985@gmail.com>
+
+**Citation**
+
+If you use this as part of your work, kindly cite as follows:
+
+@article{ambikasaran2013fastdirect,
+  author={{A}mbikasaran, {S}ivaram and {D}arve, {E}ric},
+  title={An $\mathcal{O}(N \log N)$ Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices},
+  journal={Journal of Scientific Computing},
+  year={2013},
+  volume={57},
+  number={3},
+  pages={477--501},
+  month={December},
+  publisher={Springer}
+}
+
+@MISC{ambikasaran2013HODLR,
+  author = {{A}mbikasaran, {S}ivaram},
+  title = {Blazingly fast direct solver for dense linear systems},
+  howpublished = {https://github.com/sivaramambikasaran/HODLR_Solver},
+  year = {2013}
+ }
 
 **Version 3.14**
 

@@ -23,7 +23,7 @@ where R(i,j) is the distance between the points x(i) and x(j), where x(i), x(j) 
 	<td>100 thousand</td> <td>2.1 seconds</td> <td>13 digits</td>
     </tr>
     <tr>
-	<td>1 Million</td> <td>22.9 seconds</td> <td>12 digits</td>
+	<td>1 Million</td> <td>22.9 seconds</td> <td>13 digits</td>
     </tr>
 </table>
 

@@ -75,7 +75,7 @@ Sivaram Ambikasaran <siva.1985@gmail.com>
 
 **Citation**
 
-If you use this as part of your work, kindly cite as follows:
+If you use the implementation or any part of the implementation in your work, kindly cite as follows:
 
 @article{ambikasaran2013fastdirect,
   author={{A}mbikasaran, {S}ivaram and {D}arve, {E}ric},

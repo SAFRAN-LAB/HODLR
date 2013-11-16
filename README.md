@@ -10,7 +10,39 @@ where
 
 		B(i,j) = sin(R(i,j))/R(i,j)
 
-where R(i,j) is the distance between the points x(i) and x(j). The computed answer is accurate upto 13 digits. It is to be noted that even for higher dimensions (2D and 3D), the solver is still way faster than the conventional direct solvers, though the scaling may no longer be almost linear. The scaling depends on the smoothness of the kernel near the diagonal of the matrix. For instance, if the kernel is sin(R)/R, the timings seem to indicate that the scaling is linear in all dimensions.
+where R(i,j) is the distance between the points x(i) and x(j). The computed answer is accurate upto 13 digits. It is to be noted that even for higher dimensions (2D and 3D), the solver is still way faster than the conventional direct solvers, though the scaling may no longer be almost linear. The scaling depends on the smoothness of the kernel near the diagonal of the matrix. For instance, if the kernel is log(R) the scaling is alsmot linear in 1D as shown by the timing below.
+
+***In 1D***
+<table>
+    <tr>
+        <td>System size</td> <td>Time taken</td> <td>Accuracy</td>
+    </tr>
+    <tr>
+	<td>10 thousand</td> <td>0.5 seconds</td> <td>12 digits</td>
+    </tr>
+    <tr>
+	<td>100 thousand</td> <td>6.3 seconds</td> <td>11 digits</td>
+    </tr>
+    <tr>
+	<td>500 thousand</td> <td>40 seconds</td> <td>13 digits</td>
+    </tr>
+</table>
+
+***In 2D***
+<table>
+    <tr>
+        <td>System size</td> <td>Time taken</td> <td>Accuracy</td>
+    </tr>
+    <tr>
+	<td>10 thousand</td> <td>6.8 seconds</td> <td>12 digits</td>
+    </tr>
+    <tr>
+	<td>100 thousand</td> <td>390 seconds</td> <td>11 digits</td>
+    </tr>
+</table>
+
+
+If the kernel is sin(R)/R (smooth close to the diagonal), the scaling is linear in all dimensions.
 
 ***In 1D***
 <table>

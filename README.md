@@ -109,9 +109,9 @@ Sivaram Ambikasaran <siva.1985@gmail.com>
 If you use the implementation or any part of the implementation in your work, kindly cite as follows:
 
 ***Article***
-@article{ambikasaran2013fastdirect,
 
-  author={{A}mbikasaran, {S}ivaram and {D}arve, {E}ric},
+@article{ambikasaran2013fastdirect,</br>
+  author={{A}mbikasaran, {S}ivaram and {D}arve, {E}ric},</br>
 
   title={An $\mathcal{O}(N \log N)$ Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices},
 
@@ -131,7 +131,8 @@ If you use the implementation or any part of the implementation in your work, ki
 }
 
 ***Code***
-@MISC{ambikasaran2013HODLR,
+
+@MISC{ambikasaran2013HODLR,</br>
 
   author = {{A}mbikasaran, {S}ivaram},
 

@@ -24,7 +24,7 @@ where R(i,j) is the distance between the points x(i) and x(j). The computed answ
 	<td>100 thousand</td> <td>6.3 seconds</td> <td>11 digits</td>
     </tr>
     <tr>
-	<td>500 thousand</td> <td>40 seconds</td> <td>13 digits</td>
+	<td>500 thousand</td> <td>40 seconds</td> <td>11 digits</td>
     </tr>
 </table>
 

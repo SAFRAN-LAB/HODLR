@@ -183,6 +183,6 @@ The following files must be found inside the directory:
 
 6. The dimension of can be changed by changing DIM in the makefile.
 
-7. Read through the comments in all the files. Most of the function/class/method/variable names are self-explanatory.
+7. Read through the comments in all the files. Most of the function/class/method/variable names are self-explanatory. Read the file HODLR_Test.cpp to understand how to assemble, factor, solver a new HODLR system.
 
 8. More details will be added later.

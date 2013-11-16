@@ -108,6 +108,7 @@ Sivaram Ambikasaran <siva.1985@gmail.com>
 
 If you use the implementation or any part of the implementation in your work, kindly cite as follows:
 
+***Article***
 @article{ambikasaran2013fastdirect,
 
   author={{A}mbikasaran, {S}ivaram and {D}arve, {E}ric},
@@ -129,14 +130,15 @@ If you use the implementation or any part of the implementation in your work, ki
   publisher={Springer}
 }
 
+***Code***
 @MISC{ambikasaran2013HODLR,
 
   author = {{A}mbikasaran, {S}ivaram},
 
-  title = {Blazingly fast direct solver for dense linear systems},
+  title = {A fast direct solver for dense linear systems},
 
   howpublished = {https://github.com/sivaramambikasaran/HODLR_Solver},
-  
+
   year = {2013}
  }
 

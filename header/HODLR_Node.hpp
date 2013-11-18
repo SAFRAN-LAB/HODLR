@@ -15,7 +15,7 @@ using namespace Eigen;
 
 class HODLR_Node {
 	friend class HODLR_Tree;
-public:
+private:
 	HODLR_Node* parent;
 	HODLR_Node* child[2];
 

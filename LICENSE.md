@@ -13,7 +13,7 @@ If a copy of the MPL was not distributed with this file, You can obtain one at <
     ©
 </span> 2013 Sivaram Ambikasaran. All lefts reserved.  
 %% Contact: siva.1985@gmail.com(Sivaram)  
-%% This program is free software; you can redistribute it and/or modify it under the terms of MPL2 license.  
+%% This program is a free software; you can redistribute it and/or modify it under the terms of MPL2 license.  
 %% The Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL  
 %% was not distributed with this file, You can obtain one at <http://mozilla.org/MPL/2.0/>.
 

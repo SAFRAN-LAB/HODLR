@@ -37,7 +37,7 @@ void HODLR_Tree::create_Tree(HODLR_Node*& node) {
 	}
 }
 
-void HODLR_Tree::assemble_Matrix(double diagonal, double lowRankTolerance) {
+void HODLR_Tree::assemble_Matrix(VectorXd& diagonal, double lowRankTolerance) {
 	this->lowRankTolerance	=	lowRankTolerance;
 	this->diagonal		=	diagonal;
 	set_Locations(N);

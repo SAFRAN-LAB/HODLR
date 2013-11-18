@@ -39,8 +39,8 @@ int main() {
 	cout << "Time taken is: " << double(end-start)/double(CLOCKS_PER_SEC)<< endl;
 
 	cout << endl << "Assembling the matrix in HODLR form..." << endl;
-	start		=	clock();
-	double diagonal	=	2.0;
+	start			=	clock();
+	VectorXd diagonal	=	2.0*VectorXd::Ones(N);
 	A->assemble_Matrix(diagonal, tolerance);
 	end		=	clock();
 	cout << "Time taken is: " << double(end-start)/double(CLOCKS_PER_SEC)<< endl;
@@ -75,7 +75,7 @@ int main() {
 //	cout << endl << "Exact determinant is: " << setprecision(16) << log(fabs(B.partialPivLu().determinant())) << endl;
 
 	double determinant;
-	cout << endl << "Computing the determinant..." << endl;
+	cout << endl << "Computing the log determinant..." << endl;
 	start		=	clock();
 	A->compute_Determinant(determinant);
 	end		=	clock();

@@ -26,11 +26,11 @@ HODLR_Node::HODLR_Node(unsigned levelNumber, unsigned nodeNumber, unsigned nStar
 	this->child[1]		=	NULL;
 }
 
-void HODLR_Node::assemble_Matrices(double lowRankTolerance, double diagonal) {
+void HODLR_Node::assemble_Matrices(double lowRankTolerance, VectorXd& diagonal) {
 	if (isLeaf	==	true) {
 		get_Matrix(nStart, nStart, nSize, nSize, K);
 		for (unsigned k=0; k<nSize; ++k) {
-			K(k,k)	=	diagonal;
+			K(k,k)	=	diagonal(nStart+k);
 		}
 	}
 	else if (isLeaf	==	false) {

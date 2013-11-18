@@ -143,23 +143,16 @@ Developed by Sivaram Ambikasaran
 
 This program is free software; you can redistribute it and/or modify it under the terms of MPL2 license. The Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at <http://mozilla.org/MPL/2.0/.>
 
-###FILES:
+###DIRECTORIES AND FILES
 
-The following files must be found inside the directory:
 
-1. HODLR_Node.cpp
-2. HODLR_Node.hpp
-3. HODLR_Tree.cpp
-4. HODLR_Tree.hpp
-5. HODLR_Test.cpp
-6. get_Matrix.cpp
-7. get_Matrix.hpp
-8. partial_Piv_LU.cpp
-9. partial_Piv_LU.hpp
-10. KDTree.cpp
-11. KDTree.hpp
-12. makefile_HODLR_Test.mk
-13. README.md
+	./examples/		:	Example input C++ codes; Needed to read input from user or from input file.  
+	./src/			:	Source code in C++  
+	./header/		:	Relevant header files  
+	./exec/			:	Executables for HODLR  
+	./README.md		:	This file  
+	./LICENSE.md	:	License file  
+	./makefile.mk	:	Makefile
 
 ###SETTING THINGS UP:
 
@@ -167,11 +160,13 @@ The following files must be found inside the directory:
 
 2. Download Eigen from here: <http://eigen.tuxfamily.org/index.php?title=Main_Page>
 
-3. There is a sample input file named "HODLR_Test.cpp". This calls the features the code can handle.
+3. There is a sample input file named "HODLR_Test.cpp" in the directory './examples/'. This calls the features the code can handle.
 
 4. Go to the directory where makefile is in, then key in the following command in the terminal:
 
-		make -f makefile_HODLR_Test.mk
+		make -f makefile.mk
+
+5. Once your run the make command, the executables are created in the directory named './exec/'. To run the code, go into the 'exec' directory and call './HODLR_Test'.
 
 5. You can change the kernels in the makefile by changing KERNEL. More kernels can be added by editing the function
 

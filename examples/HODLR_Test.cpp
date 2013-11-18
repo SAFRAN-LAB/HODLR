@@ -81,7 +81,7 @@ int main() {
 	end		=	clock();
 	cout << "Time taken is: " << double(end-start)/double(CLOCKS_PER_SEC)<< endl;
 
-	cout << endl << "Fast determinant is: " << setprecision(16) << determinant << endl;
+	cout << endl << "Log determinant is: " << setprecision(16) << determinant << endl;
 	//
 	// cout << endl << "Exact matrix matrix product..." << endl;
 	// start			=	clock();

@@ -23,7 +23,7 @@ private:
 	double lowRankTolerance;
 	double determinant;
 	VectorXd diagonal;
-    
+        
 	void create_Tree(HODLR_Node*& node);
 	void assemble_Matrix(HODLR_Node*& node);
 	void matMatProduct(HODLR_Node*& node, MatrixXd& x, MatrixXd& b);
@@ -31,7 +31,7 @@ private:
 	void set_Matrices_For_Inversion(HODLR_Node*& node);
 	void solve(HODLR_Node*& node, MatrixXd& x);
 	void compute_Determinant(HODLR_Node*& node);
-    
+        
 public:
 	HODLR_Tree(unsigned N, unsigned nLeaf);
 	void assemble_Matrix(VectorXd& diagonal, double lowRankTolerance);

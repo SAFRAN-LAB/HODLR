@@ -21,7 +21,7 @@ using namespace Eigen;
 int main() {
     srand (time(NULL));
 	
-	unsigned N	=	100000;
+	unsigned N		=	100000;
 	unsigned nRhs	=	1;
 	unsigned nLeaf	=	50;
 	double tolerance=	1e-14;
@@ -88,6 +88,6 @@ int main() {
 	// MatrixXd bExact	=	B*x;
 	// end				=	clock();
 	// cout << endl << "Time taken is: " << double(end-start)/double(CLOCKS_PER_SEC)<< endl;
-	// 
+	//
 	// cout << endl << (bExact-b).cwiseAbs().maxCoeff() << endl;
 }

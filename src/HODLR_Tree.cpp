@@ -1,6 +1,6 @@
 //
 //  HODLR_Tree.cpp
-//  
+//
 //
 //  Created by Sivaram Ambikasaran on 11/8/13.
 //
@@ -53,13 +53,13 @@ void HODLR_Tree::assemble_Matrix(HODLR_Node*& node) {
 }
 
 void HODLR_Tree::matMatProduct(MatrixXd& x, MatrixXd& b) {
-
+    
 	b	=	MatrixXd::Zero(N, x.cols());
 	matMatProduct(root, x, b);
 }
 
 void HODLR_Tree::matMatProduct(HODLR_Node*& node, MatrixXd& x, MatrixXd& b) {
-
+    
 	if (node) {
 		node->matrix_Matrix_Product(x, b);
 		matMatProduct(node->child[0], x, b);

@@ -53,12 +53,12 @@ void partial_Piv_LU(const unsigned start_Row, const unsigned start_Col, const un
         computed_Rank   =   n_Rows;
         return;
     }
-
+    
     vector<int> rowIndex;	//	This stores the row indices, which have already been used.
     vector<int> colIndex;	//	This stores the column indices, which have already been used.
     vector<VectorXd> u;		//	Stores the column basis.
     vector<VectorXd> v;		//	Stores the row basis.
-
+    
 	srand (time(NULL));
     double max, Gamma, unused_max;
     
@@ -75,7 +75,7 @@ void partial_Piv_LU(const unsigned start_Row, const unsigned start_Col, const un
     VectorXd a, row, col;
     
     double row_Squared_Norm, row_Norm, col_Squared_Norm, col_Norm;
-
+    
     //  Repeat till the desired tolerance is obtained
     do {
         //  Generation of the row
@@ -85,7 +85,7 @@ void partial_Piv_LU(const unsigned start_Row, const unsigned start_Col, const un
         for (unsigned l=0; l<computed_Rank; ++l) {
             row =   row-u[l](rowIndex.back())*v[l];
         }
-
+        
         pivot   =   max_Abs_Vector(row, colIndex, max);
         
         unsigned max_tries  =   50;
@@ -114,7 +114,7 @@ void partial_Piv_LU(const unsigned start_Row, const unsigned start_Col, const un
             pivot   =   max_Abs_Vector(row, colIndex, max);
             ++count;
         }
-
+        
         if (count == max_tries) break;
         
         count = 0;
@@ -180,7 +180,7 @@ void partial_Piv_LU(const unsigned start_Row, const unsigned start_Col, const un
         }
         ++computed_Rank;
     } while (row_Norm*col_Norm > fabs(max)*tolerance*matrix_Norm && computed_Rank <= fmin(n_Rows, n_Cols));
-
+    
     //  If the computed_Rank is close to full-rank then return the trivial full-rank decomposition
     if (computed_Rank>=fmin(n_Rows, n_Cols)) {
         if (n_Rows < n_Cols) {
@@ -196,7 +196,7 @@ void partial_Piv_LU(const unsigned start_Row, const unsigned start_Col, const un
             return;
         }
     }
-
+    
     U   =   MatrixXd(n_Rows,computed_Rank);
     V   =   MatrixXd(computed_Rank,n_Cols);
     for (unsigned j=0; j<computed_Rank; ++j) {

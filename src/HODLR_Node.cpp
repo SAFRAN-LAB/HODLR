@@ -1,6 +1,6 @@
 //
 //  HODLR_Node.cpp
-//  
+//
 //
 //  Created by Sivaram Ambikasaran on 11/8/13.
 //
@@ -34,17 +34,17 @@ void HODLR_Node::assemble_Matrices(double lowRankTolerance, VectorXd& diagonal) 
 		}
 	}
 	else if (isLeaf	==	false) {
-
+        
 		partial_Piv_LU(child[0]->nStart, child[1]->nStart, child[0]->nSize, child[1]->nSize, lowRankTolerance, nRank[0], U[0], V[1]);
-
+        
 		partial_Piv_LU(child[1]->nStart, child[0]->nStart, child[1]->nSize, child[0]->nSize, lowRankTolerance, nRank[1], U[1], V[0]);
-
+        
 	}
 }
 
 void HODLR_Node::matrix_Matrix_Product(MatrixXd& x, MatrixXd& b) {
 	unsigned n	=	x.cols();
-
+    
 	if (isLeaf	==	true) {
 		b.block(nStart, 0, nSize, n)	=	b.block(nStart, 0, nSize, n)	+	K*x.block(nStart, 0, nSize, n);
 	}
@@ -70,7 +70,7 @@ void HODLR_Node::compute_K() {
 		unsigned m0	=	V[0].rows();
 		unsigned m1	=	V[1].rows();
 		K	=	MatrixXd::Identity(m0+m1, m0+m1);
-
+        
 		K.block(0, m1, m1, m0)	=	Vinverse[1]*Uinverse[1];
 		K.block(m1, 0, m0, m1)	=	Vinverse[0]*Uinverse[0];
 	}
@@ -88,19 +88,19 @@ void HODLR_Node::apply_Inverse(MatrixXd& matrix, unsigned mStart) {
 	}
 	else if (isLeaf	==	false) {
 		//	Computes temp		=	Vinverse*matrix
-
+        
 		MatrixXd temp(nRank[0]+nRank[1], n);
-
+        
 		temp.block(0, 0, nRank[0] , n)		=	Vinverse[1]*matrix.block(start+child[0]->nSize, 0 , child[1]->nSize, n);
-
+        
 		temp.block(nRank[0], 0, nRank[1] , n)	=	Vinverse[0]*matrix.block(start, 0 , child[0]->nSize, n);
 		
 		//	Computes tempSolve	=	Kinverse\temp
-
+        
 		MatrixXd tempSolve	=	Kinverse.solve(temp);
 		
 		//	Computes matrix		=	matrix-Uinverse*tempSolve
-
+        
 		matrix.block(start, 0, child[0]->nSize, n)			=	matrix.block(start, 0, child[0]->nSize, n)	-	Uinverse[0]*tempSolve.block(0, 0, nRank[0], n);
 		matrix.block(start + child[0]->nSize, 0, child[1]->nSize, n)	=	matrix.block(start + child[0]->nSize, 0, child[1]->nSize, n)	-	Uinverse[1]*tempSolve.block(nRank[0], 0, nRank[1], n);
 	}

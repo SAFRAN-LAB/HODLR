@@ -33,7 +33,7 @@ int main() {
 	clock_t start, end;
   
 	cout << endl << "Setting things up..." << endl;
-	start		=	clock();
+	start	=	clock();
 	HODLR_Tree* A	=	new HODLR_Tree(N, nLeaf);
 	end		=	clock();
 	cout << "Time taken is: " << double(end-start)/double(CLOCKS_PER_SEC)<< endl;

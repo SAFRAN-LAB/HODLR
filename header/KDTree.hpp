@@ -1,6 +1,6 @@
 //
 //  KDTree.hpp
-//  
+//
 //
 //  Created by Sivaram Ambikasaran on 10/22/13.
 //

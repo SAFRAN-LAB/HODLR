@@ -146,15 +146,43 @@ This program is free software; you can redistribute it and/or modify it under th
 ###DIRECTORIES AND FILES
 
 
-	./examples/		:	Example input C++ codes; Needed to read input from user or from input file.  
-	./src/			:	Source code in C++  
-	./header/		:	Relevant header files  
-	./exec/			:	Executables for HODLR  
-	./README.md		:	This file  
-	./LICENSE.md	:	License file  
+	./examples/		:	Example input C++ codes; Needed to read input from user or from input file.
+	./src/			:	Source code in C++
+	./header/		:	Relevant header files
+	./exec/			:	Executables for HODLR
+	./README.md		:	This file
+	./LICENSE.md	:	License file
 	./makefile.mk	:	Makefile
 
-###SETTING THINGS UP:
+##Usage
+
+###DEPENDENCIES:
+
+To run this package, you need to have **Eigen**. If you don't already have it,
+download and install Eigen following the instructions
+[here](http://eigen.tuxfamily.org/index.php?title=Main_Page).
+
+###BUILD USING CMAKE:
+
+The easiest way to build this library is using [CMake](http://cmake.org/).
+In the project directory, run:
+```
+mkdir build
+cd build
+cmake ..
+make
+make test
+[sudo] make install # optional
+```
+this will build the static `hodlr` library and run a few tests.
+
+Your code should include `get_Matrix.hpp` and implement the function
+```
+double get_Matrix_Entry (const unsigned i, const unsigned j)
+```
+
+
+###CUSTOM MAKEFILE:
 
 1. To run this package, you need to have **Eigen**.
 

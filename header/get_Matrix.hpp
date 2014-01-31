@@ -11,13 +11,6 @@ using namespace Eigen;
 
 
 /****************************************************************/
-/*	FUNCTION:	set_Locations				*/
-/*								*/
-/*	Sets the location of points in space.			*/
-/****************************************************************/
-void set_Locations(unsigned N);
-
-/****************************************************************/
 /*	FUNCTION:   get_Matrix_Entry                         	*/
 /*                                                              */
 /*	Obtains an entry of the matrix                         	*/

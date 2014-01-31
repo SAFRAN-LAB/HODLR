@@ -40,7 +40,6 @@ void HODLR_Tree::create_Tree(HODLR_Node*& node) {
 void HODLR_Tree::assemble_Matrix(VectorXd& diagonal, double lowRankTolerance) {
 	this->lowRankTolerance	=	lowRankTolerance;
 	this->diagonal		=	diagonal;
-	set_Locations(N);
 	assemble_Matrix(root);
 }
 
@@ -53,13 +52,13 @@ void HODLR_Tree::assemble_Matrix(HODLR_Node*& node) {
 }
 
 void HODLR_Tree::matMatProduct(MatrixXd& x, MatrixXd& b) {
-    
+
 	b	=	MatrixXd::Zero(N, x.cols());
 	matMatProduct(root, x, b);
 }
 
 void HODLR_Tree::matMatProduct(HODLR_Node*& node, MatrixXd& x, MatrixXd& b) {
-    
+
 	if (node) {
 		node->matrix_Matrix_Product(x, b);
 		matMatProduct(node->child[0], x, b);
@@ -102,7 +101,7 @@ void HODLR_Tree::set_Matrices_For_Inversion(HODLR_Node*& node) {
 void HODLR_Tree::solve(MatrixXd& b, MatrixXd& x) {
 	x	=	b;
 	solve(root, x);
-	
+
 }
 
 void HODLR_Tree::solve(HODLR_Node*& node, MatrixXd& x) {

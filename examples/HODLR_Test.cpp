@@ -11,103 +11,98 @@
 #include <cstdlib>
 #include <ctime>
 #include <iomanip>
-#include "get_Matrix.hpp"
+
 #include "HODLR_Tree.hpp"
+#include "HODLR_Kernel.hpp"
 #include "KDTree.hpp"
 
 using namespace std;
 using namespace Eigen;
 
+class Test_Kernel : public HODLR_Kernel {
+
+private:
 
 #ifdef ONE
-VectorXd Theta;
-unsigned nDim	=	1;
+	VectorXd Theta;
+	const static unsigned nDim	=	1;
 #elif TWO
-MatrixXd Theta;
-unsigned nDim	=	2;
+	MatrixXd Theta;
+	const static unsigned nDim	=	2;
 #elif THREE
-MatrixXd Theta;
-unsigned nDim	=	3;
+	MatrixXd Theta;
+	const static unsigned nDim	=	3;
 #endif
 
-/****************************************************************/
-/*	FUNCTION:	set_Locations				*/
-/*								*/
-/*	Sets the location of points in space.			*/
-/****************************************************************/
-void set_Locations(unsigned N) {
+public:
+	Test_Kernel (unsigned N) {
 #ifdef ONE
-	Theta	=        VectorXd::Random(N);
-        sort(Theta.data(), Theta.data()+Theta.size());
+		Theta	=        VectorXd::Random(N);
+		sort(Theta.data(), Theta.data()+Theta.size());
 #else
-	Theta	=	MatrixXd::Random(N, nDim);
-	get_KDTree_Sorted(Theta,0);
+		Theta	=	MatrixXd::Random(N, nDim);
+		get_KDTree_Sorted(Theta,0);
 #endif
-}
+	};
 
-
-/****************************************************************/
-/*	FUNCTION:   get_Matrix_Entry                         	*/
-/*                                                              */
-/*	Obtains an entry of the matrix                         	*/
-/****************************************************************/
-double get_Matrix_Entry(const unsigned i, const unsigned j) {
+	double get_Matrix_Entry(const unsigned i, const unsigned j) {
 #ifdef ONE
-	double R	=	fabs(Theta(i)-Theta(j));
-	#ifdef	GAUSSIAN
-		return exp(-R*R);
-	#elif	EXPONENTIAL
-		return exp(-R);
-	#elif	SINC
-		return sin(R)/R;
-	#elif	QUADRIC
-		return 1.0+R*R;
-	#elif	INVERSEQUADRIC
-		return 1.0/(1.0+R*R);
-	#elif	MULTIQUADRIC
-		return sqrt(1.0+R*R);
-	#elif	INVERSEMULTIQUADRIC
-		return 1.0/sqrt(1.0+R*R);
-	#elif	R2LOGR
-	        return R*R*log(R);
-	#elif	LOGR
-        	return log(R);
-	#elif	ONEOVERR
-        	return 1.0/R;
-	#elif	LOG1R
-        	return log(1+R);
-	#endif
+		double R	=	fabs(Theta(i)-Theta(j));
+		#ifdef	GAUSSIAN
+			return exp(-R*R);
+		#elif	EXPONENTIAL
+			return exp(-R);
+		#elif	SINC
+			return sin(R)/R;
+		#elif	QUADRIC
+			return 1.0+R*R;
+		#elif	INVERSEQUADRIC
+			return 1.0/(1.0+R*R);
+		#elif	MULTIQUADRIC
+			return sqrt(1.0+R*R);
+		#elif	INVERSEMULTIQUADRIC
+			return 1.0/sqrt(1.0+R*R);
+		#elif	R2LOGR
+				return R*R*log(R);
+		#elif	LOGR
+				return log(R);
+		#elif	ONEOVERR
+				return 1.0/R;
+		#elif	LOG1R
+				return log(1+R);
+		#endif
 #else
-	double R2	=	(Theta(i,0)-Theta(j,0))*(Theta(i,0)-Theta(j,0));
-	for (unsigned k=1; k<nDim; ++k) {
-		R2	=	R2+(Theta(i,k)-Theta(j,k))*(Theta(i,k)-Theta(j,k));
-	}
-	#ifdef	GAUSSIAN
-		return exp(-R2);
-	#elif	EXPONENTIAL
-		return exp(-sqrt(R2));
-	#elif	SINC
-		double R	=	sqrt(R2);
-		return sin(R)/R;
-	#elif	QUADRIC
-		return 1.0+R2;
-	#elif	INVERSEQUADRIC
-		return 1.0/(1.0+R2);
-	#elif	MULTIQUADRIC
-		return sqrt(1.0+R2);
-	#elif	INVERSEMULTIQUADRIC
-		return 1.0/sqrt(1.0+R2);
-	#elif	R2LOGR
-        	return 0.5*R2*log(R2);
-	#elif	LOGR
-        	return 0.5*log(R2);
-	#elif	ONEOVERR
-        	return 1.0/sqrt(R2);
-	#elif	LOG1R
-	        return log(1+sqrt(R2));
-	#endif
+		double R2	=	(Theta(i,0)-Theta(j,0))*(Theta(i,0)-Theta(j,0));
+		for (unsigned k=1; k<nDim; ++k) {
+			R2	=	R2+(Theta(i,k)-Theta(j,k))*(Theta(i,k)-Theta(j,k));
+		}
+		#ifdef	GAUSSIAN
+			return exp(-R2);
+		#elif	EXPONENTIAL
+			return exp(-sqrt(R2));
+		#elif	SINC
+			double R	=	sqrt(R2);
+			return sin(R)/R;
+		#elif	QUADRIC
+			return 1.0+R2;
+		#elif	INVERSEQUADRIC
+			return 1.0/(1.0+R2);
+		#elif	MULTIQUADRIC
+			return sqrt(1.0+R2);
+		#elif	INVERSEMULTIQUADRIC
+			return 1.0/sqrt(1.0+R2);
+		#elif	R2LOGR
+				return 0.5*R2*log(R2);
+		#elif	LOGR
+				return 0.5*log(R2);
+		#elif	ONEOVERR
+				return 1.0/sqrt(R2);
+		#elif	LOG1R
+				return log(1+sqrt(R2));
+		#endif
 #endif
-}
+	};
+};
 
 int main() {
 	srand (time(NULL));
@@ -117,7 +112,7 @@ int main() {
 	unsigned nLeaf	=	50;
 	double tolerance=	1e-14;
 
-    set_Locations(N);
+	Test_Kernel kernel(N);
 
 	MatrixXd x	=	MatrixXd::Random(N, nRhs);
 	MatrixXd b, xSol;
@@ -127,7 +122,7 @@ int main() {
 
 	cout << endl << "Setting things up..." << endl;
 	start	=	clock();
-	HODLR_Tree* A	=	new HODLR_Tree(N, nLeaf);
+	HODLR_Tree<Test_Kernel>* A	=	new HODLR_Tree<Test_Kernel>(&kernel, N, nLeaf);
 	end		=	clock();
 	cout << "Time taken is: " << double(end-start)/double(CLOCKS_PER_SEC)<< endl;
 

@@ -7,8 +7,8 @@
 #include <iostream>
 #include <Eigen/Dense>
 
-#include "get_Matrix.hpp"
 #include "HODLR_Tree.hpp"
+#include "HODLR_Kernel.hpp"
 
 using std::cin;
 using std::cout;
@@ -18,15 +18,29 @@ using std::getline;
 using Eigen::VectorXd;
 using Eigen::MatrixXd;
 
-vector<double> _theta, _time, _flux, _ferr;
 
-double get_Matrix_Entry(const unsigned i, const unsigned j) {
-    double d = _time[i] - _time[j];
-    return _theta[0] * exp(-0.5 * d * d / (_theta[0]));
-}
+class Kepler_Kernel : public HODLR_Kernel {
+
+public:
+	Kepler_Kernel (vector<double> theta, vector<double> time)
+		: theta_(theta), time_(time) {};
+
+	double get_Matrix_Entry(const unsigned i, const unsigned j) {
+		double d = time_[i] - time_[j];
+		return theta_[0] * exp(-0.5 * d * d / (theta_[0]));
+	}
+
+private:
+
+	vector<double> theta_, time_;
+
+};
+
 
 int main ()
 {
+	vector<double> _theta, _time, _flux, _ferr;
+
     _theta.push_back(1e-3*1e-3);
     _theta.push_back(1.5*1.5);
 
@@ -55,10 +69,13 @@ int main ()
         yvar(i) = _ferr[i] * _ferr[i];
     }
 
+	// Set up the kernel.
+	Kepler_Kernel kernel (_theta, _time);
+
     clock_t start, end;
     cout << endl << "Setting things up..." << endl;
     start = clock();
-    HODLR_Tree * A = new HODLR_Tree(N, nLeaf);
+    HODLR_Tree<Kepler_Kernel> * A = new HODLR_Tree<Kepler_Kernel>(&kernel, N, nLeaf);
     end = clock();
     cout << "Time taken is: " << double(end-start)/double(CLOCKS_PER_SEC)<< endl;
 

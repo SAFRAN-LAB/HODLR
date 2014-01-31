@@ -101,6 +101,10 @@ install (TARGETS hodlr
          LIBRARY DESTINATION lib${LIB_SUFFIX}
          ARCHIVE DESTINATION lib${LIB_SUFFIX})
 
+# Build the Kepler demo.
+add_executable (kepler examples/kepler_test.cpp)
+target_link_libraries (kepler hodlr)
+
 # Build the tests.
 macro (HODLR_TEST NAME KERNEL DIM)
     add_executable (${NAME}_test examples/HODLR_Test.cpp)

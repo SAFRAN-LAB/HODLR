@@ -13,58 +13,151 @@
 #include <iomanip>
 #include "get_Matrix.hpp"
 #include "HODLR_Tree.hpp"
-
+#include "KDTree.hpp"
 
 using namespace std;
 using namespace Eigen;
 
+
+#ifdef ONE
+VectorXd Theta;
+unsigned nDim	=	1;
+#elif TWO
+MatrixXd Theta;
+unsigned nDim	=	2;
+#elif THREE
+MatrixXd Theta;
+unsigned nDim	=	3;
+#endif
+
+/****************************************************************/
+/*	FUNCTION:	set_Locations				*/
+/*								*/
+/*	Sets the location of points in space.			*/
+/****************************************************************/
+void set_Locations(unsigned N) {
+#ifdef ONE
+	Theta	=        VectorXd::Random(N);
+        sort(Theta.data(), Theta.data()+Theta.size());
+#else
+	Theta	=	MatrixXd::Random(N, nDim);
+	get_KDTree_Sorted(Theta,0);
+#endif
+}
+
+
+/****************************************************************/
+/*	FUNCTION:   get_Matrix_Entry                         	*/
+/*                                                              */
+/*	Obtains an entry of the matrix                         	*/
+/****************************************************************/
+double get_Matrix_Entry(const unsigned i, const unsigned j) {
+#ifdef ONE
+	double R	=	fabs(Theta(i)-Theta(j));
+	#ifdef	GAUSSIAN
+		return exp(-R*R);
+	#elif	EXPONENTIAL
+		return exp(-R);
+	#elif	SINC
+		return sin(R)/R;
+	#elif	QUADRIC
+		return 1.0+R*R;
+	#elif	INVERSEQUADRIC
+		return 1.0/(1.0+R*R);
+	#elif	MULTIQUADRIC
+		return sqrt(1.0+R*R);
+	#elif	INVERSEMULTIQUADRIC
+		return 1.0/sqrt(1.0+R*R);
+	#elif	R2LOGR
+	        return R*R*log(R);
+	#elif	LOGR
+        	return log(R);
+	#elif	ONEOVERR
+        	return 1.0/R;
+	#elif	LOG1R
+        	return log(1+R);
+	#endif
+#else
+	double R2	=	(Theta(i,0)-Theta(j,0))*(Theta(i,0)-Theta(j,0));
+	for (unsigned k=1; k<nDim; ++k) {
+		R2	=	R2+(Theta(i,k)-Theta(j,k))*(Theta(i,k)-Theta(j,k));
+	}
+	#ifdef	GAUSSIAN
+		return exp(-R2);
+	#elif	EXPONENTIAL
+		return exp(-sqrt(R2));
+	#elif	SINC
+		double R	=	sqrt(R2);
+		return sin(R)/R;
+	#elif	QUADRIC
+		return 1.0+R2;
+	#elif	INVERSEQUADRIC
+		return 1.0/(1.0+R2);
+	#elif	MULTIQUADRIC
+		return sqrt(1.0+R2);
+	#elif	INVERSEMULTIQUADRIC
+		return 1.0/sqrt(1.0+R2);
+	#elif	R2LOGR
+        	return 0.5*R2*log(R2);
+	#elif	LOGR
+        	return 0.5*log(R2);
+	#elif	ONEOVERR
+        	return 1.0/sqrt(R2);
+	#elif	LOG1R
+	        return log(1+sqrt(R2));
+	#endif
+#endif
+}
+
 int main() {
 	srand (time(NULL));
-	
+
 	unsigned N	=	100000;
 	unsigned nRhs	=	1;
 	unsigned nLeaf	=	50;
 	double tolerance=	1e-14;
-	
+
+    set_Locations(N);
+
 	MatrixXd x	=	MatrixXd::Random(N, nRhs);
 	MatrixXd b, xSol;
-	
+
 	cout << endl << "Number of particles is: " << N << endl;
 	clock_t start, end;
-	
+
 	cout << endl << "Setting things up..." << endl;
 	start	=	clock();
 	HODLR_Tree* A	=	new HODLR_Tree(N, nLeaf);
 	end		=	clock();
 	cout << "Time taken is: " << double(end-start)/double(CLOCKS_PER_SEC)<< endl;
-	
+
 	cout << endl << "Assembling the matrix in HODLR form..." << endl;
 	start			=	clock();
 	VectorXd diagonal	=	2.0*VectorXd::Ones(N);
 	A->assemble_Matrix(diagonal, tolerance);
 	end		=	clock();
 	cout << "Time taken is: " << double(end-start)/double(CLOCKS_PER_SEC)<< endl;
-	
+
 	cout << endl << "Matrix matrix product..." << endl;
 	start		=	clock();
 	A->matMatProduct(x, b);
 	end		=	clock();
 	cout << "Time taken is: " << double(end-start)/double(CLOCKS_PER_SEC)<< endl;
-	
+
 	cout << endl << "Factoring the matrix..." << endl;
 	start		=	clock();
 	A->compute_Factor();
 	end		=	clock();
 	cout << "Time taken is: " << double(end-start)/double(CLOCKS_PER_SEC)<< endl;
-	
+
 	cout << endl << "Solving the system..." << endl;
 	start		=	clock();
 	A->solve(b, xSol);
 	end		=	clock();
 	cout << "Time taken is: " << double(end-start)/double(CLOCKS_PER_SEC)<< endl;
-	
+
 	cout << endl << "Error in computed solution: " << (xSol-x).cwiseAbs().maxCoeff() << endl;
-	
+
 	//	MatrixXd B;
 	//	cout << endl << "Assembling the entire matrix..." << endl;
 	//	start			=	clock();
@@ -73,14 +166,14 @@ int main() {
 	//	cout << endl << "Time taken is: " << double(end-start)/double(CLOCKS_PER_SEC)<< endl;
 	//
 	//	cout << endl << "Exact determinant is: " << setprecision(16) << log(fabs(B.partialPivLu().determinant())) << endl;
-	
+
 	double determinant;
 	cout << endl << "Computing the log determinant..." << endl;
 	start		=	clock();
 	A->compute_Determinant(determinant);
 	end		=	clock();
 	cout << "Time taken is: " << double(end-start)/double(CLOCKS_PER_SEC)<< endl;
-	
+
 	cout << endl << "Log determinant is: " << setprecision(16) << determinant << endl;
 	//
 	// cout << endl << "Exact matrix matrix product..." << endl;

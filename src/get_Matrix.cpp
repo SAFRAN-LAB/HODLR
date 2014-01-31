@@ -1,102 +1,11 @@
 #include <vector>
 #include <cmath>
 #include <Eigen/Dense>
-#include "./get_Matrix.hpp"
-#include "./KDTree.hpp"
+#include "get_Matrix.hpp"
+#include "KDTree.hpp"
 
 using namespace std;
 using namespace Eigen;
-
-
-#ifdef ONE
-VectorXd Theta;
-unsigned nDim	=	1;
-#elif TWO
-MatrixXd Theta;
-unsigned nDim	=	2;
-#elif THREE
-MatrixXd Theta;
-unsigned nDim	=	3;
-#endif
-
-/****************************************************************/
-/*	FUNCTION:	set_Locations				*/
-/*								*/
-/*	Sets the location of points in space.			*/
-/****************************************************************/
-void set_Locations(unsigned N) {
-#ifdef ONE
-	Theta	=        VectorXd::Random(N);
-        sort(Theta.data(), Theta.data()+Theta.size());
-#else
-	Theta	=	MatrixXd::Random(N, nDim);
-	get_KDTree_Sorted(Theta,0);
-#endif
-}
-
-
-/****************************************************************/
-/*	FUNCTION:   get_Matrix_Entry                         	*/
-/*                                                              */
-/*	Obtains an entry of the matrix                         	*/
-/****************************************************************/
-double get_Matrix_Entry(const unsigned i, const unsigned j) {
-#ifdef ONE
-	double R	=	fabs(Theta(i)-Theta(j));
-	#ifdef	GAUSSIAN
-		return exp(-R*R);
-	#elif	EXPONENTIAL
-		return exp(-R);
-	#elif	SINC
-		return sin(R)/R;
-	#elif	QUADRIC
-		return 1.0+R*R;
-	#elif	INVERSEQUADRIC
-		return 1.0/(1.0+R*R);
-	#elif	MULTIQUADRIC
-		return sqrt(1.0+R*R);
-	#elif	INVERSEMULTIQUADRIC
-		return 1.0/sqrt(1.0+R*R);
-	#elif	R2LOGR
-	        return R*R*log(R);
-	#elif	LOGR
-        	return log(R);
-	#elif	ONEOVERR
-        	return 1.0/R;
-	#elif	LOG1R
-        	return log(1+R);
-	#endif
-#else
-	double R2	=	(Theta(i,0)-Theta(j,0))*(Theta(i,0)-Theta(j,0));
-	for (unsigned k=1; k<nDim; ++k) {
-		R2	=	R2+(Theta(i,k)-Theta(j,k))*(Theta(i,k)-Theta(j,k));
-	}
-	#ifdef	GAUSSIAN
-		return exp(-R2);
-	#elif	EXPONENTIAL
-		return exp(-sqrt(R2));
-	#elif	SINC
-		double R	=	sqrt(R2);
-		return sin(R)/R;
-	#elif	QUADRIC
-		return 1.0+R2;
-	#elif	INVERSEQUADRIC
-		return 1.0/(1.0+R2);
-	#elif	MULTIQUADRIC
-		return sqrt(1.0+R2);
-	#elif	INVERSEMULTIQUADRIC
-		return 1.0/sqrt(1.0+R2);
-	#elif	R2LOGR
-        	return 0.5*R2*log(R2);
-	#elif	LOGR
-        	return 0.5*log(R2);
-	#elif	ONEOVERR
-        	return 1.0/sqrt(R2);
-	#elif	LOG1R
-	        return log(1+sqrt(R2));
-	#endif
-#endif
-}
 
 
 /****************************************************************/

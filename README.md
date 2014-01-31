@@ -174,7 +174,12 @@ make
 make test
 [sudo] make install # optional
 ```
-this will build the static `hodlr` library and run a few tests.
+this will build the static `hodlr` library and run a few tests. If your
+version of the Eigen headers is installed in a non-standard place, you can
+change the `cmake` line to:
+```
+cmake .. -DEIGEN_INCLUDE_DIR_HINTS=/path/to/eigen
+```
 
 Your code should include `get_Matrix.hpp` and implement the function
 ```

@@ -108,8 +108,9 @@ target_link_libraries (kepler hodlr)
 # Build the tests.
 macro (HODLR_TEST NAME KERNEL DIM)
     add_executable (${NAME}_test examples/HODLR_Test.cpp)
+    set_target_properties (${NAME}_test PROPERTIES
+                           COMPILE_FLAGS "-D${KERNEL} -D${DIM} ${HODLR_FLAGS}")
     target_link_libraries (${NAME}_test hodlr)
-    set (CMAKE_CXX_FLAGS "${HODLR_FLAGS} -D${KERNEL} -D${DIM}")
     add_test (NAME ${NAME}_test
               COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${NAME}_test)
 endmacro (HODLR_TEST)

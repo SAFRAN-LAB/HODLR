@@ -1,5 +1,5 @@
 CC	=g++
-CFLAGS	=-c -Wall -DNDEBUG -O4 -ffast-math -ffinite-math-only -I header/ -I ~/Dropbox/Eigen/
+CFLAGS	=-c -Wall -DNDEBUG -O4 -ffast-math -ffinite-math-only -I header/
 LDFLAGS	=
 SOURCES	=./src/KDTree.cpp ./src/get_Matrix.cpp ./src/partial_Piv_LU.cpp ./src/HODLR_Node.cpp ./src/HODLR_Tree.cpp ./examples/HODLR_Test.cpp
 KERNEL	=-DGAUSSIAN  # use -DEXPONENTIAL, -DGAUSSIAN, -DSINC, -DQUADRIC, -DINVERSEQUADRIC, -DMULTIQUADRIC, -DINVERSEMULTIQUADRIC, -DR2LOGR, -DLOGR, -DONEOVERR

@@ -1,13 +1,19 @@
-//
-//  HODLR_Kernel.hpp
-//
-//
-//  Created by Dan Foreman-Mackey on 2014-01-31.
-//
-//
+/*!
+ \class HODLR_Matrix
 
-#ifndef __HODLR_KERNEL_HPP__
-#define __HODLR_KERNEL_HPP__
+ \brief This class is for HODLR matrix.
+ 
+ \note
+ 
+ \author $Dan Foreman-Mackey$
+
+ \version
+
+ \date $Date: January 31st, 2014$
+ */
+
+#ifndef __HODLR_MATRIX_HPP__
+#define __HODLR_MATRIX_HPP__
 
 #include <vector>
 #include <cmath>
@@ -15,18 +21,23 @@
 
 #include "KDTree.hpp"
 
-using namespace std;
 using namespace Eigen;
 
-class HODLR_Kernel {
+class HODLR_Matrix {
 
 public:
-	HODLR_Kernel () {};
+	HODLR_Matrix () {};
 
+        /*!
+         Allows access to the matrix elements, i.e., returns the (i,j)th element of the HODLR matrix.
+         */
 	virtual double get_Matrix_Entry(const unsigned i, const unsigned j) {
 		return 0.0;
 	};
 
+        /*!
+         Allows access to the sub-matrix, i.e., returns a 'n_Rows' by 'n_Cols' sub-matrix starting at the index (start_Row, start_Column) of the HODLR matrix.
+         */
 	void get_Matrix(const unsigned start_Row, const unsigned start_Col, const unsigned n_Rows, const unsigned n_Cols, MatrixXd& A) {
 		A   =   MatrixXd(n_Rows,n_Cols);
 		for (unsigned i=0; i<n_Rows; ++i) {
@@ -36,6 +47,9 @@ public:
 		}
 	};
 
+        /*!
+         Allows access to the rows of the HODLR matrix, i.e., returns the 'row_Index'th row with the column starting at 'start_Col' and ending at 'start_Col+n_Cols'.
+         */
 	void get_Matrix_Row(const unsigned start_Col, const unsigned n_Cols, const unsigned row_Index, VectorXd& v) {
 		v   =   VectorXd(n_Cols);
 		for (unsigned j=0; j<n_Cols; ++j) {
@@ -43,6 +57,9 @@ public:
 		}
 	}
 
+        /*!
+         Allows access to the columns of the HODLR matrix, i.e., returns the 'col_Index'th column with the row starting at 'start_Row' and ending at 'start_Row+n_Rows'.
+         */
 	void get_Matrix_Col(const unsigned start_Row, const unsigned n_Rows, const unsigned col_Index, VectorXd& v) {
 		v   =   VectorXd(n_Rows);
 		for (unsigned j=0; j<n_Rows; ++j) {
@@ -50,6 +67,9 @@ public:
 		}
 	}
 
+        /*!
+         Returns the maximum absolute value and the index of maximum element of the vector.
+         */
 	unsigned max_Abs_Vector(const VectorXd& v, const vector<int>& not_Allowed_Indices, double& max) {
 		unsigned n      =   v.size();
 		max             =   v(0);
@@ -67,4 +87,4 @@ public:
 
 };
 
-#endif /* defined(__HODLR_KERNEL_HPP__) */
+#endif /* defined(__HODLR_MATRIX_HPP__) */

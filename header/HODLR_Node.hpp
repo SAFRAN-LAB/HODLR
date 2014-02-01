@@ -1,10 +1,18 @@
-//
-//  HODLR_Node.hpp
-//
-//
-//  Created by Sivaram Ambikasaran on 11/8/13.
-//
-//
+/*!
+ \class HODLR_Node
+ 
+ \brief This class is for the node of a HODLR tree, i.e., a diagonal sub-matrix at the appropriate level in the tree.
+
+ \note
+ 
+ \author $Sivaram Ambikasaran$
+ 
+ \version
+ 
+ \date $November 8th, 2013$
+ 
+ Contact: siva.1985@gmail.com
+ */
 
 #ifndef __HODLR_NODE_HPP__
 #define __HODLR_NODE_HPP__
@@ -15,36 +23,38 @@
 using std::vector;
 using namespace Eigen;
 
-template <typename KernelType>
+template <typename MatrixType>
 class HODLR_Node {
 private:
-	KernelType* kernel;
+	MatrixType* kernel;
 
 public:
-	// friend class HODLR_Tree<KernelType>;
 	HODLR_Node* parent;
 	HODLR_Node* child[2];
 
-        //	Variables of interest for both leaf and non-leaf;
-	unsigned levelNumber;	//	Level number of the node;
-	unsigned nodeNumber;	//	Node number is either 0 or 1;
-	unsigned nStart;	//	nStart is the starting index of node;
-	unsigned nSize;		//	nSize is the size of the node;
-	MatrixXd K;		//	At leaf level, stores the self interaction; At non-leaf stores the matrix [I, V1inverse*U1inverse; V0inverse*U0inverse, I];
-	FullPivLU<MatrixXd> Kinverse;	//	Stores Factorization of K;
-	double determinant;	//	Stores K.determinant();
+        /**	Variables of interest for both leaf and non-leaf;*/
+	unsigned levelNumber;	///<	Level number of the node;
+	unsigned nodeNumber;	///<	Node number is either 0 or 1;
+	unsigned nStart;	///<	nStart is the starting index of node;
+	unsigned nSize;		///<	nSize is the size of the node;
+	MatrixXd K;		///<	At leaf level, stores the self interaction; At non-leaf stores the matrix [I, V1inverse*U1inverse; V0inverse*U0inverse, I];
+	FullPivLU<MatrixXd> Kinverse;	///<	Stores Factorization of K;
+	double determinant;	///<	Stores K.determinant();
 
-        //	Variables of interest for non-leaf;
-	unsigned nRank[2];	//	nRank[0] rank of K01; nRank[1] rank of K10;
-	MatrixXd U[2];		//	Column basis of low-rank interaction of children at non-leaf;
-	MatrixXd V[2];		//	Row basis of low-rank interaction ofchildren at non-leaf;
-	MatrixXd Uinverse[2];	//	Column basis of low-rank interaction of children of inverse at non-leaf.
-	MatrixXd Vinverse[2];	//	Row basis of low-rank interaction of children of inverse at non-leaf.
+        /**	Variables of interest for non-leaf;*/
+	unsigned nRank[2];	///<	nRank[0] rank of K01; nRank[1] rank of K10;
+	MatrixXd U[2];		///<	Column basis of low-rank interaction of children at non-leaf;
+	MatrixXd V[2];		///<	Row basis of low-rank interaction ofchildren at non-leaf;
+	MatrixXd Uinverse[2];	///<	Column basis of low-rank interaction of children of inverse at non-leaf.
+	MatrixXd Vinverse[2];	///<	Row basis of low-rank interaction of children of inverse at non-leaf.
 
-        //	Variables of interest at leaf;
-	bool isLeaf;		//	If node is a leaf, it takes the value TRUE;
+        /**	Variables of interest at leaf;*/
+	bool isLeaf;		///<	If node is a leaf, it takes the value TRUE;
 
-	HODLR_Node(KernelType* kernel, unsigned levelNumber, unsigned nodeNumber, unsigned nStart, unsigned nSize) {
+        /*!
+         Constructor for the class.
+         */
+	HODLR_Node(MatrixType* kernel, unsigned levelNumber, unsigned nodeNumber, unsigned nStart, unsigned nSize) {
 		this->kernel		=	kernel;
 		this->levelNumber	=	levelNumber;
 		this->nodeNumber	=	nodeNumber;
@@ -55,6 +65,9 @@ public:
 		this->child[1]		=	NULL;
 	};
 
+        /*!
+         Assemble the relevant matrices.
+         */
 	void assemble_Matrices(double lowRankTolerance, VectorXd& diagonal) {
 		if (isLeaf	==	true) {
 			kernel->get_Matrix(nStart, nStart, nSize, nSize, K);
@@ -68,6 +81,9 @@ public:
 		}
 	};
 
+        /*!
+         Matrix matrix product.
+         */
 	void matrix_Matrix_Product(MatrixXd& x, MatrixXd& b) {
 		unsigned n	=	x.cols();
 
@@ -84,6 +100,9 @@ public:
 		}
 	};
 
+        /*!
+         Set UV Inversion.
+         */
 	void set_UV_Inversion() {
 		for (unsigned k=0; k<2; ++k) {
 			Uinverse[k]	=	U[k];
@@ -102,10 +121,16 @@ public:
 		}
 	};
 
+        /*!
+         Computes the inverse.
+         */
 	void compute_Inverse() {
 		Kinverse.compute(K);
 	};
 
+        /*!
+         Applies the inverse.
+         */
 	void apply_Inverse(MatrixXd& matrix, unsigned mStart) {
 		unsigned n	=	matrix.cols();
 		unsigned start	=	nStart-mStart;
@@ -132,10 +157,16 @@ public:
 		}
 	};
 
+        /*!
+         Computes the determinant of the matrix.
+         */
 	void compute_Determinant() {
 		determinant	=	log(fabs(K.determinant()));
 	};
 
+        /*!
+         Destructor.
+         */
 	~HODLR_Node() {
 		delete child[0];
 		delete child[1];
@@ -143,33 +174,40 @@ public:
 		child[1]	=	NULL;
 	};
 
+        /*!
+         \brief Partial pivoted LU to construct low-rank.
+         
+         
+         */
 	void partial_Piv_LU(const unsigned start_Row, const unsigned start_Col, const unsigned n_Rows, const unsigned n_Cols, const double tolerance, unsigned& computed_Rank, MatrixXd& U, MatrixXd& V) {
 
 	/********************************/
 	/*	PURPOSE OF EXISTENCE	*/
 	/********************************/
 
-	//	Obtains the low-rank decomposition of the matrix to a desired tolerance using the partial pivoting LU algorithm, i.e., given a sub-matrix 'A' and tolerance 'epsilon', computes matrices 'U' and 'V' such that ||A-UV||_F < epsilon. The norm is Frobenius norm.
+	/*!
+         Obtains the low-rank decomposition of the matrix to a desired tolerance using the partial pivoting LU algorithm, i.e., given a sub-matrix 'A' and tolerance 'epsilon', computes matrices 'U' and 'V' such that ||A-UV||_F < epsilon. The norm is Frobenius norm.
+         */
 
 	/************************/
 	/*	INPUTS          */
 	/************************/
 
-	//	start_Row	-	Starting row of the sub-matrix.
-	//	start_Col	-	Starting column of the sub-matrix.
-	//	n_Rows		-	Number of rows of the sub-matrix.
-	//	n_Cols		-	Number of columns of the sub-matrix.
-	//	tolerance	-	Tolerance of low-rank approximation.
+	///	start_Row	-	Starting row of the sub-matrix.
+	///	start_Col	-	Starting column of the sub-matrix.
+	///	n_Rows		-	Number of rows of the sub-matrix.
+	///	n_Cols		-	Number of columns of the sub-matrix.
+	///	tolerance	-	Tolerance of low-rank approximation.
 
 	/************************/
 	/*	OUTPUTS		*/
 	/************************/
 
-	//	computed_Rank	-	Rank obtained for the given tolerance.
-	//	U		-	Matrix forming the column basis.
-	//	V		-	Matrix forming the row basis.
+	///	computed_Rank	-	Rank obtained for the given tolerance.
+	///	U		-	Matrix forming the column basis.
+	///	V		-	Matrix forming the row basis.
 
-		//  If the matrix is small enough, do not do anything
+		/// If the matrix is small enough, do not do anything
 		unsigned tolerable_Rank =   5;
 		if (n_Cols <= tolerable_Rank){
 			kernel->get_Matrix(start_Row, start_Col, n_Rows, n_Cols, U);
@@ -184,17 +222,17 @@ public:
 			return;
 		}
 
-		vector<int> rowIndex;	//	This stores the row indices, which have already been used.
-		vector<int> colIndex;	//	This stores the column indices, which have already been used.
-		vector<VectorXd> u;		//	Stores the column basis.
-		vector<VectorXd> v;		//	Stores the row basis.
+		vector<int> rowIndex;	///	This stores the row indices, which have already been used.
+		vector<int> colIndex;	///	This stores the column indices, which have already been used.
+		vector<VectorXd> u;	///	Stores the column basis.
+		vector<VectorXd> v;	///	Stores the row basis.
 
 		srand (time(NULL));
 		double max, Gamma, unused_max;
 
 		/*  INITIALIZATION  */
 
-		//  Initialize the matrix norm and the the first row index
+		/// Initialize the matrix norm and the the first row index
 		double matrix_Norm  =   0;
 		rowIndex.push_back(0);
 
@@ -206,11 +244,11 @@ public:
 
 		double row_Squared_Norm, row_Norm, col_Squared_Norm, col_Norm;
 
-		//  Repeat till the desired tolerance is obtained
+		/// Repeat till the desired tolerance is obtained
 		do {
-			//  Generation of the row
+			/// Generation of the row
 			kernel->get_Matrix_Row(start_Col, n_Cols, start_Row+rowIndex.back(), a);
-			//  Row of the residuum and the pivot column
+			/// Row of the residuum and the pivot column
 			row =   a;
 			for (unsigned l=0; l<computed_Rank; ++l) {
 				row =   row-u[l](rowIndex.back())*v[l];
@@ -222,7 +260,7 @@ public:
 			unsigned count      =   0;
 			unsigned count1     =   0;
 
-			//  This randomization is needed if in the middle of the algorithm the row happens to be exactly the linear combination of the previous rows.
+			/// This randomization is needed if in the middle of the algorithm the row happens to be exactly the linear combination of the previous rows.
 			while (fabs(max)<tolerance && count < max_tries) {
 				unsigned new_rowIndex;
 				rowIndex.pop_back();
@@ -233,10 +271,10 @@ public:
 				count1  =   0;
 				rowIndex.push_back(new_rowIndex);
 
-				//  Generation of the row
+				/// Generation of the row
 				kernel->get_Matrix_Row(start_Col, n_Cols, start_Row+rowIndex.back(), a);
 
-				//  Row of the residuum and the pivot column
+				/// Row of the residuum and the pivot column
 				row =   a;
 				for (unsigned l=0; l<computed_Rank; ++l) {
 					row =   row-u[l](rowIndex.back())*v[l];
@@ -251,20 +289,20 @@ public:
 
 			colIndex.push_back(pivot);
 
-			//  Normalizing constant
+			/// Normalizing constant
 			Gamma   =   1.0/max;
 
-			//  Generation of the column
+			/// Generation of the column
 			kernel->get_Matrix_Col(start_Row, n_Rows, start_Col+colIndex.back(), a);
 
-			//  Column of the residuum and the pivot row
+			/// Column of the residuum and the pivot row
 			col =   a;
 			for (unsigned l=0; l<computed_Rank; ++l) {
 				col =   col-v[l](colIndex.back())*u[l];
 			}
 			pivot   =   kernel->max_Abs_Vector(col, rowIndex, unused_max);
 
-			//  This randomization is needed if in the middle of the algorithm the columns happens to be exactly the linear combination of the previous columns.
+			/// This randomization is needed if in the middle of the algorithm the columns happens to be exactly the linear combination of the previous columns.
 			while (fabs(max)<tolerance && count < max_tries) {
 				colIndex.pop_back();
 				unsigned new_colIndex;
@@ -274,10 +312,10 @@ public:
 				count1  =   0;
 				colIndex.push_back(new_colIndex);
 
-				//  Generation of the column
+				/// Generation of the column
 				kernel->get_Matrix_Col(start_Row, n_Rows, start_Col+colIndex.back(), a);
 
-				//  Column of the residuum and the pivot row
+				/// Column of the residuum and the pivot row
 				col =   a;
 				for (unsigned l=0; l<computed_Rank; ++l) {
 					col =   col-u[l](colIndex.back())*v[l];
@@ -292,11 +330,11 @@ public:
 
 			rowIndex.push_back(pivot);
 
-			//  New vectors
+			/// New vectors
 			u.push_back(Gamma*col);
 			v.push_back(row);
 
-			//  New approximation of matrix norm
+			/// New approximation of matrix norm
 			row_Squared_Norm    =   row.squaredNorm();
 			row_Norm            =   sqrt(row_Squared_Norm);
 
@@ -311,7 +349,7 @@ public:
 			++computed_Rank;
 		} while (row_Norm*col_Norm > fabs(max)*tolerance*matrix_Norm && computed_Rank <= fmin(n_Rows, n_Cols));
 
-		//  If the computed_Rank is close to full-rank then return the trivial full-rank decomposition
+		/// If the computed_Rank is close to full-rank then return the trivial full-rank decomposition
 		if (computed_Rank>=fmin(n_Rows, n_Cols)) {
 			if (n_Rows < n_Cols) {
 				U   =   MatrixXd::Identity(n_Rows,n_Rows);

@@ -1,13 +1,17 @@
-//
-//  KDTree.cpp
-//
-//
-//  Created by Sivaram Ambikasaran on 11/14/13.
-//
-//
+/*!
+ \brief This function is for the construction of KDTree.
+ 
+ \note
+ 
+ \author $Sivaram Ambikasaran$
+ 
+ \version
+ 
+ \date $Date: November 14th, 2013$
+ */
 
 #include "KDTree.hpp"
-#include"Eigen/Dense"
+#include<Eigen/Dense>
 
 using namespace Eigen;
 
@@ -46,60 +50,60 @@ void mergeSort(MatrixXd& locations, unsigned index) {
 		return;
 	}
 	else {
-		//	Number of points in the left cluster.
+		///	Number of points in the left cluster.
 		unsigned Nleft		=	N/2;
 		
-		//	Number of points in the right cluster.
+		///	Number of points in the right cluster.
 		unsigned Nright		=	N-Nleft;
 		
-		//	Dimension of the space.
+		///	Dimension of the space.
 		unsigned nDimensions	=	locations.cols();
 		
-		//	Left locations.
+		///	Left locations.
 		MatrixXd leftLocations	=	locations.block(0,0,Nleft,nDimensions);
 		
-		//	Right locations.
+		///	Right locations.
 		MatrixXd rightLocations	=	locations.block(Nleft,0,Nright,nDimensions);
 		
-		//	Mergesort for the left.
+		///	Mergesort for the left.
 		mergeSort(leftLocations, index);
 		
-		//	Mergesort for the right.
+		///	Mergesort for the right.
 		mergeSort(rightLocations, index);
 		
-		//	Merge the sorted left and right lists.
+		///	Merge the sorted left and right lists.
 		mergeSortedLists(leftLocations, rightLocations, index, locations);
 	}
 }
 
 void get_KDTree_Sorted(MatrixXd& locations, unsigned index) {
-	//	Get the total number of points.
+	///	Get the total number of points.
 	unsigned N		=	locations.rows();
 	if (N==1) {
 		return;
 	}
 	else {
-		//	Number of points in the left cluster.
+		///	Number of points in the left cluster.
 		unsigned Nleft		=	N/2;
-		
-		//	Number of points in the right cluster.
+
+		///	Number of points in the right cluster.
 		unsigned Nright		=	N-Nleft;
-		
-		//	Dimension of the space.
+
+		///	Dimension of the space.
 		unsigned nDimensions	=	locations.cols();
-		
-		//	Merge sort on the input locations based on the coordinate index%2.
+
+		///	Merge sort on the input locations based on the coordinate index%2.
 		mergeSort(locations, index%nDimensions);
-		
-		//	Obtain the left and right locations.
+
+		///	Obtain the left and right locations.
 		MatrixXd leftLocations	=	locations.block(0,0,Nleft,nDimensions);
 		MatrixXd rightLocations	=	locations.block(Nleft,0,Nright,nDimensions);
-		
-		//	Sort the left and right locations based on a KDTree.
+
+		///	Sort the left and right locations based on a KDTree.
 		get_KDTree_Sorted(leftLocations, index+1);
 		get_KDTree_Sorted(rightLocations, index+1);
-		
-		//	Output the locations.
+
+		///	Output the locations.
 		locations.block(0,0,Nleft,nDimensions)		=	leftLocations;
 		locations.block(Nleft,0,Nright,nDimensions)	=	rightLocations;
 	}

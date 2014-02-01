@@ -8,7 +8,7 @@
 #include <Eigen/Dense>
 
 #include "HODLR_Tree.hpp"
-#include "HODLR_Kernel.hpp"
+#include "HODLR_Matrix.hpp"
 
 using std::cin;
 using std::cout;
@@ -19,7 +19,7 @@ using Eigen::VectorXd;
 using Eigen::MatrixXd;
 
 
-class Kepler_Kernel : public HODLR_Kernel {
+class Kepler_Kernel : public HODLR_Matrix {
 
 public:
 	Kepler_Kernel (vector<double> theta, vector<double> time)

@@ -13,13 +13,13 @@
 #include <iomanip>
 
 #include "HODLR_Tree.hpp"
-#include "HODLR_Kernel.hpp"
+#include "HODLR_Matrix.hpp"
 #include "KDTree.hpp"
 
 using namespace std;
 using namespace Eigen;
 
-class Test_Kernel : public HODLR_Kernel {
+class Test_Kernel : public HODLR_Matrix {
 
 private:
 

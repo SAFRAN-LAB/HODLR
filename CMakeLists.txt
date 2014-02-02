@@ -117,3 +117,15 @@ endmacro (HODLR_TEST)
 
 hodlr_test (oned_gaussian GAUSSIAN ONE)
 hodlr_test (twod_gaussian GAUSSIAN TWO)
+
+# ===========================================================================
+#   PYTHON
+# ===========================================================================
+
+option (BUILD_PYTHON
+        "Build the Python bindings"
+        ON)
+
+if (BUILD_PYTHON)
+    add_subdirectory (python)
+endif ()

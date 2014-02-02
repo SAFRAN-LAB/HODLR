@@ -31,6 +31,7 @@ extern "C" {
 
     static PyObject *_hodlr_logdet (_hodlr *self);
     static PyObject *_hodlr_solve (_hodlr *self, PyObject *args);
+    static PyObject *_hodlr_matrix_product (_hodlr *self, PyObject *args);
 }
 
 // General Python setup and cleanup.
@@ -163,6 +164,74 @@ static PyObject *_hodlr_solve (_hodlr *self, PyObject *args)
     return ret;
 }
 
+static PyObject *_hodlr_matrix_product (_hodlr *self, PyObject *args)
+{
+    PyObject *b_obj;
+    if (!PyArg_ParseTuple(args, "O", &b_obj)) return NULL;
+
+    // Parse the matrix.
+    PyArrayObject *b_array = PARSE_ARRAY(b_obj);
+    if (b_array == NULL) {
+        Py_XDECREF(b_array);
+        return NULL;
+    }
+
+    // Check the dimensions.
+    unsigned int ndim = PyArray_NDIM(b_array);
+    if (ndim < 1 || ndim > 2 || self->dim != PyArray_DIM(b_array, 0)) {
+        PyErr_SetString(PyExc_ValueError, "Dimension mismatch");
+        Py_DECREF(b_array);
+        return NULL;
+    }
+
+    // How many systems are we solving?
+    unsigned int nrhs = 1, oned = 1;
+    if (ndim > 1) {
+        oned = 0;
+        nrhs = PyArray_DIM(b_array, 1);
+    }
+
+    // Access the data.
+    double *b = (double*)PyArray_DATA(b_array);
+    MatrixXd bv = Map<MatrixXd>(b, self->dim, nrhs);
+
+    // Solve the system.
+    MatrixXd xv(self->dim, nrhs);
+    self->solver->matMatProduct(bv, xv);
+    Py_DECREF(b_array);
+
+    // Build the output array.
+    PyArrayObject *x_array;
+    if (oned) {
+        npy_intp dim[1] = {self->dim};
+        x_array = (PyArrayObject*)PyArray_SimpleNew(1, dim, NPY_DOUBLE);
+    } else {
+        npy_intp dim[2] = {self->dim, nrhs};
+        x_array = (PyArrayObject*)PyArray_SimpleNew(2, dim, NPY_DOUBLE);
+    }
+    if (x_array == NULL) {
+        Py_DECREF(b_array);
+        Py_XDECREF(x_array);
+        return NULL;
+    }
+    int i, j;
+    double *x = (double*)PyArray_DATA(x_array);
+    for (i = 0; i < self->dim; ++i)
+        for (j = 0; j < nrhs; ++j)
+            x[i*nrhs+j] = xv(i, j);
+
+    // Build the return value.
+    PyObject *ret = Py_BuildValue("O", x_array);
+    Py_DECREF(x_array);
+
+    if (ret == NULL) {
+        Py_XDECREF(ret);
+        return NULL;
+    }
+
+    return ret;
+}
+
 static PyMethodDef _hodlr_methods[] = {
     {"logdet",
      (PyCFunction)_hodlr_logdet,
@@ -172,6 +241,10 @@ static PyMethodDef _hodlr_methods[] = {
      (PyCFunction)_hodlr_solve,
      METH_VARARGS,
      "Solve the system for a given RHS."},
+    {"matrix_product",
+     (PyCFunction)_hodlr_matrix_product,
+     METH_VARARGS,
+     "Perform a matrix multiplication."},
     {NULL}  /* Sentinel */
 };
 

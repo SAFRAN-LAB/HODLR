@@ -2,9 +2,9 @@
  \class HODLR_Matrix
 
  \brief This class is for HODLR matrix.
- 
+
  \note
- 
+
  \author $Dan Foreman-Mackey$
 
  \version
@@ -19,8 +19,7 @@
 #include <cmath>
 #include <Eigen/Dense>
 
-#include "KDTree.hpp"
-
+using std::vector;
 using namespace Eigen;
 
 class HODLR_Matrix {

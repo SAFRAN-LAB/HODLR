@@ -1,4 +1,4 @@
-project (HODLR C CXX)
+project (HODLR CXX)
 cmake_minimum_required (VERSION 2.8)
 set (CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
@@ -92,25 +92,15 @@ if (UNIX)
         "${HODLR_FLAGS} -Werror -Wall -Wextra -Wno-unknown-pragmas -Wno-sign-compare -Wno-unused-parameter -Wno-missing-field-initializers")
 endif (UNIX)
 
-# Compile the library.
-file (GLOB HODLR_SRC ${CMAKE_SOURCE_DIR}/src/*.cpp)
-set (CMAKE_CXX_FLAGS "${HODLR_FLAGS}")
-add_library (hodlr STATIC ${HODLR_SRC})
-install (TARGETS hodlr
-         RUNTIME DESTINATION bin
-         LIBRARY DESTINATION lib${LIB_SUFFIX}
-         ARCHIVE DESTINATION lib${LIB_SUFFIX})
-
 # Build the Kepler demo.
 add_executable (kepler examples/kepler_test.cpp)
-target_link_libraries (kepler hodlr)
 
 # Build the tests.
 macro (HODLR_TEST NAME KERNEL DIM)
-    add_executable (${NAME}_test examples/HODLR_Test.cpp)
+    set (EXAMPLE_SRC examples/HODLR_Test.cpp examples/KDTree.cpp)
+    add_executable (${NAME}_test ${EXAMPLE_SRC})
     set_target_properties (${NAME}_test PROPERTIES
                            COMPILE_FLAGS "-D${KERNEL} -D${DIM} ${HODLR_FLAGS}")
-    target_link_libraries (${NAME}_test hodlr)
     add_test (NAME ${NAME}_test
               COMMAND ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${NAME}_test)
 endmacro (HODLR_TEST)

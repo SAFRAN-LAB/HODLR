@@ -1,4 +1,4 @@
-project (HODLR C CXX)
+project (HODLR CXX)
 cmake_minimum_required (VERSION 2.8)
 set (CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 
@@ -107,15 +107,3 @@ endmacro (HODLR_TEST)
 
 hodlr_test (oned_gaussian GAUSSIAN ONE)
 hodlr_test (twod_gaussian GAUSSIAN TWO)
-
-# ===========================================================================
-#   PYTHON
-# ===========================================================================
-
-option (BUILD_PYTHON
-        "Build the Python bindings"
-        ON)
-
-if (BUILD_PYTHON)
-    add_subdirectory (python)
-endif ()

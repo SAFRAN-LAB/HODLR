@@ -34,7 +34,7 @@ basic usage will look like:
         return np.exp(-0.5 * (i - j) ** 2)
 
     # Set up the system.
-    N = 5000
+    N = 500
     diag = np.random.randn(N)
     solver = hodlr.HODLR(matrix, diag)
 
@@ -47,7 +47,9 @@ basic usage will look like:
     print("L1 error: {0}".format(np.mean(np.abs(x - xsol))))
 
     # Get the log-determinant.
-    print("Log-derterminant".format(solver.logdet()))
+    print("Log-determinant: {0}".format(solver.logdet()))
+
+Take a look at ``demo.py`` for a more detailed example.
 
 Authors
 -------

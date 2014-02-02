@@ -23,11 +23,10 @@ include_dirs = [
     "${CMAKE_CURRENT_SOURCE_DIR}/hodlr",
 ] + filter(lambda p: len(p), "${EIGEN_INCLUDE_DIRS}".split(";"))
 
-library_dirs = ["${CMAKE_BINARY_DIR}/lib"]
+library_dirs = []
 libraries = ["m"]
 sources = [
     "${CMAKE_CURRENT_SOURCE_DIR}/hodlr/_hodlr.cpp",
-    "${CMAKE_SOURCE_DIR}/src/KDTree.cpp",
 ]
 
 ext = Extension("hodlr._hodlr",

@@ -19,8 +19,6 @@
 #include <cmath>
 #include <Eigen/Dense>
 
-#include "KDTree.hpp"
-
 using std::vector;
 using namespace Eigen;
 

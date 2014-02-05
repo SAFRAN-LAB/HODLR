@@ -71,20 +71,18 @@ if (CMAKE_COMPILER_IS_GNUCC)
     endif (CMAKE_SYSTEM_NAME MATCHES "Darwin")
 endif (CMAKE_COMPILER_IS_GNUCC)
 
-if (CMAKE_C_COMPILER_ID STREQUAL "Clang")
-    # Use of -O4 requires use of gold linker & LLVM-gold plugin, which might
-    # well not be present / in use and without which files will compile, but
-    # not link ('file not recognized') so explicitly check for support
-    include (CheckCCompilerFlag)
-    check_c_compiler_flag ("-O4" HAVE_LTO_SUPPORT)
-    if (HAVE_LTO_SUPPORT)
-        message (STATUS "Enabling link-time optimization (-O4)")
-        set (HODLR_FLAGS "${HODLR_FLAGS} -O4")
-    else ()
-        message (STATUS
-                 "Compiler/linker does not support link-time optimization (-O4), disabling.")
-    endif (HAVE_LTO_SUPPORT)
-endif ()
+# Use of -O4 requires use of gold linker & LLVM-gold plugin, which might
+# well not be present / in use and without which files will compile, but
+# not link ('file not recognized') so explicitly check for support
+include (CheckCXXCompilerFlag)
+check_cxx_compiler_flag ("-O4" HAVE_LTO_SUPPORT)
+if (HAVE_LTO_SUPPORT)
+    message (STATUS "Enabling link-time optimization (-O4)")
+    set (HODLR_FLAGS "${HODLR_FLAGS} -O4")
+else ()
+    message (STATUS
+             "Compiler/linker does not support link-time optimization (-O4), disabling.")
+endif (HAVE_LTO_SUPPORT)
 
 # GCC is not strict enough by default, so enable most of the warnings.
 if (UNIX)

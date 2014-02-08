@@ -10,13 +10,18 @@
 #include <Eigen/Dense>
 #include <cstdlib>
 #include <ctime>
+#include <vector>
 #include <iomanip>
 
 #include "HODLR_Tree.hpp"
 #include "HODLR_Matrix.hpp"
 #include "KDTree.hpp"
 
-using namespace std;
+using std::cout;
+using std::cout;
+using std::vector;
+using std::setprecision;
+using std::sort;
 using namespace Eigen;
 
 class Test_Kernel : public HODLR_Matrix {
@@ -107,15 +112,15 @@ public:
 int main() {
 	srand (time(NULL));
 
-	unsigned N	=	100000;
+	unsigned N	=	10000;
 	unsigned nRhs	=	1;
 	unsigned nLeaf	=	50;
-	double tolerance=	1e-14;
+	double tolerance=	1e-16;
 
 	Test_Kernel kernel(N);
 
-	MatrixXd x	=	MatrixXd::Random(N, nRhs);
-	MatrixXd b, xSol;
+	MatrixXd xExact	=	MatrixXd::Random(N, nRhs);
+	MatrixXd bExact(N,nRhs), bFast(N,nRhs), xFast(N,nRhs);
 
 	cout << endl << "Number of particles is: " << N << endl;
 	clock_t start, end;
@@ -133,9 +138,23 @@ int main() {
 	end		=	clock();
 	cout << "Time taken is: " << double(end-start)/double(CLOCKS_PER_SEC)<< endl;
 
-	cout << endl << "Matrix matrix product..." << endl;
+        cout << endl << "Exact matrix matrix product..." << endl;
+        start           =       clock();
+        for (int i=0; i<N; ++i) {
+                bExact(i,0)             =       diagonal(i)*xExact(i,0);
+                for (int j=0; j<i; ++j) {
+                        bExact(i,0)     =       bExact(i,0)+kernel.get_Matrix_Entry(i, j)*xExact(j,0);
+                }
+                for (int j=i+1; j<N; ++j) {
+                        bExact(i,0)     =       bExact(i,0)+kernel.get_Matrix_Entry(i, j)*xExact(j,0);
+                }
+        }
+        end		=	clock();
+	cout << "Time taken is: " << double(end-start)/double(CLOCKS_PER_SEC)<< endl;
+
+	cout << endl << "Fast matrix matrix product..." << endl;
 	start		=	clock();
-	A->matMatProduct(x, b);
+	A->matMatProduct(xExact, bFast);
 	end		=	clock();
 	cout << "Time taken is: " << double(end-start)/double(CLOCKS_PER_SEC)<< endl;
 
@@ -147,12 +166,13 @@ int main() {
 
 	cout << endl << "Solving the system..." << endl;
 	start		=	clock();
-	A->solve(b, xSol);
+	A->solve(bExact, xFast);
 	end		=	clock();
 	cout << "Time taken is: " << double(end-start)/double(CLOCKS_PER_SEC)<< endl;
 
-	cout << endl << "Error in computed solution: " << (xSol-x).cwiseAbs().maxCoeff() << endl;
+	cout << endl << "Error in computed solution: " << (xFast-xExact).norm()/xExact.norm()<< endl;
 
+	cout << endl << "Error in matrix matrix product: " << (bFast-bExact).cwiseAbs().maxCoeff() << endl;
 	//	MatrixXd B;
 	//	cout << endl << "Assembling the entire matrix..." << endl;
 	//	start			=	clock();
@@ -170,6 +190,7 @@ int main() {
 	cout << "Time taken is: " << double(end-start)/double(CLOCKS_PER_SEC)<< endl;
 
 	cout << endl << "Log determinant is: " << setprecision(16) << determinant << endl;
+
 	//
 	// cout << endl << "Exact matrix matrix product..." << endl;
 	// start			=	clock();

@@ -33,16 +33,17 @@ public:
 	HODLR_Node* child[2];
 
         /**	Variables of interest for both leaf and non-leaf;*/
-	unsigned levelNumber;	///<	Level number of the node;
-	unsigned nodeNumber;	///<	Node number is either 0 or 1;
-	unsigned nStart;	///<	nStart is the starting index of node;
-	unsigned nSize;		///<	nSize is the size of the node;
-	MatrixXd K;		///<	At leaf level, stores the self interaction; At non-leaf stores the matrix [I, V1inverse*U1inverse; V0inverse*U0inverse, I];
+	int levelNumber;           ///<	Level number of the node;
+	int nodeNumber;            ///<	Node number is either 0 or 1;
+        int levelBasedNodeNumber;       ///<    Level based node number;
+	int nStart;                ///<	nStart is the starting index of node;
+	int nSize;                 ///<	nSize is the size of the node;
+	MatrixXd K;                     ///<	At leaf level, stores the self interaction; At non-leaf stores the matrix [I, V1inverse*U1inverse; V0inverse*U0inverse, I];
 	FullPivLU<MatrixXd> Kinverse;	///<	Stores Factorization of K;
-	double determinant;	///<	Stores K.determinant();
+	double determinant;             ///<	Stores K.determinant();
 
         /**	Variables of interest for non-leaf;*/
-	unsigned nRank[2];	///<	nRank[0] rank of K01; nRank[1] rank of K10;
+	int nRank[2];	///<	nRank[0] rank of K01; nRank[1] rank of K10;
 	MatrixXd U[2];		///<	Column basis of low-rank interaction of children at non-leaf;
 	MatrixXd V[2];		///<	Row basis of low-rank interaction ofchildren at non-leaf;
 	MatrixXd Uinverse[2];	///<	Column basis of low-rank interaction of children of inverse at non-leaf.
@@ -54,15 +55,16 @@ public:
         /*!
          Constructor for the class.
          */
-	HODLR_Node(MatrixType* kernel, unsigned levelNumber, unsigned nodeNumber, unsigned nStart, unsigned nSize) {
-		this->kernel		=	kernel;
-		this->levelNumber	=	levelNumber;
-		this->nodeNumber	=	nodeNumber;
-		this->nStart		=	nStart;
-		this->nSize		=	nSize;
-		this->parent		=	NULL;
-		this->child[0]		=	NULL;
-		this->child[1]		=	NULL;
+	HODLR_Node(MatrixType* kernel, int levelNumber, int nodeNumber, int levelBasedNodeNumber, int nStart, int nSize) {
+		this->kernel                    =	kernel;
+		this->levelNumber               =	levelNumber;
+                this->levelBasedNodeNumber      =       levelBasedNodeNumber;
+		this->nodeNumber                =	nodeNumber;
+		this->nStart                    =	nStart;
+		this->nSize                     =	nSize;
+		this->parent                    =	NULL;
+		this->child[0]                  =	NULL;
+		this->child[1]                  =	NULL;
 	};
 
         /*!
@@ -71,13 +73,15 @@ public:
 	void assemble_Matrices(double lowRankTolerance, VectorXd& diagonal) {
 		if (isLeaf	==	true) {
 			kernel->get_Matrix(nStart, nStart, nSize, nSize, K);
-			for (unsigned k=0; k<nSize; ++k) {
+			for (int k=0; k<nSize; ++k) {
 				K(k,k)	=	diagonal(nStart+k);
 			}
 		}
 		else if (isLeaf	==	false) {
 			partial_Piv_LU(child[0]->nStart, child[1]->nStart, child[0]->nSize, child[1]->nSize, lowRankTolerance, nRank[0], U[0], V[1]);
 			partial_Piv_LU(child[1]->nStart, child[0]->nStart, child[1]->nSize, child[0]->nSize, lowRankTolerance, nRank[1], U[1], V[0]);
+//                        ranks[levelNumber][levelBasedNodeNumber][0]     =       nRank[0];
+//                        ranks[levelNumber][levelBasedNodeNumber][1]     =       nRank[1];
 		}
 	};
 
@@ -85,16 +89,16 @@ public:
          Matrix matrix product.
          */
 	void matrix_Matrix_Product(MatrixXd& x, MatrixXd& b) {
-		unsigned n	=	x.cols();
+		int n	=	x.cols();
 
 		if (isLeaf	==	true) {
 			b.block(nStart, 0, nSize, n)	=	b.block(nStart, 0, nSize, n)	+	K*x.block(nStart, 0, nSize, n);
 		}
 		else if (isLeaf	==	false) {
-			unsigned n0	=	child[0]->nStart;
-			unsigned n1	=	child[1]->nStart;
-			unsigned m0	=	child[0]->nSize;
-			unsigned m1	=	child[1]->nSize;
+			int n0	=	child[0]->nStart;
+			int n1	=	child[1]->nStart;
+			int m0	=	child[0]->nSize;
+			int m1	=	child[1]->nSize;
 			b.block(n0, 0, m0, n)	=	b.block(n0, 0, m0, n)	+	U[0]*(V[1]*x.block(n1, 0, m1, n));
 			b.block(n1, 0, m1, n)	=	b.block(n1, 0, m1, n)	+	U[1]*(V[0]*x.block(n0, 0, m0, n));
 		}
@@ -104,7 +108,7 @@ public:
          Set UV Inversion.
          */
 	void set_UV_Inversion() {
-		for (unsigned k=0; k<2; ++k) {
+		for (int k=0; k<2; ++k) {
 			Uinverse[k]	=	U[k];
 			Vinverse[k]	=	V[k];
 		}
@@ -112,8 +116,8 @@ public:
 
 	void compute_K() {
 		if (isLeaf	==	false) {
-			unsigned m0	=	V[0].rows();
-			unsigned m1	=	V[1].rows();
+			int m0	=	V[0].rows();
+			int m1	=	V[1].rows();
 			K	=	MatrixXd::Identity(m0+m1, m0+m1);
 
 			K.block(0, m1, m1, m0)	=	Vinverse[1]*Uinverse[1];
@@ -131,9 +135,9 @@ public:
         /*!
          Applies the inverse.
          */
-	void apply_Inverse(MatrixXd& matrix, unsigned mStart) {
-		unsigned n	=	matrix.cols();
-		unsigned start	=	nStart-mStart;
+	void apply_Inverse(MatrixXd& matrix, int mStart) {
+		int n	=	matrix.cols();
+		int start	=	nStart-mStart;
 		if (isLeaf	==	true) {
 			matrix.block(start, 0, nSize, n)	=	Kinverse.solve(matrix.block(start, 0, nSize, n));
 		}
@@ -179,7 +183,7 @@ public:
          
          
          */
-	void partial_Piv_LU(const unsigned start_Row, const unsigned start_Col, const unsigned n_Rows, const unsigned n_Cols, const double tolerance, unsigned& computed_Rank, MatrixXd& U, MatrixXd& V) {
+	void partial_Piv_LU(const int start_Row, const int start_Col, const int n_Rows, const int n_Cols, const double tolerance, int& computed_Rank, MatrixXd& U, MatrixXd& V) {
 
 	/********************************/
 	/*	PURPOSE OF EXISTENCE	*/
@@ -208,7 +212,7 @@ public:
 	///	V		-	Matrix forming the row basis.
 
 		/// If the matrix is small enough, do not do anything
-		unsigned tolerable_Rank =   5;
+		int tolerable_Rank =   5;
 		if (n_Cols <= tolerable_Rank){
 			kernel->get_Matrix(start_Row, start_Col, n_Rows, n_Cols, U);
 			V               =   MatrixXd::Identity(n_Cols, n_Cols);
@@ -236,7 +240,7 @@ public:
 		double matrix_Norm  =   0;
 		rowIndex.push_back(0);
 
-		unsigned pivot;
+		int pivot;
 
 		computed_Rank   =   0;
 
@@ -250,19 +254,19 @@ public:
 			kernel->get_Matrix_Row(start_Col, n_Cols, start_Row+rowIndex.back(), a);
 			/// Row of the residuum and the pivot column
 			row =   a;
-			for (unsigned l=0; l<computed_Rank; ++l) {
+			for (int l=0; l<computed_Rank; ++l) {
 				row =   row-u[l](rowIndex.back())*v[l];
 			}
 
 			pivot   =   kernel->max_Abs_Vector(row, colIndex, max);
 
-			unsigned max_tries  =   50;
-			unsigned count      =   0;
-			unsigned count1     =   0;
+			int max_tries  =   100;
+			int count      =   0;
+			int count1     =   0;
 
 			/// This randomization is needed if in the middle of the algorithm the row happens to be exactly the linear combination of the previous rows.
 			while (fabs(max)<tolerance && count < max_tries) {
-				unsigned new_rowIndex;
+				int new_rowIndex;
 				rowIndex.pop_back();
 				do {
 					new_rowIndex   =   rand()%n_Rows;
@@ -276,7 +280,7 @@ public:
 
 				/// Row of the residuum and the pivot column
 				row =   a;
-				for (unsigned l=0; l<computed_Rank; ++l) {
+				for (int l=0; l<computed_Rank; ++l) {
 					row =   row-u[l](rowIndex.back())*v[l];
 				}
 				pivot   =   kernel->max_Abs_Vector(row, colIndex, max);
@@ -297,7 +301,7 @@ public:
 
 			/// Column of the residuum and the pivot row
 			col =   a;
-			for (unsigned l=0; l<computed_Rank; ++l) {
+			for (int l=0; l<computed_Rank; ++l) {
 				col =   col-v[l](colIndex.back())*u[l];
 			}
 			pivot   =   kernel->max_Abs_Vector(col, rowIndex, unused_max);
@@ -305,7 +309,7 @@ public:
 			/// This randomization is needed if in the middle of the algorithm the columns happens to be exactly the linear combination of the previous columns.
 			while (fabs(max)<tolerance && count < max_tries) {
 				colIndex.pop_back();
-				unsigned new_colIndex;
+				int new_colIndex;
 				do {
 					new_colIndex   =   rand()%n_Cols;
 				} while (find(colIndex.begin(),colIndex.end(),new_colIndex)!=colIndex.end() && count1 < max_tries);
@@ -317,7 +321,7 @@ public:
 
 				/// Column of the residuum and the pivot row
 				col =   a;
-				for (unsigned l=0; l<computed_Rank; ++l) {
+				for (int l=0; l<computed_Rank; ++l) {
 					col =   col-u[l](colIndex.back())*v[l];
 				}
 				pivot   =   kernel->max_Abs_Vector(col, rowIndex, unused_max);
@@ -343,7 +347,7 @@ public:
 
 			matrix_Norm         =   matrix_Norm +   Gamma*Gamma*row_Squared_Norm*col_Squared_Norm;
 
-			for (unsigned j=0; j<computed_Rank; ++j) {
+			for (int j=0; j<computed_Rank; ++j) {
 				matrix_Norm     =   matrix_Norm +   2.0*(u[j].dot(u.back()))*(v[j].dot(v.back()));
 			}
 			++computed_Rank;
@@ -367,7 +371,7 @@ public:
 
 		U   =   MatrixXd(n_Rows,computed_Rank);
 		V   =   MatrixXd(computed_Rank,n_Cols);
-		for (unsigned j=0; j<computed_Rank; ++j) {
+		for (int j=0; j<computed_Rank; ++j) {
 			U.col(j)    =   u[j];
 			V.row(j)    =   v[j];
 		}

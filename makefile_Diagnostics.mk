@@ -1,11 +1,11 @@
 CC	=g++
 CFLAGS	=-c -Wall -O4 -ffast-math -ffinite-math-only -I header/
 LDFLAGS	=
-SOURCES	=./examples/HODLR_Test.cpp ./examples/KDTree.cpp
+SOURCES	=./examples/HODLR_diagnostics.cpp ./examples/KDTree.cpp
 KERNEL	=-DGAUSSIAN # use -DEXPONENTIAL, -DGAUSSIAN, -DSINC, -DQUADRIC, -DINVERSEQUADRIC, -DMULTIQUADRIC, -DINVERSEMULTIQUADRIC, -DR2LOGR, -DLOGR, -DONEOVERR
 DIM	=-DTWO  # use -DONE, -DTWO, -DTHREE
 OBJECTS	=$(SOURCES:.cpp=.o)
-EXECUTABLE	=./exec/HODLR_Test
+EXECUTABLE	=./exec/HODLR_Diagnostics
 
 all: $(SOURCES) $(EXECUTABLE)
 

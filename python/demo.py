@@ -22,11 +22,12 @@ pl.plot(t, f, ".k", alpha=0.3)
 pl.savefig("data.png")
 
 ns = [100, 500, 1000, 5000, 10000, 50000]
+actual = np.empty(len(ns))
 builds = np.empty(len(ns))
 solves = np.empty(len(ns))
 dets = np.empty(len(ns))
 for i, n in enumerate(ns):
-    print(n)
+    actual[i] = len(t[:n])
 
     # Set up the system.
     diag = fe * fe
@@ -55,6 +56,31 @@ for i, n in enumerate(ns):
     print("Value: {0}".format(logdet))
 
 pl.clf()
-pl.plot(np.log10(ns), np.log10(builds+solves+dets), "o")
-pl.plot(np.log10(ns), np.log10(np.array(ns) * np.log(ns)), "-")
-pl.savefig("builds.png")
+pl.plot(np.log10(actual), np.log10(builds+solves+dets), "o")
+pl.savefig("demo.png")
+
+# Format the LaTeX table.
+top = r"""
+\begin{table}[!htbp]
+\rowcolors{1}{gray!30}{white}
+\begin{center}
+\caption{.}
+\begin{tabular}{|c|c|c|c|}
+\hline
+Number of data points & \multicolumn{3}{|c|}{Time taken in seconds} \\
+\hline
+ & Assembly \& Factor & Solve & Determinant \\
+
+\hline
+"""
+btm = """
+\end{tabular}
+\end{center}
+\end{table}
+"""
+
+row = r"{0} & {1:.2e} & {2:.2e} & {3:.2e} \\\hline".format
+rows = "\n".join(map(lambda a: row(*a),
+                     zip(map(int, actual), builds, solves, dets)))
+
+open("results.tex", "w").write(top + rows + btm)

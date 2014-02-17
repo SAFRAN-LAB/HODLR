@@ -32,7 +32,7 @@ include_dirs = [
 library_dirs = []
 libraries = ["m"]
 sources = ["hodlr/_hodlr.cpp", ]
-extra_compile_args = ["-ffast-math"]
+extra_compile_args = ["-ffast-math", "-O4"]
 
 ext = Extension("hodlr._hodlr",
                 sources=sources,

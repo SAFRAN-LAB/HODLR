@@ -1,22 +1,23 @@
 /*!
  \class HODLR_Tree
- 
+
  \brief This class is the main class for the HODLR tree.
- 
+
  \note
- 
+
  \author $Sivaram Ambikasaran$
- 
+
  \version
- 
+
  \date $November 8th, 2013$
- 
+
  Contact: siva.1985@gmail.com
  */
 
 #ifndef __HODLR_TREE_HPP__
 #define __HODLR_TREE_HPP__
 
+#include <iostream>
 #include <Eigen/Dense>
 #include <cmath>
 #include <vector>

@@ -2,7 +2,10 @@
 #define __MATRIXDEFS_HPP__
 
 #include <Python.h>
+#include <Eigen/Dense>
 #include "HODLR_Matrix.hpp"
+
+using Eigen::VectorXd;
 
 class Python_Matrix : public HODLR_Matrix {
 
@@ -50,6 +53,28 @@ private:
 
     unsigned int status_;
     PyObject * function_;
+
+};
+
+class Gaussian_Matrix : public HODLR_Matrix {
+
+public:
+
+    Gaussian_Matrix (const double amp, const double var, const double* t)
+        : amp_(amp), ivar_(1.0/var), t_(t)
+    {
+        status_ = 0;
+    };
+
+    double get_Matrix_Entry (const unsigned i, const unsigned j) {
+        double d = t_[i] - t_[j];
+        return amp_ * exp(-0.5*d*d*ivar_);
+    };
+
+private:
+
+    unsigned int status_;
+    const double amp_, ivar_, *t_;
 
 };
 

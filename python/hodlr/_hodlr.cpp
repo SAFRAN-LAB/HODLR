@@ -6,6 +6,10 @@
 #include "HODLR_Tree.hpp"
 #include "matrixdefs.hpp"
 
+// Silence some warnings.
+#pragma GCC diagnostic ignored "-Wwrite-strings"
+#pragma GCC diagnostic ignored "-Wdelete-non-virtual-dtor"
+
 using namespace Eigen;
 
 // Parse NumPy objects.
@@ -17,8 +21,9 @@ typedef struct {
     PyObject_HEAD
 
     unsigned int dim;
-    Python_Matrix * matrix;
-    HODLR_Tree<Python_Matrix> * solver;
+    Gaussian_Matrix * matrix;
+    HODLR_Tree<Gaussian_Matrix> * solver;
+    PyArrayObject * time_array;
 
 } _hodlr;
 
@@ -29,9 +34,9 @@ extern "C" {
     static int _hodlr_init(_hodlr *self, PyObject *args, PyObject *kwds);
     void init_hodlr(void);
 
-    static PyObject *_hodlr_logdet (_hodlr *self);
-    static PyObject *_hodlr_solve (_hodlr *self, PyObject *args);
-    static PyObject *_hodlr_matrix_product (_hodlr *self, PyObject *args);
+    static PyObject* _hodlr_logdet (_hodlr *self);
+    static PyObject* _hodlr_solve (_hodlr *self, PyObject *args);
+    static PyObject* _hodlr_matrix_product (_hodlr *self, PyObject *args);
 }
 
 // General Python setup and cleanup.
@@ -39,55 +44,98 @@ static void _hodlr_dealloc(_hodlr *self)
 {
     if (self->solver != NULL) delete self->solver;
     if (self->matrix != NULL) delete self->matrix;
+    Py_XDECREF(self->time_array);
     self->ob_type->tp_free((PyObject*)self);
 }
 
 static PyObject *_hodlr_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
 {
-    _hodlr *self;
+    _hodlr* self;
     self = (_hodlr*)type->tp_alloc(type, 0);
     self->matrix = NULL;
     self->solver = NULL;
+    self->time_array = NULL;
     return (PyObject*)self;
 }
 
 static int _hodlr_init(_hodlr *self, PyObject *args, PyObject *kwds)
 {
-    double tol = 1e-14;
+    double tol = 1e-14, amp, var;
     unsigned int nLeaf = 50;
-    PyObject * matrix_obj = NULL, * diag_obj = NULL;
-    static char *kws[] = {"matrix", "diag", "nleaf", "tol", NULL};
-    if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO|id", &(kws[0]),
-                                     &matrix_obj, &diag_obj, &nLeaf, &tol))
+    PyObject * time_obj = NULL, * diag_obj = NULL;
+    static char *kws[] = {"amp", "var", "time", "diag", "nleaf", "tol", NULL};
+    if (!PyArg_ParseTupleAndKeywords(args, kwds, "ddOO|id", &(kws[0]), &amp,
+                                     &var, &time_obj, &diag_obj, &nLeaf,
+                                     &tol))
         return -1;
 
-    // Check the matrix function and set up the matrix object.
-    if (!PyCallable_Check (matrix_obj)) {
-        PyErr_SetString(PyExc_TypeError, "The matrix object must be callable");
+    // Set up the matrix.
+    self->time_array = PARSE_ARRAY(time_obj);
+    self->dim = PyArray_DIM(self->time_array, 0);
+    double *time = (double*)PyArray_DATA(self->time_array);
+    if (self->time_array == NULL) {
         return -2;
     }
-    self->matrix = new Python_Matrix (matrix_obj);
+    self->matrix = new Gaussian_Matrix (amp, var, time);
 
     // Parse the diagonal array.
     PyArrayObject *diag_array = PARSE_ARRAY(diag_obj);
-    if (diag_array == NULL) {
+    if (diag_array == NULL || self->dim != PyArray_DIM(diag_array, 0)) {
+        Py_DECREF(self->time_array);
         Py_XDECREF(diag_array);
         return -3;
     }
-    self->dim = PyArray_DIM(diag_array, 0);
     double *diag = (double*)PyArray_DATA(diag_array);
     VectorXd dv = Map<VectorXd>(diag, self->dim);
 
     // Initialize the solver.
-    self->solver = new HODLR_Tree<Python_Matrix> (self->matrix, self->dim, nLeaf);
+    self->solver = new HODLR_Tree<Gaussian_Matrix> (self->matrix, self->dim, nLeaf);
     self->solver->assemble_Matrix(dv, tol);
-    Py_DECREF(diag_obj);
+    Py_DECREF(diag_array);
 
     // Factorize the matrix.
     self->solver->compute_Factor();
 
     return 0;
 }
+
+/* static int _hodlr_init(_hodlr *self, PyObject *args, PyObject *kwds) */
+/* { */
+/*     double tol = 1e-14; */
+/*     unsigned int nLeaf = 50; */
+/*     PyObject * matrix_obj = NULL, * diag_obj = NULL; */
+/*     static char *kws[] = {"matrix", "diag", "nleaf", "tol", NULL}; */
+/*     if (!PyArg_ParseTupleAndKeywords(args, kwds, "OO|id", &(kws[0]), */
+/*                                      &matrix_obj, &diag_obj, &nLeaf, &tol)) */
+/*         return -1; */
+
+/*     // Check the matrix function and set up the matrix object. */
+/*     if (!PyCallable_Check (matrix_obj)) { */
+/*         PyErr_SetString(PyExc_TypeError, "The matrix object must be callable"); */
+/*         return -2; */
+/*     } */
+/*     self->matrix = new Python_Matrix (matrix_obj); */
+
+/*     // Parse the diagonal array. */
+/*     PyArrayObject *diag_array = PARSE_ARRAY(diag_obj); */
+/*     if (diag_array == NULL) { */
+/*         Py_XDECREF(diag_array); */
+/*         return -3; */
+/*     } */
+/*     self->dim = PyArray_DIM(diag_array, 0); */
+/*     double *diag = (double*)PyArray_DATA(diag_array); */
+/*     VectorXd dv = Map<VectorXd>(diag, self->dim); */
+
+/*     // Initialize the solver. */
+/*     self->solver = new HODLR_Tree<Python_Matrix> (self->matrix, self->dim, nLeaf); */
+/*     self->solver->assemble_Matrix(dv, tol); */
+/*     Py_DECREF(diag_obj); */
+
+/*     // Factorize the matrix. */
+/*     self->solver->compute_Factor(); */
+
+/*     return 0; */
+/* } */
 
 static PyObject *_hodlr_logdet (_hodlr *self)
 {

@@ -1,9 +1,9 @@
 CC	=g++
-CFLAGS	=-c -Wall -O4 -ffast-math -ffinite-math-only -I header/
+CFLAGS	=-c -Wall -O4 -ffast-math -ffinite-math-only -DEIGEN_NO_DEBUG -DNDEBUG -I header/
 LDFLAGS	=
 SOURCES	=./examples/HODLR_Test.cpp ./examples/KDTree.cpp
 KERNEL	=-DGAUSSIAN # use -DEXPONENTIAL, -DGAUSSIAN, -DSINC, -DQUADRIC, -DINVERSEQUADRIC, -DMULTIQUADRIC, -DINVERSEMULTIQUADRIC, -DR2LOGR, -DLOGR, -DONEOVERR
-DIM	=-DTWO  # use -DONE, -DTWO, -DTHREE
+DIM	=-DONE  # use -DONE, -DTWO, -DTHREE
 OBJECTS	=$(SOURCES:.cpp=.o)
 EXECUTABLE	=./exec/HODLR_Test
 

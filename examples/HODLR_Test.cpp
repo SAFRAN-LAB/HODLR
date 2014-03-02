@@ -112,10 +112,10 @@ public:
 int main() {
 	srand (time(NULL));
 
-	unsigned N	=	10000;
+	unsigned N	=	100;
 	unsigned nRhs	=	1;
 	unsigned nLeaf	=	50;
-	double tolerance=	1e-16;
+	double tolerance=	1e-15;
 
 	Test_Kernel kernel(N);
 

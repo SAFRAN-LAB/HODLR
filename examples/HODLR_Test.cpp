@@ -114,7 +114,7 @@ int main() {
 
 	unsigned N	=	10000;
 	unsigned nRhs	=	1;
-	unsigned nLeaf	=	500;
+	unsigned nLeaf	=	50;
 	double tolerance=	1e-16;
 
 	Test_Kernel kernel(N);

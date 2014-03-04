@@ -165,9 +165,9 @@ public:
          Computes the determinant of the matrix.
          */
 	void compute_Determinant() {
-                determinant     =       0.0;
                 MatrixXd LU     =       Kinverse.matrixLU();
-                for (int k=0; k<Kinverse.rows(); ++k) {
+                determinant     =       log(fabs(LU(0,0)));
+                for (int k=1; k<Kinverse.rows(); ++k) {
                         determinant+=log(fabs(LU(k,k)));
                 }
 //              Previous version which had some underflow.

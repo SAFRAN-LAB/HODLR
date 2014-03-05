@@ -112,10 +112,10 @@ public:
 int main() {
 	srand (time(NULL));
 
-	unsigned N	=	10000;
+	unsigned N	=	50000;
 	unsigned nRhs	=	1;
-	unsigned nLeaf	=	50;
-	double tolerance=	1e-16;
+	unsigned nLeaf	=	100;
+	double tolerance=	1e-15;
 
 	Test_Kernel kernel(N);
 
@@ -133,12 +133,12 @@ int main() {
 
 	cout << endl << "Assembling the matrix in HODLR form..." << endl;
 	start			=	clock();
-	VectorXd diagonal	=	2.0*VectorXd::Ones(N);
+	VectorXd diagonal	=	2.0*VectorXd::Ones(N)+VectorXd::Random(N);
 	A->assemble_Matrix(diagonal, tolerance);
 	end		=	clock();
 	cout << "Time taken is: " << double(end-start)/double(CLOCKS_PER_SEC)<< endl;
 
-        cout << endl << "Exact matrix matrix product..." << endl;
+        cout << endl << "Exact matrix vector product..." << endl;
         start           =       clock();
         for (int i=0; i<N; ++i) {
                 bExact(i,0)             =       diagonal(i)*xExact(i,0);

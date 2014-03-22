@@ -20,14 +20,22 @@ If you use the implementation or any part of the implementation in your work, ki
 
 @article{ambikasaran2013fast,
 
-  author={{A}mbikasaran, {S}ivaram and {D}arve, {E}ric},</br>
-  title={An $\mathcal{O}(N \log N)$ Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices},</br>
-  journal={Journal of Scientific Computing},</br>
-  year={2013},</br>
-  volume={57},</br>
-  number={3},</br>
-  pages={477--501},</br>
-  month={December},</br>
+  author={{A}mbikasaran, {S}ivaram and {D}arve, {E}ric},
+  
+  title={An $\mathcal{O}(N \log N)$ Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices},
+  
+  journal={Journal of Scientific Computing},
+  
+  year={2013},
+  
+  volume={57},
+  
+  number={3},
+  
+  pages={477--501},
+  
+  month={December},
+  
   publisher={Springer}
 }
 

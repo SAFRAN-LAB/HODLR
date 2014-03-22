@@ -18,7 +18,8 @@ If you use the implementation or any part of the implementation in your work, ki
 
 ***Article***
 
-@article{ambikasaran2013fast,</br>
+@article{ambikasaran2013fast,
+
   author={{A}mbikasaran, {S}ivaram and {D}arve, {E}ric},</br>
   title={An $\mathcal{O}(N \log N)$ Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices},</br>
   journal={Journal of Scientific Computing},</br>

@@ -37,15 +37,21 @@ If you use the implementation or any part of the implementation in your work, ki
   month={December},
   
   publisher={Springer}
+  
 }
 
 ***Code***
 
-@MISC{ambikasaran2013HODLR,</br>
-  author = {{A}mbikasaran, {S}ivaram},</br>
-  title = {A fast direct solver for dense linear systems},</br>
-  howpublished = {https://github.com/sivaramambikasaran/HODLR},</br>
+@MISC{ambikasaran2013HODLR,
+
+  author = {{A}mbikasaran, {S}ivaram},
+  
+  title = {A fast direct solver for dense linear systems},
+  
+  howpublished = {https://github.com/sivaramambikasaran/HODLR},
+  
   year = {2013}
+  
  }
 
 **Version 3.14**

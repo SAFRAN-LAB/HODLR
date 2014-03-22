@@ -1,4 +1,4 @@
-#HODLR SOLVER: Fast direct solver and determinant computation for dense linear systems
+#HODLR: Fast direct solver and determinant computation for dense linear systems
 
 This is an extension of the fast direct solver discussed in the article: "An O(N log (N)) Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices". The solver has also been extended to matrices not necessarily arising out of kernels and also to higher dimensions. Further, the solver has been optimized and the running time of the solver is now massively (a few orders of magnitude) faster than the running times reported in the article. Low-rank approximation of the appropriate blocks are obtained using partial pivoted LU algorithm. The domain is sub-divided based on a KDTree. The solver is fairly general and works with minimal restrictions.
 

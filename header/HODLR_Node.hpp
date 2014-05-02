@@ -165,13 +165,15 @@ public:
          Computes the determinant of the matrix.
          */
 	void compute_Determinant() {
-                MatrixXd LU     =       Kinverse.matrixLU();
-                determinant     =       log(fabs(LU(0,0)));
-                for (int k=1; k<Kinverse.rows(); ++k) {
-                        determinant+=log(fabs(LU(k,k)));
+                if (Kinverse.rows()>0) {        //      Check needed when the matrix is predominantly diagonal.
+                        MatrixXd LU     =       Kinverse.matrixLU();
+                        determinant     =       log(fabs(LU(0,0)));
+                        for (int k=1; k<Kinverse.rows(); ++k) {
+                                determinant+=log(fabs(LU(k,k)));
+                        }
+                        //              Previous version which had some underflow.
+                        //              determinant	=	log(fabs(K.determinant()));
                 }
-//              Previous version which had some underflow.
-//              determinant	=	log(fabs(K.determinant()));
 	};
 
         /*!

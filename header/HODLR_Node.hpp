@@ -70,7 +70,7 @@ public:
         /*!
          Assemble the relevant matrices.
          */
-	void assemble_Matrices(double lowRankTolerance, VectorXd& diagonal) {
+	void assemble_Matrices(double lowRankTolerance, VectorXd& diagonal, char s) {
 		if (isLeaf	==	true) {
 			kernel->get_Matrix(nStart, nStart, nSize, nSize, K);
 			for (int k=0; k<nSize; ++k) {
@@ -79,7 +79,14 @@ public:
 		}
 		else if (isLeaf	==	false) {
 			partial_Piv_LU(child[0]->nStart, child[1]->nStart, child[0]->nSize, child[1]->nSize, lowRankTolerance, nRank[0], U[0], V[1]);
+            if (s == 's') {
+                V[0]    =   U[0].transpose();
+                U[1]    =   V[1].transpose();
+                nRank[1]=   nRank[0];
+            }
+            else {
 			partial_Piv_LU(child[1]->nStart, child[0]->nStart, child[1]->nSize, child[0]->nSize, lowRankTolerance, nRank[1], U[1], V[0]);
+            }
 //                        ranks[levelNumber][levelBasedNodeNumber][0]     =       nRank[0];
 //                        ranks[levelNumber][levelBasedNodeNumber][1]     =       nRank[1];
 		}
@@ -114,14 +121,20 @@ public:
 		}
 	};
 
-	void compute_K() {
+	void compute_K(char s) {
 		if (isLeaf	==	false) {
 			int m0	=	V[0].rows();
 			int m1	=	V[1].rows();
 			K	=	MatrixXd::Identity(m0+m1, m0+m1);
 
 			K.block(0, m1, m1, m0)	=	Vinverse[1]*Uinverse[1];
-			K.block(m1, 0, m0, m1)	=	Vinverse[0]*Uinverse[0];
+            if (s=='s') {
+//                K.block(m1, 0, m0, m1)  =   K.block(0, m1, m1, m0).transpose();
+                K.block(m1, 0, m0, m1)	=	Vinverse[0]*Uinverse[0];
+            }
+            else {
+                K.block(m1, 0, m0, m1)	=	Vinverse[0]*Uinverse[0];
+            }
 		}
 	};
 

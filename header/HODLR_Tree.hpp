@@ -45,6 +45,7 @@ private:
         vector< vector<int*> > ranks;
         vector< vector<int> > nCalls_To_Get_Matrix_Entry;
         int nCalls;
+    char s; //  s = 's' means symmetric, else non-symmetric
         /*!
          Creates the tree.
          */
@@ -71,7 +72,7 @@ private:
          */
 	void assemble_Matrix(HODLR_Node<MatrixType>*& node) {
 		if (node) {
-			node->assemble_Matrices(lowRankTolerance, diagonal);
+			node->assemble_Matrices(lowRankTolerance, diagonal, s);
 			assemble_Matrix(node->child[0]);
 			assemble_Matrix(node->child[1]);
 		}
@@ -118,7 +119,7 @@ private:
 			for (int k=0; k<2; ++k) {
 				compute_Factor(node->child[k]);
 			}
-			node->compute_K();
+			node->compute_K(s);
 			node->compute_Inverse();
 			HODLR_Node<MatrixType>*& mynode	=	node->parent;
 			int number		=	node->nodeNumber;
@@ -184,9 +185,10 @@ public:
         /*!
          Assembles the matrix.
          */
-	void assemble_Matrix(VectorXd& diagonal, double lowRankTolerance) {
+	void assemble_Matrix(VectorXd& diagonal, double lowRankTolerance, char s) {
 		this->lowRankTolerance	=	lowRankTolerance;
-		this->diagonal		=	diagonal;
+		this->diagonal          =	diagonal;
+        this->s                 =   s;
 		assemble_Matrix(root);
 	};
 

@@ -81,7 +81,7 @@ int main ()
 
     cout << endl << "Assembling the matrix in HODLR form..." << endl;
     start = clock();
-    A->assemble_Matrix(yvar, tolerance);
+    A->assemble_Matrix(yvar, tolerance, 's');
     end = clock();
     cout << "Time taken is: " << double(end-start)/double(CLOCKS_PER_SEC)<< endl;
 

@@ -87,7 +87,7 @@ endif (HAVE_LTO_SUPPORT)
 # GCC is not strict enough by default, so enable most of the warnings.
 if (UNIX)
     set (HODLR_FLAGS
-        "${HODLR_FLAGS} -Werror -Wall -Wextra -Wno-unknown-pragmas -Wno-sign-compare -Wno-unused-parameter -Wno-missing-field-initializers")
+        "${HODLR_FLAGS} -Wall -Wextra -Wno-unknown-pragmas -Wno-sign-compare -Wno-unused-parameter -Wno-missing-field-initializers")
 endif (UNIX)
 
 # Build the Kepler demo.

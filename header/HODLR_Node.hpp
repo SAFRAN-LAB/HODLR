@@ -65,7 +65,15 @@ public:
 		this->parent                    =	NULL;
 		this->child[0]                  =	NULL;
 		this->child[1]                  =	NULL;
+		this->set_seed(time(NULL));
 	};
+
+	/*!
+	 Set the random generator seed
+	 */
+	void set_seed(int seed) {
+		srand(seed);
+	}
 
         /*!
          Assemble the relevant matrices.
@@ -252,7 +260,6 @@ public:
 		vector<VectorXd> u;	///	Stores the column basis.
 		vector<VectorXd> v;	///	Stores the row basis.
 
-		srand (time(NULL));
 		double max, Gamma, unused_max;
 
 		/*  INITIALIZATION  */

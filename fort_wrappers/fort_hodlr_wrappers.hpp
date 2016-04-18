@@ -20,6 +20,12 @@ extern "C"
 			      double * xyz, double * xyztarg, double * work, 
 			      double * diag, double eps);
 
+  void initialize_matrix_wrap_sym(HODLR_Tree<Extern_Kernel> ** A, 
+			      Extern_Kernel ** kernel, 
+			      unsigned N, unsigned nDim, unsigned nLeaf, 
+			      double * xyz, double * xyztarg, double * work, 
+			      double * diag, double eps, char s);
+
   void matrix_multiply_wrap(HODLR_Tree<Extern_Kernel> ** A, 
 			    double * x, double * b, unsigned N, 
 			    unsigned nRow, unsigned nCol);

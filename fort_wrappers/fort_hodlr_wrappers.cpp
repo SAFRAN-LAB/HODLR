@@ -43,6 +43,62 @@ xyz - real array used by Matrix_Entry_Routine
 xyztarg - real array used by Matrix_Entry_Routine
 work - real array used by Matrix_Entry_Routine
 
+matrix is assumed non-symmetric
+
+Other input:
+
+diag - real array of length N containing the matrix diagonal
+eps - tolerance used by assemble_Matrix 
+
+Output:
+
+A - the system matrix stored as a HODLR_Tree
+
+ *********************************************************************/
+{
+
+  char s = 'n';
+
+  VectorXd diagonal(N);
+
+  for (int i = 0; i < N; i++)
+    diagonal(i) = diag[i];
+
+  (*kernel) = new Extern_Kernel(N,nDim,xyz,xyztarg,work);
+  (*A) = new HODLR_Tree<Extern_Kernel>(*kernel, N, nLeaf);
+
+  (*A)->assemble_Matrix(diagonal, eps, s);
+
+  return;
+  
+}
+
+void initialize_matrix_wrap_sym(HODLR_Tree<Extern_Kernel> ** A, 
+			    Extern_Kernel ** kernel, 
+			    unsigned N, unsigned nDim, unsigned nLeaf, 
+			    double * xyz, double * xyztarg, 
+			    double * work, double * diag, double eps,
+			    char s)
+/*********************************************************************
+
+Creates a HODLR_Tree<Extern_Kernel> at (*A) with kernel at (*kernel).
+
+
+Input:
+
+The kernel is created by calling the Extern_Kernel constructor with 
+the parameters:
+
+N - system size.
+nDim - generally, the number of dimensions
+xyz - real array used by Matrix_Entry_Routine
+xyztarg - real array used by Matrix_Entry_Routine
+work - real array used by Matrix_Entry_Routine
+s - character. if s = 's' the matrix must be symmetric and a more
+               efficient version of the routines are used.
+               if s is otherwise, regular routines are used (and 
+               matrix can be non-symmetric)
+
 Other input:
 
 diag - real array of length N containing the matrix diagonal
@@ -63,7 +119,7 @@ A - the system matrix stored as a HODLR_Tree
   (*kernel) = new Extern_Kernel(N,nDim,xyz,xyztarg,work);
   (*A) = new HODLR_Tree<Extern_Kernel>(*kernel, N, nLeaf);
 
-  (*A)->assemble_Matrix(diagonal, eps);
+  (*A)->assemble_Matrix(diagonal, eps, s);
 
   return;
   

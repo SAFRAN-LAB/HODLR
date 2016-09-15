@@ -2,6 +2,7 @@
 #define __HODLR_Node__
 
 #include <Eigen/Dense>
+#include <Eigen/QR>
 #include "HODLR_Matrix.hpp"
 
 class HODLR_Node {
@@ -22,6 +23,12 @@ private:
 	void assemble_Leaf_Node(HODLR_Matrix* A);
 	void matmat_Product_Non_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b);
 	void matmat_Product_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b);
+	Eigen::MatrixXd Q[2];
+	Eigen::MatrixXd Qfactor[2];
+	Eigen::MatrixXd R;
+	Eigen::MatrixXd Ksym;
+	Eigen::MatrixXd W;
+	int sym_rank;
 };
 
 HODLR_Node::HODLR_Node(int nodeNumber, int levelNumber, int localNumber, int nStart, int nSize, double tolerance) {
@@ -69,4 +76,28 @@ void HODLR_Node::matmat_Product_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b) {
 	// std::cout << "\nDone matmat_Product_Leaf\n";
 }
 
+void HODLR_Node::assemble_Symmetric_Non_Leaf_Node(HODLR_Matrix* A) {
+	// std::cout << "\nStart assemble_Non_Leaf_Node\n";
+	Eigen::MatrixXd USym[2];
+	Eigen::MatrixXd R[2];
+	A->rook_Piv(cStart[0],cStart[1],cSize[0],cSize[1], tolerance, USym[0], USym[1], sym_rank);
+
+	int minmn[2];
+	minmn[0] = std::min(USym[0].rows(), USym[0].cols());
+	minmn[1] = std::min(USym[1].rows(), USym[1].cols());
+	
+	HouseholderQR<MatrixXd> qr(USym[0]);
+	Eigen::MatrixXd::Identity(USym[0].rows(), minmn[0]);
+    	A->Q[0] = qr.householderQ()*(Eigen::MatrixXd::Identity((USym[0].rows(), minmn[0]));
+	R[0] = qr.matrixQR().block(0,0,minmn[0],USym[0].cols()).triangularView<Eigen::Upper>();
+    	
+	qr(USym[1]);
+  	Eigen::MatrixXd::Identity(USym[1].rows(), minmn[1]);
+    	A->Q[1] = qr.householderQ()*(Eigen::MatrixXd::Identity((USym[1].rows(), minmn[1]));
+	R[1] = qr.matrixQR().block(0,0,minmn[1],USym[1].cols()).triangularView<Eigen::Upper>();
+  	
+	A->R = R[0]*R[1]*transpose();
+
+	// std::cout << "\nDone assemble_Non_Leaf_Node\n";
+}
 #endif /*__HODLR_Node__*/

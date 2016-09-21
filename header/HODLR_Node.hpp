@@ -23,12 +23,15 @@ private:
 	void assemble_Leaf_Node(HODLR_Matrix* A);
 	void matmat_Product_Non_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b);
 	void matmat_Product_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b);
+	//Symmetric factorization nodes
 	Eigen::MatrixXd Q[2];
 	Eigen::MatrixXd Qfactor[2];
-	Eigen::MatrixXd R;
-	Eigen::MatrixXd Ksym;
+	Eigen::MatrixXd R[2];
+	Eigen::MatrixXd Rfactor[2];
+	Eigen::MatrixXd X;
 	Eigen::MatrixXd W;
 	int sym_rank;
+	void assemble_Symmetric_Non_Leaf_Node(HODLR_Matrix* A)
 };
 
 HODLR_Node::HODLR_Node(int nodeNumber, int levelNumber, int localNumber, int nStart, int nSize, double tolerance) {
@@ -78,7 +81,7 @@ void HODLR_Node::matmat_Product_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b) {
 
 void HODLR_Node::assemble_Symmetric_Non_Leaf_Node(HODLR_Matrix* A) {
 	// std::cout << "\nStart assemble_Non_Leaf_Node\n";
-	Eigen::MatrixXd USym[2];
+	/*Eigen::MatrixXd USym[2];
 	Eigen::MatrixXd R[2];
 	A->rook_Piv(cStart[0],cStart[1],cSize[0],cSize[1], tolerance, USym[0], USym[1], sym_rank);
 
@@ -96,7 +99,10 @@ void HODLR_Node::assemble_Symmetric_Non_Leaf_Node(HODLR_Matrix* A) {
     	A->Q[1] = qr.householderQ()*(Eigen::MatrixXd::Identity((USym[1].rows(), minmn[1]));
 	R[1] = qr.matrixQR().block(0,0,minmn[1],USym[1].cols()).triangularView<Eigen::Upper>();
   	
-	A->R = R[0]*R[1]*transpose();
+	A->R = R[0]*R[1]*transpose();*/
+
+	A->rook_Piv(cStart[0],cStart[1],cSize[0],cSize[1], tolerance, Q[0], Q[1], sym_rank);
+
 
 	// std::cout << "\nDone assemble_Non_Leaf_Node\n";
 }

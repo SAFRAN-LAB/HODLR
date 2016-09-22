@@ -3,6 +3,7 @@
 
 #include <Eigen/Dense>
 #include <Eigen/QR>
+#include <Eigen/Cholesky>
 #include "HODLR_Matrix.hpp"
 
 class HODLR_Node {
@@ -26,12 +27,12 @@ private:
 	//Symmetric factorization nodes
 	Eigen::MatrixXd Q[2];
 	Eigen::MatrixXd Qfactor[2];
-	Eigen::MatrixXd R[2];
+	Eigen::MatrixXd R;
 	Eigen::MatrixXd Rfactor[2];
 	Eigen::MatrixXd X;
-	Eigen::MatrixXd W;
+	Eigen::LLT<Eigen::MatrixXd> llt;
 	int sym_rank;
-	void assemble_Symmetric_Non_Leaf_Node(HODLR_Matrix* A)
+	void assemble_Symmetric_Non_Leaf_Node(HODLR_Matrix* A);
 };
 
 HODLR_Node::HODLR_Node(int nodeNumber, int levelNumber, int localNumber, int nStart, int nSize, double tolerance) {

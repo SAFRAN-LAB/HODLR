@@ -1,9 +1,9 @@
-CC		=g++-6
+CC		=g++-5
 CFLAGS	=-c -fopenmp -Wall -Ofast -funroll-loops -ffast-math -ffinite-math-only -I header/
 LDFLAGS	=-fopenmp
-SOURCES	=./examples/testHODLR.cpp
+SOURCES	=./examples/testHODLRSymmetric.cpp
 OBJECTS	=$(SOURCES:.cpp=.o)
-EXECUTABLE	=./exec/testHODLR
+EXECUTABLE	=./exec/testHODLRSymmetric
 
 all: $(SOURCES) $(EXECUTABLE)
 

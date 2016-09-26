@@ -28,8 +28,9 @@ private:
 	Eigen::MatrixXd Q[2];
 	Eigen::MatrixXd Qfactor[2];
 	Eigen::MatrixXd R;
-	Eigen::MatrixXd Rfactor[2];
 	Eigen::MatrixXd X;
+	Eigen::MatrixXd Ksym;
+	Eigen::PartialPivLU<Eigen::MatrixXd> Ksymfactor;
 	Eigen::LLT<Eigen::MatrixXd> llt;
 	int sym_rank;
 	void assemble_Symmetric_Non_Leaf_Node(HODLR_Matrix* A);

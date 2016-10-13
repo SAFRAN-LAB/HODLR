@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include <Eigen/Dense>
 #include "HODLR_Tree.hpp"
 #include "HODLR_Matrix.hpp"
@@ -9,14 +10,15 @@ private:
 public:
 	myHODLR_Matrix(int N) : HODLR_Matrix(N) {
 		x	=	Eigen::VectorXd::Random(N);
+		std::sort(x.data(),x.data()+x.size());
 	};
 	double get_Matrix_Entry(int j, int k) {
 		if(j==k) {
-			return 2.0;
+			return 100.0;
 		}
 		else {
-			return 1.0/(1.0+((x(j)-x(k))*(x(j)-x(k))));
-			// return exp(-(x(j)-x(k))*(x(j)-x(k)));
+			//return 1.0/(1.0+((x(j)-x(k))*(x(j)-x(k))));
+			 return exp(-fabs(x(j)-x(k)));
 		}
 	}
 	~myHODLR_Matrix() {};

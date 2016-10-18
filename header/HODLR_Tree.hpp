@@ -55,6 +55,8 @@ public:
 	 Eigen::MatrixXd solve_Symmetric_Transpose_Factor(Eigen::MatrixXd b);
 	 Eigen::MatrixXd solve_Symmetric_Transpose_Non_Leaf(int j, int k, Eigen::MatrixXd b);
 	 Eigen::MatrixXd solve_Symmetric_Transpose_Leaf(int k, Eigen::MatrixXd b);
+	 Eigen::MatrixXd symmetric_transpose_mult(Eigen::MatrixXd b1);
+	 Eigen::MatrixXd mult_Symmetric_transpose_Non_Leaf(int j, int k, Eigen::MatrixXd b);
 };
 
 HODLR_Tree::HODLR_Tree(int nLevels, double tolerance, HODLR_Matrix* A) {
@@ -325,7 +327,7 @@ std::cout << "\nStart Symmetric factorize\n";
 
 	small_Cholesky(0,0);
 	//testing_puposes
-//	tree[0][0]->X = symmetric_Cholesky(0,0,tree[0][0]->sym_rank);
+	tree[0][0]->X = symmetric_Cholesky(0,0,tree[0][0]->sym_rank);
 
 	 std::cout << "\nEnd Symmetric factorize...\n";
 }
@@ -382,7 +384,7 @@ Eigen::MatrixXd HODLR_Tree::solve_Symmetric_Leaf(int k, Eigen::MatrixXd b) {
 
 void HODLR_Tree::factorize_Symmetric_Non_Leaf(int j, int k) {
 //	 std::cout << "\nStart Symmetric factorize; Level: " << j << " Node: " << k << "\n";
-//	tree[j][k]->X = symmetric_Cholesky(j,k,tree[j][k]->sym_rank);
+	tree[j][k]->X = symmetric_Cholesky(j,k,tree[j][k]->sym_rank);
    
     small_Cholesky(j,k);
 	
@@ -484,12 +486,14 @@ Eigen::MatrixXd HODLR_Tree::solve_Symmetric_Factor(Eigen::MatrixXd b1) {
     	return x;
 }
 
+
+
 double HODLR_Tree::symmetric_determinant() {
 	// std::cout << "\nStart solve...\n";
 	double det = 0.0;
 	for (int j=nLevels; j>=0; --j) {
 		for (int k=0; k<nodesInLevel[j]; ++k) {
-			det += log(tree[j][k]->llt.matrixL().determinant())/log(2);
+			det += log(tree[j][k]->llt.matrixL().determinant());
 		}
 	}
 	// std::cout << "\nEnd solve...\n";
@@ -635,6 +639,59 @@ Eigen::MatrixXd HODLR_Tree::symmetric_mult(Eigen::MatrixXd b1){
          b.block(n0, 0, n1, b.cols()) -= tree[j][k]->Qfactor[1]*(xtmp - ytmp);
         return(b);
 
+    }
+
+    Eigen::MatrixXd HODLR_Tree::symmetric_transpose_mult(Eigen::MatrixXd b1){
+        int start, size;
+            Eigen::MatrixXd b = b1;
+            	Eigen::MatrixXd x	=	Eigen::MatrixXd::Zero(b.rows(),b.cols());
+            	int r	=	b.cols();
+
+
+                Eigen::MatrixXd M1[nodesInLevel[nLevels]];
+             	 #pragma omp parallel for
+             	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
+             		start	=	tree[nLevels][k]->nStart;
+             		size	=	tree[nLevels][k]->nSize;
+             		M1[k] = tree[nLevels][k]->llt.matrixL().transpose()*b.block(start, 0, size, r);
+             	//	std::cout<<"second\n";
+             	}
+
+             	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
+                     		start	=	tree[nLevels][k]->nStart;
+                     		size	=	tree[nLevels][k]->nSize;
+                     		x.block(start, 0, size, r)	= M1[k];
+                     	//	std::cout<<"second\n";
+                     	}
+                 b = x;
+
+            	for (int j=nLevels-1; j>=0; --j) {
+            	 Eigen::MatrixXd M2[nodesInLevel[j]];
+            		 #pragma omp parallel for
+            		for (int k=0; k<nodesInLevel[j]; ++k) {
+            			start	=	tree[j][k]->nStart;
+            			size	=	tree[j][k]->nSize;
+                        M2[k]	=	mult_Symmetric_transpose_Non_Leaf(j, k, b.block(start, 0, size, r));
+            	//		std::cout<<"first\n";
+            		}
+            		for (int k=0; k<nodesInLevel[j]; ++k) {
+                        start	=	tree[j][k]->nStart;
+                        size	=	tree[j][k]->nSize;
+                        x.block(start, 0, size, r)	=	M2[k];
+                    }
+            		b=x;
+                }
+            	return(x);
+    }
+
+    Eigen::MatrixXd HODLR_Tree::mult_Symmetric_transpose_Non_Leaf(int j, int k, Eigen::MatrixXd b){
+            int n0 = tree[j][k]->Q[0].rows();
+            int n1 = tree[j][k]->Q[1].rows();
+            Eigen::MatrixXd tmp = tree[j][k]->Qfactor[1].transpose()*b.block(n0,0,n1,b.cols());
+            b.block(0,0,n0,b.cols()) += tree[j][k]->Qfactor[0]*(tree[j][k]->R*tmp);
+            b.block(n0,0,n1,b.cols()) += tree[j][k]->Qfactor[1]*(((Eigen::MatrixXd)tree[j][k]->llt.matrixL().transpose() - Eigen::MatrixXd::Identity(tree[j][k]->sym_rank, tree[j][k]->sym_rank))*tmp);
+
+            return(b);
     }
 
 #endif /*__HODLR_Tree__*/

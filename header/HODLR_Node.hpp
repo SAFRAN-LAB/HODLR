@@ -8,14 +8,27 @@
 
 class HODLR_Node {
 	friend class HODLR_Tree;
+/////temp changes
+public:
+int nStart, nSize;
+Eigen::MatrixXd Ksym;
+    Eigen::MatrixXd Q[2];
+    Eigen::LLT<Eigen::MatrixXd> llt, llt1;
+    int cStart[2], cSize[2];
+    Eigen::MatrixXd Qfactor[2];	Eigen::MatrixXd K;
+    	Eigen::MatrixXd R;
+    	int sym_rank;
+    	Eigen::MatrixXd X;
+////
+
 private:
 	HODLR_Node(int nodeNumber, int levelNumber, int localNumber, int nStart, int nSize, double tolerance);
 	int nodeNumber, levelNumber, localNumber;
-	int nStart, nSize;
-	int cStart[2], cSize[2];
+//	int nStart, nSize;
+//	int cStart[2], cSize[2];
 	Eigen::MatrixXd U[2], V[2];
 	Eigen::MatrixXd Ufactor[2], Vfactor[2];
-	Eigen::MatrixXd K;
+//	Eigen::MatrixXd K;
 	Eigen::PartialPivLU<Eigen::MatrixXd> Kfactor;
 	int rank[2];
 	bool isLeaf;
@@ -25,14 +38,14 @@ private:
 	void matmat_Product_Non_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b);
 	void matmat_Product_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b);
 	//Symmetric factorization nodes
-	Eigen::MatrixXd Q[2];
-	Eigen::MatrixXd Qfactor[2];
-	Eigen::MatrixXd R;
-	Eigen::MatrixXd X;
-	Eigen::MatrixXd Ksym;
+//	Eigen::MatrixXd Q[2];
+	/*Eigen::MatrixXd Qfactor[2];
+	Eigen::MatrixXd R;*/
+//	Eigen::MatrixXd X;
+//	Eigen::MatrixXd Ksym;
 	Eigen::PartialPivLU<Eigen::MatrixXd> Ksymfactor;
-	Eigen::LLT<Eigen::MatrixXd> llt;
-	int sym_rank;
+//	Eigen::LLT<Eigen::MatrixXd> llt;
+//	int sym_rank;
 	void assemble_Symmetric_Non_Leaf_Node(HODLR_Matrix* A);
 };
 

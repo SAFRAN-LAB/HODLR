@@ -119,9 +119,7 @@ Eigen::VectorXd HODLR_Matrix::get_Col(const int k, const int nRowStart, const in
 
 Eigen::MatrixXd HODLR_Matrix::get_Matrix(const int nRowStart, const int nColStart, const int nRows, const int nCols) {
 	Eigen::MatrixXd mat(nRows, nCols);
-	#pragma omp parallel for
 	for (int j=0; j<nRows; ++j) {
-	    #pragma omp parallel for
 		for (int k=0; k<nCols; ++k) {
 			mat(j,k)	=	get_Matrix_Entry(j+nRowStart, k+nColStart);
 		}

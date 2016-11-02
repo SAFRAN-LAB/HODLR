@@ -3,146 +3,179 @@
 #include <cmath>
 #include "HODLR_Tree.hpp"
 #include "HODLR_Matrix.hpp"
+#include "KDTree.hpp"
+
+int dim  = 1;
+double tol = 1e-13;
 
 class myHODLR_Matrix : public HODLR_Matrix {
 	private:
-		Eigen::VectorXd x;
+		//Eigen::VectorXd x;
+		Eigen::MatrixXd Theta;
 	public:
-		myHODLR_Matrix(int N) : HODLR_Matrix(N) {
-			x	=	Eigen::VectorXd::Random(N);
-			std::sort(x.data(),x.data()+x.size());
+		myHODLR_Matrix(int N) : HODLR_Matrix(dim*N) {
+			//x	=	Eigen::VectorXd::Random(N);
+			//std::sort(x.data(),x.data()+x.size());
+			Theta = Eigen::MatrixXd::Random(N,dim);
+			get_KDTree_Sorted(Theta, 0);
 		};
+
 		double get_Matrix_Entry(int j, int k) {
-			if(j==k) {
-				return 100.0;
-			}
-			else {
-//				return 1.0/(1.0+((x(j)-x(k))*(x(j)-x(k))));
-				return exp(-(x(j)-x(k))*(x(j)-x(k)));
-//                return exp(-fabs(x(j)-x(k)));
-			}
+ //           return get_Biharmonic_Kernel_Entry(j,k);
+            return get_Gaussian_Kernel_Entry(j,k);
+//		     return get_RPY_Tensor_Entry(j,k);
+		}
+
+        double get_Biharmonic_Kernel_Entry(int j, int k){
+            if (j == k){
+                return 1;
+            } else {
+                 Eigen::VectorXd X = Theta.row(j/dim) - Theta.row(k/dim);
+                 double r = 0.0;
+                 for(int i = 0; i<dim; i++){
+                    r += X(i)*X(i);
+                 }
+                 double ex = 0.5 * r * log(r);
+               if(j%dim == k%dim){
+                    return 1 + ex;
+                } else {
+                    return ex;
+                }
+            }
+        }
+
+		double get_Gaussian_Kernel_Entry(int j, int k){
+		     if(j == k){
+		        return 20;
+		     } else{
+	             Eigen::VectorXd X = Theta.row(j/dim) - Theta.row(k/dim);
+                 double r = 0.0;
+                 for(int i = 0; i<dim; i++){
+                    r += X(i)*X(i);
+                 }
+                 double ex = exp(-r);
+                 if (j%dim == k%dim){
+                    return (1 + ex);
+                 } else {
+                    return ex;
+                 }
+		     }
+		}
+
+		double get_RPY_Tensor_Entry(int j, int k){
+             Eigen::VectorXd X = Theta.row(j/dim) - Theta.row(k/dim);
+             double R = X(j%dim) * X(k%dim);
+             double r = 0.0;
+             for(int i = 0; i<dim; i++){
+                r += X(i)*X(i);
+             }
+             r = sqrt(r);
+             double a = pow(1/1500, 1/dim);
+                if(r < 2*a){
+                    if(j == k){
+                        return 4/(3*a);
+                    } else {
+                        double A = 3/32 * R/a * R/r;
+                        if(j%dim == k%dim){
+                           return 4/3 * 1/a * (1 - 9/32 * r/a + A);
+                        } else{
+                            return 4/3 * A/a;
+                        }
+                    }
+                } else {
+                    if(j == k){
+                        return 1/r;
+                    } else {
+                        double B = (R/r * R/r) - (2/3 * a/r *a/r) * (3 * R/r * R/r);
+                        if(j%dim == k%dim){
+                            return  1/r * (1 + 2/3 * a/r * a/r + B);
+                        } else {
+                            return B/r;
+                        }
+                    }
+                }
 		}
 		~myHODLR_Matrix() {};
 };
 
 int main(int argc, char* argv[]) {
+
 	int N					=	atoi(argv[1]);
 	myHODLR_Matrix* A		=	new myHODLR_Matrix(N);
-//	int nLevels				=	log(N/200)/log(2);
-	int nLevels				=	log(N/256)/log(2);
-	double tolerance		=	1e-15;
-
-
-
+	int nLevels				=	log((dim*N)/200)/log(2);
+	std::cout<<nLevels<<"\n";
+	double tolerance		=	tol;
 	double start, end;
-	// double CPS	=	CLOCKS_PER_SEC;
 	double CPS	=	1.0;
 
 	std::cout << "\nFast method...\n";
-	// start	=	clock();
 	start	=	omp_get_wtime();
 	HODLR_Tree* myMatrix	=	new HODLR_Tree(nLevels, tolerance, A);
-	Eigen::MatrixXd x		=	Eigen::MatrixXd::Random(N,1);
+	Eigen::MatrixXd x		=	Eigen::MatrixXd::Random(dim*N,1);
 	Eigen::MatrixXd bFast;
 	myMatrix->assembleSymmetricTree();
-	// end		=	clock();
 	end		=	omp_get_wtime();
 	std::cout << "\nTime taken for assembling the matrix in HODLR form is: " << (end-start)/CPS << "\n";
 
+ //   std::cout<<" rank: "<<myMatrix->tree[0][0]->sym_rank<<"\n";
+
 	Eigen::MatrixXd xFast;
-	// start	=	clock();
 	start	=	omp_get_wtime();
 	myMatrix->symmetric_factorize();
-	// end	=	clock();
 	end		=	omp_get_wtime();
 	std::cout << "\nTime taken to factorize is: " << (end-start)/CPS << std::endl;
 
 
-    Eigen::MatrixXd M;
-  Eigen::MatrixXd Wc;
-    Eigen::MatrixXd Rc = Eigen::MatrixXd::Identity(N,N);
-    for(int l=0;l<nLevels;++l){
-        Wc = Eigen::MatrixXd::Zero(N,N);
-        for(int k=0; k<myMatrix->nodesInLevel[l]; ++k){
-                   int r = myMatrix->tree[l][k]->sym_rank;
-                   int n0 = myMatrix->tree[l][k]->Q[0].rows();
-                   int n1 = myMatrix->tree[l][k]->Q[1].rows();
-                   Eigen::MatrixXd T = Eigen::MatrixXd::Identity(n0+n1,n0+n1);
-                   Eigen::MatrixXd temp = Eigen::MatrixXd::Zero(n0+n1,2*r);
-                   temp.block(0,0,n0,r) = myMatrix->tree[l][k]->Qfactor[0];
-                   temp.block(n0,r,n1,r) = myMatrix->tree[l][k]->Qfactor[1];
-                   T += temp*myMatrix->tree[l][k]->X*temp.transpose();
-                   Wc.block(myMatrix->tree[l][k]->nStart, myMatrix->tree[l][k]->nStart, myMatrix->tree[l][k]->nSize, myMatrix->tree[l][k]->nSize) = T;
 
-        }
- //     Rc = Wc*Rc*Wc.transpose();
-        Rc = Wc*Rc;
+
+    Eigen::MatrixXd M = A->get_Matrix(0,0,N,N);
+    Eigen::LLT<Eigen::MatrixXd> P;
+    P.compute(M);
+    double det = 0.0;
+    for(int i=0; i<P.matrixL().rows(); ++i){
+        det += log(P.matrixL()(i,i));
     }
-
-    Wc = Eigen::MatrixXd::Zero(N,N);
-
-
-    int l=nLevels;
-    	for(int k=0; k<myMatrix->nodesInLevel[l]; ++k){
-        Wc.block(myMatrix->tree[l-1][k/2]->cStart[k%2],myMatrix->tree[l-1][k/2]->cStart[k%2],myMatrix->tree[l-1][k/2]->cSize[k%2],myMatrix->tree[l-1][k/2]->cSize[k%2]) = myMatrix->tree[l][k]->llt.matrixL();
-    }
-
-
-//    Rc = Wc*Rc*Wc.transpose();
-    Rc = Wc*Rc;
-
-    Eigen::MatrixXd Rc1 = Rc*Rc.transpose();
-	 M = A->get_Matrix(0,0,N,N);
-//	Eigen::LLT<Eigen::MatrixXd> mllt;
-//    mllt.compute(M);
-//    Eigen::MatrixXd L = mllt.matrixL();
-
-//    Eigen::MatrixXd P = Rc-M;
-
-
-	/*double nrm = ((double)(Rc1 - M).norm());
-    	std::cout<<"Error norm: "<<std::endl<<nrm<<std::endl;*/
-
-   // double det = 0.0;
-
-    /*for(int i= 0; i<L.rows(); ++i){
-        det += log(L(i,i))/log(2);
-    }*/
-    	/*std::cout<<"Determinant "<<myMatrix->symmetric_determinant()<<" Det "<< 2*det<<"\n";*/
-
        start	=	omp_get_wtime();
-       /*double det =*/ myMatrix->symmetric_Determinant();
+       double det1 = myMatrix->symmetric_Determinant();
        end		=	omp_get_wtime();
        std::cout << "\nTime taken for symmetric_determinant: " << (end-start)/CPS << "\n";
+       std::cout<<"fast determinant: "<<det1<<" Usual det: "<<2*det<<"\n";
 
-        start	=	omp_get_wtime();
-        bFast = myMatrix->symmetric_Inverse(x);
+       /* start	=	omp_get_wtime();
+        bFast = myMatrix->symmetric_Factor_Solve(x);
         end		=	omp_get_wtime();
-        std::cout<<"bfast norm "<<(x - Rc*bFast).norm()<<"\n";
         std::cout << "\nTime taken for symmetric_Inverse: " << (end-start)/CPS << "\n";
+        std::cout<<"bfast norm "<<(x - Rc*bFast).norm()<<"\n";
 
         start	=	omp_get_wtime();
-        bFast = myMatrix->symmetric_Transpose_Inverse(x);
+        bFast = myMatrix->symmetric_Factor_Transpose_Solve(x);
         end		=	omp_get_wtime();
         std::cout << "\nTime taken for symmetric_Transpose_Inverse: " << (end-start)/CPS << "\n";
-        std::cout<<"bfast norm "<<(x - Rc.transpose()*bFast).norm()<<"\n";
+       std::cout<<"bfast norm "<<(x - Rc.transpose()*bFast).norm()<<"\n";*/
 
-        start	=	omp_get_wtime();
-        bFast = myMatrix->symmetric_Full_Inverse(x);
+        /*start	=	omp_get_wtime();
+        bFast = myMatrix->symmetric_Solve(x);
         end		=	omp_get_wtime();
         std::cout << "\nTime taken for symmetric_Full_Inverse: " << (end-start)/CPS << "\n";
-        std::cout<<"bfast norm "<<(x - M*bFast).norm()<<"\n";
+        std::cout<<"bfast norm "<<(x - M*bFast).norm()<<"\n";*/
 
-       start	=	omp_get_wtime();
-       bFast = myMatrix->symmetric_Product(x);
+       /*start	=	omp_get_wtime();
+       bFast = myMatrix->symmetric_Factor_Product(x);
        end		=	omp_get_wtime();
        std::cout << "\nTime taken for symmetric_Product: " << (end-start)/CPS << "\n";
        std::cout<<"bfast norm "<<(Rc*x - bFast).norm()<<"\n";
 
        start	=	omp_get_wtime();
-       bFast = myMatrix->symmetric_Transpose_Product(x);
+       bFast = myMatrix->symmetric_Factor_Transpose_Product(x);
        end		=	omp_get_wtime();
        std::cout << "\nTime taken for symmetric_Transpose_Product: " << (end-start)/CPS << "\n";
-       std::cout<<"bfast norm "<<(Rc.transpose()*x - bFast).norm()<<"\n";
+       std::cout<<"bfast norm "<<(Rc.transpose()*x - bFast).norm()<<"\n";*/
 
-}
+       start = omp_get_wtime();
+       bFast = myMatrix->build_Symmetric_Matrix_Factor();
+       end = omp_get_wtime();
+       std::cout<<"\nTime taken for building matrix: "<<(end-start)/CPS<<"\n";
+       std::cout<<"bfast norm "<<(M - bFast*bFast.transpose()).norm()<<"\n";
+
+
+    }

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <cmath>
 #include <Eigen/Dense>
 #include "HODLR_Tree.hpp"
 #include "HODLR_Matrix.hpp"
@@ -9,14 +10,17 @@ private:
 public:
 	myHODLR_Matrix(int N) : HODLR_Matrix(N) {
 		x	=	Eigen::VectorXd::Random(N);
+		std::sort(x.data(),x.data()+x.size());
 	};
 	double get_Matrix_Entry(int j, int k) {
 		if(j==k) {
-			return 2.0;
+			return 10;
 		}
 		else {
-			return 1.0/(1.0+((x(j)-x(k))*(x(j)-x(k))));
-			// return exp(-(x(j)-x(k))*(x(j)-x(k)));
+			//return 1.0/(1.0+((x(j)-x(k))*(x(j)-x(k))));
+//			return sqrt(1.0 + ((x(j)-x(k))*(x(j)-x(k))));
+			// return exp(-fabs(x(j)-x(k)));
+			return exp(-(x(j)-x(k))*(x(j)-x(k)));
 		}
 	}
 	~myHODLR_Matrix() {};
@@ -89,5 +93,20 @@ int main(int argc, char* argv[]) {
 	// end		=	clock();
 	// std::cout << "\nTime taken to solve is: " << (end-start)/CPS << "\n";
 
-	std::cout << "\nError in the solution is: " << (xFast-x).norm()/(1.0+x.norm()) << "\n";
+	std::cout << "\nError in the solution is: " << (xFast-x).norm()/*/(1.0+x.norm())*/ << "\n";
+
+  Eigen::MatrixXd M = A->get_Matrix(0,0,N,N);
+Eigen::LLT<Eigen::MatrixXd> P;
+    P.compute(M);
+    double det = 0.0;
+    for(int i=0; i<P.matrixL().rows(); ++i){
+        det += log(P.matrixL()(i,i));
+    }
+
+	start = omp_get_wtime();
+           double det1 = myMatrix->hodlr_Determinant();
+           end = omp_get_wtime();
+           std::cout<<"\nTime taken for computing: "<<(end-start)/CPS<<"\n";
+
+           std::cout<<"fast determinant: "<<det1<<" Usual det: "<<2*det<<"\n";
 }

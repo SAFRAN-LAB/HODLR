@@ -8,25 +8,28 @@
 
 class HODLR_Node {
 	friend class HODLR_Tree;
-private:
+	private:
 	HODLR_Node(int nodeNumber, int levelNumber, int localNumber, int nStart, int nSize, double tolerance);
 	int nodeNumber, levelNumber, localNumber;
 	int nStart, nSize;
 	int cStart[2], cSize[2];
-	Eigen::MatrixXd U[2], V[2];
-	Eigen::MatrixXd Ufactor[2], Vfactor[2];
-	Eigen::MatrixXd K;
-	Eigen::PartialPivLU<Eigen::MatrixXd> Kfactor;
-	int rank[2];
 	bool isLeaf;
 	double tolerance;
-	void assemble_Non_Leaf_Node(HODLR_Matrix* A);
+	Eigen::MatrixXd K;
 	void assemble_Leaf_Node(HODLR_Matrix* A);
+
+	//  Variables and methods needed for HODLR solver
+	Eigen::MatrixXd U[2], V[2];
+	Eigen::MatrixXd Ufactor[2], Vfactor[2];
+	Eigen::PartialPivLU<Eigen::MatrixXd> Kfactor;
+	int rank[2];
+	void assemble_Non_Leaf_Node(HODLR_Matrix* A);
 	void matmat_Product_Non_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b);
 	void matmat_Product_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b);
+
+	//  Variables and methods needed for symmetric factorization
 	Eigen::MatrixXd Q[2];
 	Eigen::MatrixXd Qfactor[2];
-	Eigen::MatrixXd R;
 	Eigen::LLT<Eigen::MatrixXd> llt;
 	int sym_rank;
 	void assemble_Symmetric_Non_Leaf_Node(HODLR_Matrix* A);
@@ -90,28 +93,42 @@ void HODLR_Node::assemble_Leaf_Node(HODLR_Matrix* A) {
 	K	=	A->get_Matrix(nStart, nStart, nSize, nSize);
 }
 
-/**********************************************************************************************************************/
-/*	PURPOSE OF EXISTENCE:	                                                                                          */
-/**********************************************************************************************************************/
+/*******************************************************/
+/*	PURPOSE OF EXISTENCE:	 Matrix-matrix product     */
+/*******************************************************/
 
 /************/
 /*	INPUTS	*/
 /************/
 
+/// x   -   Matrix to be multiplied on the right of the HODLR matrix
+
+/************/
+/*	OUTPUTS	*/
+/************/
+
+/// b   -   Matrix matrix product
 
 void HODLR_Node::matmat_Product_Non_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b) {
 	b.block(cStart[0],0,cSize[0],x.cols())+=(U[0]*(V[1].transpose()*x.block(cStart[1],0,cSize[1],x.cols())));
 	b.block(cStart[1],0,cSize[1],x.cols())+=(U[1]*(V[0].transpose()*x.block(cStart[0],0,cSize[0],x.cols())));
 }
 
-/**********************************************************************************************************************/
-/*	PURPOSE OF EXISTENCE:	                                                                                          */
-/**********************************************************************************************************************/
+/*******************************************************/
+/*	PURPOSE OF EXISTENCE:	 Matrix-matrix product     */
+/*******************************************************/
 
 /************/
 /*	INPUTS	*/
 /************/
 
+/// x   -   Matrix to be multiplied on the right of the HODLR matrix
+
+/************/
+/*	OUTPUTS	*/
+/************/
+
+/// b   -   Matrix matrix product
 
 void HODLR_Node::matmat_Product_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b) {
 	b.block(nStart,0,nSize,x.cols())+=K*x.block(nStart,0,nSize,x.cols());

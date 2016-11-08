@@ -10,52 +10,67 @@
 #include "HODLR_Node.hpp"
 
 class HODLR_Tree {
-private:
-	int N;
-	int nLevels;
-	double tolerance;
-	std::vector<int> nodesInLevel;
-	HODLR_Matrix* A;
-	std::vector< std::vector<HODLR_Node*> > tree;
-	void createTree();
-	void createRoot();
-	void createChildren(int j, int k);
-	void factorize_Leaf(int k);
-	void factorize_Non_Leaf(int j, int k);
-	Eigen::MatrixXd solve_Leaf(int k, Eigen::MatrixXd b);
-	Eigen::MatrixXd solve_Non_Leaf(int j, int k, Eigen::MatrixXd b);
-	void qr(int j, int k);
-	void qr_Level(int level);
-	void factorize_Symmetric_Leaf(int k);
-	Eigen::MatrixXd solve_Symmetric_Leaf(int k, Eigen::MatrixXd b);
-	void factorize_Symmetric_Non_Leaf(int j, int k);
-	Eigen::MatrixXd solve_Symmetric_Non_Leaf(int j, int k,  Eigen::MatrixXd b);
-	void small_Cholesky(int j, int k);
-	Eigen::MatrixXd mult_Symmetric_Non_Leaf(int j, int k, Eigen::MatrixXd b);
-	Eigen::MatrixXd solve_Symmetric_Transpose_Non_Leaf(int j, int k, Eigen::MatrixXd b);
-	Eigen::MatrixXd solve_Symmetric_Transpose_Leaf(int k, Eigen::MatrixXd b);
-	Eigen::MatrixXd mult_Symmetric_transpose_Non_Leaf(int j, int k, Eigen::MatrixXd b);
+	private:
+		int N;
+		int nLevels;
+		double tolerance;
+		std::vector<int> nodesInLevel;
+		HODLR_Matrix* A;
+		std::vector< std::vector<HODLR_Node*> > tree;
+		void createTree();
+		void createRoot();
+		void createChildren(int j, int k);
 
-public:
-	HODLR_Tree(int nLevels, double tolerance, HODLR_Matrix* A);
-	~HODLR_Tree();
-	virtual double get_Matrix_Element(int j, int k) {
-		return j*j+k*k;
-	}
-	void assembleTree();
-	void factorize();
-	double hodlr_Determinant();
-	void matmat_Product(Eigen::MatrixXd x, Eigen::MatrixXd& b);
-	Eigen::MatrixXd solve(Eigen::MatrixXd b);
-	void assembleSymmetricTree();
-	void symmetric_factorize();
-	double symmetric_Determinant();
-	Eigen::MatrixXd symmetric_Solve(Eigen::MatrixXd b);
-	Eigen::MatrixXd symmetric_Factor_Solve(Eigen::MatrixXd b);
-	Eigen::MatrixXd symmetric_Factor_Transpose_Solve(Eigen::MatrixXd b);
-	Eigen::MatrixXd symmetric_Factor_Product(Eigen::MatrixXd b);
-	Eigen::MatrixXd symmetric_Factor_Transpose_Product(Eigen::MatrixXd b);
-	Eigen::MatrixXd build_Symmetric_Matrix_Factor();
+
+		//  Variables and methods needed for HODLR solver
+		void factorize_Leaf(int k);
+		void factorize_Non_Leaf(int j, int k);
+		Eigen::MatrixXd solve_Leaf(int k, Eigen::MatrixXd b);
+		Eigen::MatrixXd solve_Non_Leaf(int j, int k, Eigen::MatrixXd b);
+
+
+		//  Variables and methods needed for symmetric factorization
+		void qr(int j, int k);
+		void qr_Level(int level);
+		void factorize_Symmetric_Leaf(int k);
+		void factorize_Symmetric_Non_Leaf(int j, int k);
+		Eigen::MatrixXd solve_Symmetric_Factor_Leaf(int k, Eigen::MatrixXd b);
+		Eigen::MatrixXd solve_Symmetric_Factor_Non_Leaf(int j, int k,  Eigen::MatrixXd b);
+
+		void small_Cholesky(int j, int k);
+
+		Eigen::MatrixXd mult_Symmetric_Factor_Non_Leaf(int j, int k, Eigen::MatrixXd b);
+		Eigen::MatrixXd mult_Symmetric_Factor_transpose_Non_Leaf(int j, int k, Eigen::MatrixXd b);
+
+		Eigen::MatrixXd solve_Symmetric_Factor_Transpose_Non_Leaf(int j, int k, Eigen::MatrixXd b);
+		Eigen::MatrixXd solve_Symmetric_Factor_Transpose_Leaf(int k, Eigen::MatrixXd b);
+
+	public:
+		HODLR_Tree(int nLevels, double tolerance, HODLR_Matrix* A);
+		~HODLR_Tree();
+		virtual double get_Matrix_Element(int j, int k) {
+			return 0.0;
+		}
+
+		//  Methods for HODLR solver
+		void assembleTree();
+		void factorize();
+		double determinant();
+		void matmat_Product(Eigen::MatrixXd x, Eigen::MatrixXd& b);
+		Eigen::MatrixXd solve(Eigen::MatrixXd b);
+
+		//  Methods for symmetric factorization
+		void assembleSymmetricTree();
+		void symmetric_factorize();
+		double symmetric_Determinant();
+		Eigen::MatrixXd symmetric_Solve(Eigen::MatrixXd b);
+		Eigen::MatrixXd symmetric_Factor_Solve(Eigen::MatrixXd b);
+		Eigen::MatrixXd symmetric_Factor_Transpose_Solve(Eigen::MatrixXd b);
+		Eigen::MatrixXd symmetric_Factor_Product(Eigen::MatrixXd b);
+		Eigen::MatrixXd symmetric_Factor_Transpose_Product(Eigen::MatrixXd b);
+
+		//  Don't use this for large N; Essentially builds the entire symmetric factor; Only for testing purposes;
+		Eigen::MatrixXd build_Symmetric_Matrix_Factor();
 };
 
 /*******************************************************/
@@ -144,33 +159,45 @@ void HODLR_Tree::createTree() {
 void HODLR_Tree::assembleTree() {
 	// // std::cout << "\nStart assembleTree\n";
 	for (int j=0; j<nLevels; ++j) {
-		#pragma omp parallel for
+#pragma omp parallel for
 		for (int k=0; k<nodesInLevel[j]; ++k) {
 			tree[j][k]->assemble_Non_Leaf_Node(A);
 		}
 	}
-	#pragma omp parallel for
+#pragma omp parallel for
 	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
 		tree[nLevels][k]->assemble_Leaf_Node(A);
 	}
 	// // std::cout << "\nDone assembleTree\n";
 }
 
-/************************************************************************************************************************************************/
-/*	PURPOSE OF EXISTENCE:                                                                                                                       */
-/************************************************************************************************************************************************/
+/*******************************************************/
+/*	PURPOSE OF EXISTENCE:	 Matrix-matrix product     */
+/*******************************************************/
+
+/************/
+/*	INPUTS	*/
+/************/
+
+/// x   -   Matrix to be multiplied on the right of the HODLR matrix
+
+/************/
+/*	OUTPUTS	*/
+/************/
+
+/// b   -   Matrix matrix product
 
 void HODLR_Tree::matmat_Product(Eigen::MatrixXd x, Eigen::MatrixXd& b) {
 	// // std::cout << "\nStart matmat_Product\n";
 	int r	=	x.cols();
 	b		=	Eigen::MatrixXd::Zero(N,r);
 	for (int j=0; j<nLevels; ++j) {
-		#pragma omp parallel for
+#pragma omp parallel for
 		for (int k=0; k<nodesInLevel[j]; ++k) {
 			tree[j][k]->matmat_Product_Non_Leaf(x, b);
 		}
 	}
-	#pragma omp parallel for
+#pragma omp parallel for
 	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
 		tree[nLevels][k]->matmat_Product_Leaf(x, b);
 	}
@@ -187,7 +214,7 @@ void HODLR_Tree::matmat_Product(Eigen::MatrixXd x, Eigen::MatrixXd& b) {
 /*	INPUTS	*/
 /************/
 
-/// k           -   Node number
+/// k           -   Leaf Node number
 
 void HODLR_Tree::factorize_Leaf(int k) {
 	// std::cout << "\nStart factorize Leaf: " << k << "\n";
@@ -196,7 +223,7 @@ void HODLR_Tree::factorize_Leaf(int k) {
 	int child	=	k;
 	int size	=	tree[nLevels][k]->nSize;
 	int tstart, r;
-	#pragma omp parallel for
+#pragma omp parallel for
 	for (int l=nLevels-1; l>=0; --l) {
 		child	=	parent%2;
 		parent	=	parent/2;
@@ -255,7 +282,7 @@ void HODLR_Tree::factorize_Non_Leaf(int j, int k) {
 	int child	=	k;
 	int size	=	tree[j][k]->nSize;
 	int tstart, r;
-	
+
 	for (int l=j-1; l>=0; --l) {
 		child	=	parent%2;
 		parent	=	parent/2;
@@ -294,7 +321,7 @@ Eigen::MatrixXd HODLR_Tree::solve_Non_Leaf(int j, int k, Eigen::MatrixXd b) {
 	int r	=	b.cols();
 	Eigen::MatrixXd temp(r0+r1, r);
 	temp << tree[j][k]->Vfactor[1].transpose()*b.block(n0,0,n1,r),
-			tree[j][k]->Vfactor[0].transpose()*b.block(0,0,n0,r);
+	     tree[j][k]->Vfactor[0].transpose()*b.block(0,0,n0,r);
 	temp	=	tree[j][k]->Kfactor.solve(temp);
 	Eigen::MatrixXd y(n0+n1, r);
 	y << tree[j][k]->Ufactor[0]*temp.block(0,0,r0,r), tree[j][k]->Ufactor[1]*temp.block(r0,0,r1,r);
@@ -310,7 +337,7 @@ void HODLR_Tree::factorize() {
 	//	Set things for factorization
 	// std::cout << "Number of levels: " << nLevels << "\n";
 	for (int j=0; j<=nLevels; ++j) {
-		#pragma omp parallel for
+#pragma omp parallel for
 		for (int k=0; k<nodesInLevel[j]; ++k) {
 			for (int l=0; l<2; ++l) {
 				tree[j][k]->Ufactor[l]	=	tree[j][k]->U[l];
@@ -321,13 +348,13 @@ void HODLR_Tree::factorize() {
 	}
 
 	//	Factorize the leaf nodes
-	#pragma omp parallel for
+#pragma omp parallel for
 	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
 		factorize_Leaf(k);
 	}
 	//	Factorize the non-leaf nodes
 	for (int j=nLevels-1; j>=0; --j) {
-		#pragma omp parallel for
+#pragma omp parallel for
 		for (int k=0; k<nodesInLevel[j]; ++k) {
 			factorize_Non_Leaf(j, k);
 		}
@@ -381,21 +408,21 @@ Eigen::MatrixXd HODLR_Tree::solve(Eigen::MatrixXd b) {
 /**********************************************************************************************************************************************************/
 
 void HODLR_Tree::assembleSymmetricTree() {
-	 std::cout << "\nStart Symmetric assembleTree\n";
+	std::cout << "\nStart Symmetric assembleTree\n";
 	for (int j=0; j<nLevels; ++j) {
-		#pragma omp parallel for
+#pragma omp parallel for
 		for (int k=0; k<nodesInLevel[j]; ++k) {
 			tree[j][k]->assemble_Symmetric_Non_Leaf_Node(A);
 		}
 	}
-  #pragma omp parallel for
+#pragma omp parallel for
 	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
 		tree[nLevels][k]->assemble_Leaf_Node(A);
-		//Storing cholesky decomposition of leaf nodes
-        tree[nLevels][k]->llt.compute(tree[nLevels][k]->K);
+		//Storing Cholesky decomposition of leaf nodes
+		tree[nLevels][k]->llt.compute(tree[nLevels][k]->K);
 
 	}
-	 std::cout << "\nDone Symmetric assembleTree\n";
+	std::cout << "\nDone Symmetric assembleTree\n";
 }
 
 /******************************************************************************************************************/
@@ -404,40 +431,40 @@ void HODLR_Tree::assembleSymmetricTree() {
 
 void HODLR_Tree::symmetric_factorize() {
 
-std::cout << "\nStart Symmetric factorize\n";
+	std::cout << "\nStart Symmetric factorize\n";
 
-    for (int j=0; j<nLevels; ++j) {
-		#pragma omp parallel for
+	for (int j=0; j<nLevels; ++j) {
+#pragma omp parallel for
 		for (int k=0; k<nodesInLevel[j]; ++k) {
-				tree[j][k]->Qfactor[0]	=	tree[j][k]->Q[0];
-				tree[j][k]->Qfactor[1]	=	tree[j][k]->Q[1];
-				tree[j][k]->R = Eigen::MatrixXd::Identity(tree[j][k]->sym_rank, tree[j][k]->sym_rank);
+			tree[j][k]->Qfactor[0]	=	tree[j][k]->Q[0];
+			tree[j][k]->Qfactor[1]	=	tree[j][k]->Q[1];
+			tree[j][k]->K = Eigen::MatrixXd::Identity(tree[j][k]->sym_rank, tree[j][k]->sym_rank);
 		}
 	}
 
-//	Factorize the leaf nodes
-	#pragma omp parallel for
+	//	Factorize the leaf nodes
+#pragma omp parallel for
 	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
 		factorize_Symmetric_Leaf(k);
 	}
-//	std::cout << "\nStart Leaf qr...\n";
+	//	std::cout << "\nStart Leaf qr...\n";
 	qr_Level(nLevels-1);
-//	std::cout << "\nEnd Leaf qr...\n";
+	//	std::cout << "\nEnd Leaf qr...\n";
 
-//	Factorize the non-leaf nodes
+	//	Factorize the non-leaf nodes
 	for (int j=nLevels-1; j>0; --j) {
-		#pragma omp parallel for
+#pragma omp parallel for
 		for (int k=0; k<nodesInLevel[j]; ++k) {
 			factorize_Symmetric_Non_Leaf(j, k);
 		}
-	    qr_Level(j-1);
+		qr_Level(j-1);
 	}
 
 	if(nLevels>0){
-	    small_Cholesky(0,0);
+		small_Cholesky(0,0);
 	}
 
-	 std::cout << "\nEnd Symmetric factorize...\n";
+	std::cout << "\nEnd Symmetric factorize...\n";
 }
 
 /******************************************************************************************************************/
@@ -446,12 +473,11 @@ std::cout << "\nStart Symmetric factorize\n";
 /******************************************************************************************************************/
 
 void HODLR_Tree::qr_Level(int level){
-
-    #pragma omp parallel for
-        for(int k=0; k<nodesInLevel[level]; ++k){
-                qr(level, k);
-        }
-    }
+#pragma omp parallel for
+	for(int k=0; k<nodesInLevel[level]; ++k){
+		qr(level, k);
+	}
+}
 
 /****************************************************************************************************/
 /*	PURPOSE OF EXISTENCE:	Routine is used for obtaining QR decomposition of a node at a level. 	*/
@@ -459,16 +485,16 @@ void HODLR_Tree::qr_Level(int level){
 
 void HODLR_Tree::qr(int j, int k){
 
-    int min0 = std::min(tree[j][k]->Qfactor[0].rows(), tree[j][k]->Qfactor[0].cols());
-    int min1 = std::min(tree[j][k]->Qfactor[1].rows(), tree[j][k]->Qfactor[1].cols());
+	int min0 = std::min(tree[j][k]->Qfactor[0].rows(), tree[j][k]->Qfactor[0].cols());
+	int min1 = std::min(tree[j][k]->Qfactor[1].rows(), tree[j][k]->Qfactor[1].cols());
 
-    Eigen::HouseholderQR<Eigen::MatrixXd> qr(tree[j][k]->Qfactor[0]);
-    tree[j][k]->Qfactor[0] = qr.householderQ()*(Eigen::MatrixXd::Identity(tree[j][k]->Qfactor[0].rows(), min0));
-    tree[j][k]->R = qr.matrixQR().block(0,0,min0,tree[j][k]->Qfactor[0].cols()).triangularView<Eigen::Upper>()*tree[j][k]->R;
-    
-    Eigen::HouseholderQR<Eigen::MatrixXd> qr1(tree[j][k]->Qfactor[1]);
-    tree[j][k]->Qfactor[1] = qr1.householderQ()*(Eigen::MatrixXd::Identity(tree[j][k]->Qfactor[1].rows(), min1));
-    tree[j][k]->R *= qr1.matrixQR().block(0,0,min1,tree[j][k]->Qfactor[1].cols()).triangularView<Eigen::Upper>().transpose();
+	Eigen::HouseholderQR<Eigen::MatrixXd> qr(tree[j][k]->Qfactor[0]);
+	tree[j][k]->Qfactor[0] = qr.householderQ()*(Eigen::MatrixXd::Identity(tree[j][k]->Qfactor[0].rows(), min0));
+	tree[j][k]->K = qr.matrixQR().block(0,0,min0,tree[j][k]->Qfactor[0].cols()).triangularView<Eigen::Upper>()*tree[j][k]->K;
+
+	Eigen::HouseholderQR<Eigen::MatrixXd> qr1(tree[j][k]->Qfactor[1]);
+	tree[j][k]->Qfactor[1] = qr1.householderQ()*(Eigen::MatrixXd::Identity(tree[j][k]->Qfactor[1].rows(), min1));
+	tree[j][k]->K *= qr1.matrixQR().block(0,0,min1,tree[j][k]->Qfactor[1].cols()).triangularView<Eigen::Upper>().transpose();
 
 }
 
@@ -477,21 +503,21 @@ void HODLR_Tree::qr(int j, int k){
 /****************************************************************************************************/
 
 void HODLR_Tree::factorize_Symmetric_Leaf(int k) {
-//	 std::cout << "\nStart Symmetric factorize Leaf: " << k << "\n";
+	//	 std::cout << "\nStart Symmetric factorize Leaf: " << k << "\n";
 
 	int parent	=	k;
 	int child	=	k;
 	int size	=	tree[nLevels][k]->nSize;
 	int tstart, r;
-	#pragma omp parallel for
+#pragma omp parallel for
 	for (int l=nLevels-1; l>=0; --l) {
 		child	=	parent%2;
 		parent	=	parent/2;
 		tstart	=	tree[nLevels][k]->nStart-tree[l][parent]->cStart[child];
 		r		=	tree[l][parent]->sym_rank;
-		tree[l][parent]->Qfactor[child].block(tstart,0,size,r) = solve_Symmetric_Leaf(k, tree[l][parent]->Qfactor[child].block(tstart,0,size,r));
+		tree[l][parent]->Qfactor[child].block(tstart,0,size,r) = solve_Symmetric_Factor_Leaf(k, tree[l][parent]->Qfactor[child].block(tstart,0,size,r));
 	}
-//	 std::cout << "\nDone Symmetric factorize Leaf: " << k << "\n";
+	//	 std::cout << "\nDone Symmetric factorize Leaf: " << k << "\n";
 }
 
 /********************************************************************************************************/
@@ -511,7 +537,7 @@ void HODLR_Tree::factorize_Symmetric_Leaf(int k) {
 
 ///	x			-	Inverse of K multiplied with b
 
-Eigen::MatrixXd HODLR_Tree::solve_Symmetric_Leaf(int k, Eigen::MatrixXd b) {
+Eigen::MatrixXd HODLR_Tree::solve_Symmetric_Factor_Leaf(int k, Eigen::MatrixXd b) {
 
 	return tree[nLevels][k]->llt.matrixL().solve(b);
 }
@@ -521,21 +547,21 @@ Eigen::MatrixXd HODLR_Tree::solve_Symmetric_Leaf(int k, Eigen::MatrixXd b) {
 /********************************************************************************************************/
 
 void HODLR_Tree::factorize_Symmetric_Non_Leaf(int j, int k) {
-//	 std::cout << "\nStart Symmetric factorize; Level: " << j << " Node: " << k << "\n";
-    small_Cholesky(j,k);
+	//	 std::cout << "\nStart Symmetric factorize; Level: " << j << " Node: " << k << "\n";
+	small_Cholesky(j,k);
 	int parent = k;
 	int child	=	k;
 	int size	=	tree[j][k]->nSize;
 	int tstart, r;
-	#pragma omp parallel for
+#pragma omp parallel for
 	for (int l=j-1; l>=0; --l) {
 		child	=	parent%2;
 		parent	=	parent/2;
 		tstart	=	tree[j][k]->nStart-tree[l][parent]->cStart[child];
 		r		=	tree[l][parent]->sym_rank;
-		tree[l][parent]->Qfactor[child].block(tstart,0,size,r)	=	solve_Symmetric_Non_Leaf(j, k, tree[l][parent]->Qfactor[child].block(tstart,0,size,r));
+		tree[l][parent]->Qfactor[child].block(tstart,0,size,r)	=	solve_Symmetric_Factor_Non_Leaf(j, k, tree[l][parent]->Qfactor[child].block(tstart,0,size,r));
 	}
- //	 std::cout << "\nDone factorize; Level: " << j << " Node: " << k << "\n";
+	//	 std::cout << "\nDone factorize; Level: " << j << " Node: " << k << "\n";
 }
 
 /************************************************************************************************/
@@ -544,7 +570,7 @@ void HODLR_Tree::factorize_Symmetric_Non_Leaf(int j, int k) {
 
 void HODLR_Tree::small_Cholesky(int j, int k) {
 
-    tree[j][k]->llt.compute(Eigen::MatrixXd::Identity(tree[j][k]->sym_rank, tree[j][k]->sym_rank) - tree[j][k]->R.transpose()*tree[j][k]->R);
+	tree[j][k]->llt.compute(Eigen::MatrixXd::Identity(tree[j][k]->sym_rank, tree[j][k]->sym_rank) - tree[j][k]->K.transpose()*tree[j][k]->K);
 
 }
 
@@ -565,15 +591,15 @@ void HODLR_Tree::small_Cholesky(int j, int k) {
 /************/
 
 ///	matrix			-	(I-U(inverse of (I+X))XU') multiplied by b
-Eigen::MatrixXd HODLR_Tree::solve_Symmetric_Non_Leaf(int j, int k, Eigen::MatrixXd b) {
+Eigen::MatrixXd HODLR_Tree::solve_Symmetric_Factor_Non_Leaf(int j, int k, Eigen::MatrixXd b) {
 	// std::cout << "\nStart Solve Symm non leaf; Level: " << j << "Node: " << k << "\n";
-    int n0 = tree[j][k]->Q[0].rows();
-    int n1 = tree[j][k]->Q[1].rows();
- //   std::cout<<"b.cols "<<b.cols()<<"\n";
-    Eigen::MatrixXd tmp = tree[j][k]->Qfactor[1].transpose()*b.block(n0,0,n1,b.cols());
-    b.block(n0,0,n1,b.cols()) -= tree[j][k]->Qfactor[1]*(tree[j][k]->llt.matrixL().solve((tree[j][k]->R.transpose()*(tree[j][k]->Qfactor[0].transpose()*b.block(0,0,n0,b.cols()))) - tmp) +tmp);
+	int n0 = tree[j][k]->Q[0].rows();
+	int n1 = tree[j][k]->Q[1].rows();
+	//   std::cout<<"b.cols "<<b.cols()<<"\n";
+	Eigen::MatrixXd tmp = tree[j][k]->Qfactor[1].transpose()*b.block(n0,0,n1,b.cols());
+	b.block(n0,0,n1,b.cols()) -= tree[j][k]->Qfactor[1]*(tree[j][k]->llt.matrixL().solve((tree[j][k]->K.transpose()*(tree[j][k]->Qfactor[0].transpose()*b.block(0,0,n0,b.cols()))) - tmp) +tmp);
 
-    return(b);
+	return(b);
 
 
 }
@@ -588,26 +614,15 @@ Eigen::MatrixXd HODLR_Tree::solve_Symmetric_Non_Leaf(int j, int k, Eigen::Matrix
 
 ///	determinant			-	Determinant of the kernel matrix
 
-double HODLR_Tree::hodlr_Determinant(){
-    double det = 0.0;
-    int r[2];
-    Eigen::MatrixXd I;
-	for (int j=nLevels-1; j>=0; --j) {
+double HODLR_Tree::determinant(){
+	double det = 0.0;
+	for (int j=nLevels; j>=0; --j) {
 		for (int k=0; k<nodesInLevel[j]; ++k) {
-		    r[0] = tree[j][k]->rank[0];
-		    r[1] = tree[j][k]->rank[1];
-		    I = Eigen::MatrixXd::Identity(r[0]+r[1], r[0]+r[1]);
-	        I = Eigen::MatrixXd::Identity(r[0]+r[1], r[0]+r[1]);
-	        I.block(0, r[0], r[0], r[1]) = tree[j][k]->Vfactor[1].transpose()*tree[j][k]->Ufactor[1];
-	        I.block(r[0], 0, r[1], r[0]) = tree[j][k]->Vfactor[0].transpose()*tree[j][k]->Ufactor[0];
-			det += log(I.determinant());
+			for (int l=0; l<tree[j][k]->Kfactor.matrixLU().rows(); ++l) {
+				det += log(fabs(tree[j][k]->Kfactor.matrixLU()(l,l)));
+			}
 		}
 	}
-
-	for(int k=0; k<nodesInLevel[nLevels]; ++k){
-	    det += log(tree[nLevels][k]->K.determinant());
-	}
-
 	return(det);
 }
 
@@ -625,8 +640,9 @@ double HODLR_Tree::symmetric_Determinant() {
 	double det = 0.0;
 	for (int j=nLevels; j>=0; --j) {
 		for (int k=0; k<nodesInLevel[j]; ++k) {
-/////////////////////////////////////////////////////		std::cout<<log(tree[j][k]->llt.matrixL().determinant())<<"\n";
-			det += log(tree[j][k]->llt.matrixL().determinant());
+			for (int l=0; l<tree[j][k]->llt.matrixL().rows(); ++l) {
+				det += log(tree[j][k]->llt.matrixL()(l,l));
+			}
 		}
 	}
 	return 2*det;
@@ -651,41 +667,41 @@ double HODLR_Tree::symmetric_Determinant() {
 Eigen::MatrixXd HODLR_Tree::symmetric_Factor_Solve(Eigen::MatrixXd b1) {
 	int start, size;
 	Eigen::MatrixXd b = b1;
-    	Eigen::MatrixXd x	=	Eigen::MatrixXd::Zero(b.rows(),b.cols());
-    	int r	=	b.cols();
-    	Eigen::MatrixXd M1[nodesInLevel[nLevels]];
-    	 #pragma omp parallel for
-    	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
-    		start	=	tree[nLevels][k]->nStart;
-    		size	=	tree[nLevels][k]->nSize;
-    		M1[k] = solve_Symmetric_Leaf(k, b.block(start, 0, size, r));
-    	}
+	Eigen::MatrixXd x	=	Eigen::MatrixXd::Zero(b.rows(),b.cols());
+	int r	=	b.cols();
+	Eigen::MatrixXd M1[nodesInLevel[nLevels]];
+#pragma omp parallel for
+	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
+		start	=	tree[nLevels][k]->nStart;
+		size	=	tree[nLevels][k]->nSize;
+		M1[k] = solve_Symmetric_Factor_Leaf(k, b.block(start, 0, size, r));
+	}
 
-    	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
-            start	=	tree[nLevels][k]->nStart;
-            size	=	tree[nLevels][k]->nSize;
-            x.block(start, 0, size, r)	=  M1[k];
-         }
+	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
+		start	=	tree[nLevels][k]->nStart;
+		size	=	tree[nLevels][k]->nSize;
+		x.block(start, 0, size, r)	=  M1[k];
+	}
 
-    	b=x;
-    	for (int j=nLevels-1; j>=0; --j) {
-    	    Eigen::MatrixXd M2[nodesInLevel[j]];
-   		 #pragma omp parallel for
-    		for (int k=0; k<nodesInLevel[j]; ++k) {
-    			start	=	tree[j][k]->nStart;
-    			size	=	tree[j][k]->nSize;
-              M2[k] = solve_Symmetric_Non_Leaf(j, k, b.block(start, 0, size, r));
-    		}
+	b=x;
+	for (int j=nLevels-1; j>=0; --j) {
+		Eigen::MatrixXd M2[nodesInLevel[j]];
+#pragma omp parallel for
+		for (int k=0; k<nodesInLevel[j]; ++k) {
+			start	=	tree[j][k]->nStart;
+			size	=	tree[j][k]->nSize;
+			M2[k] = solve_Symmetric_Factor_Non_Leaf(j, k, b.block(start, 0, size, r));
+		}
 
-    		for (int k=0; k<nodesInLevel[j]; ++k) {
-                start	=	tree[j][k]->nStart;
-                size	=	tree[j][k]->nSize;
-                x.block(start, 0, size, r)	=	M2[k];
-            }
-    		b=x;
-    	}
+		for (int k=0; k<nodesInLevel[j]; ++k) {
+			start	=	tree[j][k]->nStart;
+			size	=	tree[j][k]->nSize;
+			x.block(start, 0, size, r)	=	M2[k];
+		}
+		b=x;
+	}
 
-    	return x;
+	return x;
 }
 
 /************************************************/
@@ -705,41 +721,41 @@ Eigen::MatrixXd HODLR_Tree::symmetric_Factor_Solve(Eigen::MatrixXd b1) {
 ///	x			-	Inverse of W' multiplied by B
 
 Eigen::MatrixXd HODLR_Tree::symmetric_Factor_Transpose_Solve(Eigen::MatrixXd B) {
- int start, size;
- 	Eigen::MatrixXd b = B;
-Eigen::MatrixXd x	=	Eigen::MatrixXd::Zero(b.rows(),b.cols());
-    	int r	=	b.cols();
-      Eigen::MatrixXd M1[nodesInLevel[nLevels]];
-        for (int j=0; j<nLevels; ++j) {
-    	   Eigen::MatrixXd M2[nodesInLevel[j]];
-           #pragma omp parallel for
-            for (int k=0; k<nodesInLevel[j]; ++k) {
-            	start	=	tree[j][k]->nStart;
-            	size	=	tree[j][k]->nSize;
-            	M2[k]	=	solve_Symmetric_Transpose_Non_Leaf(j, k, b.block(start, 0, size, r));
-            }
-            for (int k=0; k<nodesInLevel[j]; ++k) {
-               	start	=	tree[j][k]->nStart;
-               	size	=	tree[j][k]->nSize;
-               	x.block(start, 0, size, r)	=	M2[k];
-            }
-            b=x;
-        }
+	int start, size;
+	Eigen::MatrixXd b = B;
+	Eigen::MatrixXd x	=	Eigen::MatrixXd::Zero(b.rows(),b.cols());
+	int r	=	b.cols();
+	Eigen::MatrixXd M1[nodesInLevel[nLevels]];
+	for (int j=0; j<nLevels; ++j) {
+		Eigen::MatrixXd M2[nodesInLevel[j]];
+#pragma omp parallel for
+		for (int k=0; k<nodesInLevel[j]; ++k) {
+			start	=	tree[j][k]->nStart;
+			size	=	tree[j][k]->nSize;
+			M2[k]	=	solve_Symmetric_Factor_Transpose_Non_Leaf(j, k, b.block(start, 0, size, r));
+		}
+		for (int k=0; k<nodesInLevel[j]; ++k) {
+			start	=	tree[j][k]->nStart;
+			size	=	tree[j][k]->nSize;
+			x.block(start, 0, size, r)	=	M2[k];
+		}
+		b=x;
+	}
 
-        #pragma omp parallel for
-        for (int k=0; k<nodesInLevel[nLevels]; ++k) {
-            start	=	tree[nLevels][k]->nStart;
-            size	=	tree[nLevels][k]->nSize;
-            M1[k]	=	solve_Symmetric_Transpose_Leaf(k, b.block(start, 0, size, r));
-        }
+#pragma omp parallel for
+	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
+		start	=	tree[nLevels][k]->nStart;
+		size	=	tree[nLevels][k]->nSize;
+		M1[k]	=	solve_Symmetric_Factor_Transpose_Leaf(k, b.block(start, 0, size, r));
+	}
 
-       for (int k=0; k<nodesInLevel[nLevels]; ++k) {
-            start	=	tree[nLevels][k]->nStart;
-            size	=	tree[nLevels][k]->nSize;
-        	x.block(start, 0, size, r) = M1[k];
-        }
+	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
+		start	=	tree[nLevels][k]->nStart;
+		size	=	tree[nLevels][k]->nSize;
+		x.block(start, 0, size, r) = M1[k];
+	}
 
-        return x;
+	return x;
 }
 
 /**********************************************************************************************************************************************/
@@ -758,9 +774,9 @@ Eigen::MatrixXd x	=	Eigen::MatrixXd::Zero(b.rows(),b.cols());
 
 ///	x			-	Inverse of kernel matrix multiplied by input matrix
 
-    Eigen::MatrixXd HODLR_Tree::symmetric_Solve(Eigen::MatrixXd b) {
-    	return(symmetric_Factor_Transpose_Solve(symmetric_Factor_Solve(b)));
-    }
+Eigen::MatrixXd HODLR_Tree::symmetric_Solve(Eigen::MatrixXd b) {
+	return(symmetric_Factor_Transpose_Solve(symmetric_Factor_Solve(b)));
+}
 
 /************************************************************************************************************************/
 /*	PURPOSE OF EXISTENCE:	Routine for solving K'x = b, where K is the symmetric factor of leaf node k	*/
@@ -779,9 +795,9 @@ Eigen::MatrixXd x	=	Eigen::MatrixXd::Zero(b.rows(),b.cols());
 
 ///	x			-	Inverse of K' multiplied with b
 
-    Eigen::MatrixXd HODLR_Tree::solve_Symmetric_Transpose_Leaf(int k, Eigen::MatrixXd b){
-        return(tree[nLevels][k]->llt.matrixL().transpose().solve(b));
-    }
+Eigen::MatrixXd HODLR_Tree::solve_Symmetric_Factor_Transpose_Leaf(int k, Eigen::MatrixXd b){
+	return(tree[nLevels][k]->llt.matrixL().transpose().solve(b));
+}
 
 /************************************************************************************************************************/
 /*	PURPOSE OF EXISTENCE:	Routine for solving (I+UXU')'x = b	*/
@@ -801,17 +817,17 @@ Eigen::MatrixXd x	=	Eigen::MatrixXd::Zero(b.rows(),b.cols());
 
 ///	x			-	Inverse of (I+UXU')' multiplied with b
 
-    Eigen::MatrixXd HODLR_Tree::solve_Symmetric_Transpose_Non_Leaf(int j, int k, Eigen::MatrixXd b){
+Eigen::MatrixXd HODLR_Tree::solve_Symmetric_Factor_Transpose_Non_Leaf(int j, int k, Eigen::MatrixXd b){
 
-         int n0 = tree[j][k]->Q[0].rows();
-         int n1 = tree[j][k]->Q[1].rows();
-         Eigen::MatrixXd xtmp = tree[j][k]->Qfactor[1].transpose()*b.block(n0,0,n1,b.cols());
-         Eigen::MatrixXd ytmp = tree[j][k]->llt.matrixL().transpose().solve(xtmp);
-         b.block(0, 0, n0, b.cols()) -= tree[j][k]->Qfactor[0]*(tree[j][k]->R*ytmp);
-         b.block(n0, 0, n1, b.cols()) -= tree[j][k]->Qfactor[1]*(xtmp - ytmp);
-        return(b);
+	int n0 = tree[j][k]->Q[0].rows();
+	int n1 = tree[j][k]->Q[1].rows();
+	Eigen::MatrixXd xtmp = tree[j][k]->Qfactor[1].transpose()*b.block(n0,0,n1,b.cols());
+	Eigen::MatrixXd ytmp = tree[j][k]->llt.matrixL().transpose().solve(xtmp);
+	b.block(0, 0, n0, b.cols()) -= tree[j][k]->Qfactor[0]*(tree[j][k]->K*ytmp);
+	b.block(n0, 0, n1, b.cols()) -= tree[j][k]->Qfactor[1]*(xtmp - ytmp);
+	return(b);
 
-    }
+}
 
 /********************************************************************************************************/
 /*	PURPOSE OF EXISTENCE:	Obtains the product of W with an input matrix	*/
@@ -830,43 +846,43 @@ Eigen::MatrixXd x	=	Eigen::MatrixXd::Zero(b.rows(),b.cols());
 ///	matrix			-	W * B
 
 Eigen::MatrixXd HODLR_Tree::symmetric_Factor_Product(Eigen::MatrixXd B){
-    int start, size;
-    Eigen::MatrixXd b = B;
-    	Eigen::MatrixXd x	=	Eigen::MatrixXd::Zero(b.rows(),b.cols());
-    	int r	=	b.cols();
+	int start, size;
+	Eigen::MatrixXd b = B;
+	Eigen::MatrixXd x	=	Eigen::MatrixXd::Zero(b.rows(),b.cols());
+	int r	=	b.cols();
 
-    	for (int j=0; j<nLevels; ++j) {
-    	 Eigen::MatrixXd M2[nodesInLevel[j]];
-    		 #pragma omp parallel for
-    		for (int k=0; k<nodesInLevel[j]; ++k) {
-    			start	=	tree[j][k]->nStart;
-    			size	=	tree[j][k]->nSize;
-                M2[k]	=	mult_Symmetric_Non_Leaf(j, k, b.block(start, 0, size, r));
-    		}
-    		for (int k=0; k<nodesInLevel[j]; ++k) {
-                start	=	tree[j][k]->nStart;
-                size	=	tree[j][k]->nSize;
-                x.block(start, 0, size, r)	=	M2[k];
-            }
-    		b=x;
-        }
+	for (int j=0; j<nLevels; ++j) {
+		Eigen::MatrixXd M2[nodesInLevel[j]];
+#pragma omp parallel for
+		for (int k=0; k<nodesInLevel[j]; ++k) {
+			start	=	tree[j][k]->nStart;
+			size	=	tree[j][k]->nSize;
+			M2[k]	=	mult_Symmetric_Factor_Non_Leaf(j, k, b.block(start, 0, size, r));
+		}
+		for (int k=0; k<nodesInLevel[j]; ++k) {
+			start	=	tree[j][k]->nStart;
+			size	=	tree[j][k]->nSize;
+			x.block(start, 0, size, r)	=	M2[k];
+		}
+		b=x;
+	}
 
-        Eigen::MatrixXd M1[nodesInLevel[nLevels]];
-    	 #pragma omp parallel for
-    	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
-    		start	=	tree[nLevels][k]->nStart;
-    		size	=	tree[nLevels][k]->nSize;
-    		M1[k] = tree[nLevels][k]->llt.matrixL()*b.block(start, 0, size, r);
-    	}
+	Eigen::MatrixXd M1[nodesInLevel[nLevels]];
+#pragma omp parallel for
+	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
+		start	=	tree[nLevels][k]->nStart;
+		size	=	tree[nLevels][k]->nSize;
+		M1[k] = tree[nLevels][k]->llt.matrixL()*b.block(start, 0, size, r);
+	}
 
-    	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
-            		start	=	tree[nLevels][k]->nStart;
-            		size	=	tree[nLevels][k]->nSize;
-            		x.block(start, 0, size, r)	= M1[k];
-            	}
-        b = x;
+	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
+		start	=	tree[nLevels][k]->nStart;
+		size	=	tree[nLevels][k]->nSize;
+		x.block(start, 0, size, r)	= M1[k];
+	}
+	b = x;
 
-    	return(x);
+	return(x);
 }
 
 /********************************************************************************************************************************/
@@ -887,14 +903,13 @@ Eigen::MatrixXd HODLR_Tree::symmetric_Factor_Product(Eigen::MatrixXd B){
 
 ///	matrix			-	(I+UXU') * b
 
-    Eigen::MatrixXd HODLR_Tree::mult_Symmetric_Non_Leaf(int j, int k, Eigen::MatrixXd b) {
-
-        int n0 = tree[j][k]->Q[0].rows();
-        int n1 = tree[j][k]->Q[1].rows();
-        Eigen::MatrixXd tmp = tree[j][k]->Qfactor[1].transpose()*b.block(n0,0,n1,b.cols());
-        b.block(n0,0,n1,b.cols()) += tree[j][k]->Qfactor[1]*((tree[j][k]->R.transpose()*tree[j][k]->Qfactor[0].transpose()*b.block(0,0,n0,b.cols())) + ((Eigen::MatrixXd)tree[j][k]->llt.matrixL() - Eigen::MatrixXd::Identity(tree[j][k]->sym_rank, tree[j][k]->sym_rank))*tmp);
-        return(b);
-    }
+Eigen::MatrixXd HODLR_Tree::mult_Symmetric_Factor_Non_Leaf(int j, int k, Eigen::MatrixXd b) {
+	int n0 = tree[j][k]->Q[0].rows();
+	int n1 = tree[j][k]->Q[1].rows();
+	Eigen::MatrixXd tmp = tree[j][k]->Qfactor[1].transpose()*b.block(n0,0,n1,b.cols());
+	b.block(n0,0,n1,b.cols()) += tree[j][k]->Qfactor[1]*((tree[j][k]->K.transpose()*tree[j][k]->Qfactor[0].transpose()*b.block(0,0,n0,b.cols())) + ((Eigen::MatrixXd)tree[j][k]->llt.matrixL() - Eigen::MatrixXd::Identity(tree[j][k]->sym_rank, tree[j][k]->sym_rank))*tmp);
+	return(b);
+}
 
 /********************************************************************************************************************/
 /*	PURPOSE OF EXISTENCE:	Obtains the product of W' with an input matrix	*/
@@ -912,49 +927,49 @@ Eigen::MatrixXd HODLR_Tree::symmetric_Factor_Product(Eigen::MatrixXd B){
 
 ///	matrix			-	W' * B
 
-    Eigen::MatrixXd HODLR_Tree::symmetric_Factor_Transpose_Product(Eigen::MatrixXd B){
-        int start, size;
-            Eigen::MatrixXd b = B;
-            	Eigen::MatrixXd x	=	Eigen::MatrixXd::Zero(b.rows(),b.cols());
-            	int r	=	b.cols();
+Eigen::MatrixXd HODLR_Tree::symmetric_Factor_Transpose_Product(Eigen::MatrixXd B){
+	int start, size;
+	Eigen::MatrixXd b = B;
+	Eigen::MatrixXd x	=	Eigen::MatrixXd::Zero(b.rows(),b.cols());
+	int r	=	b.cols();
 
 
-                Eigen::MatrixXd M1[nodesInLevel[nLevels]];
-             	 #pragma omp parallel for
-             	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
-             		start	=	tree[nLevels][k]->nStart;
-             		size	=	tree[nLevels][k]->nSize;
-             		M1[k] = tree[nLevels][k]->llt.matrixL().transpose()*b.block(start, 0, size, r);
-             	}
+	Eigen::MatrixXd M1[nodesInLevel[nLevels]];
+#pragma omp parallel for
+	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
+		start	=	tree[nLevels][k]->nStart;
+		size	=	tree[nLevels][k]->nSize;
+		M1[k] = tree[nLevels][k]->llt.matrixL().transpose()*b.block(start, 0, size, r);
+	}
 
-             	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
-                     		start	=	tree[nLevels][k]->nStart;
-                     		size	=	tree[nLevels][k]->nSize;
-                     		x.block(start, 0, size, r)	= M1[k];
-                     	}
-                 b = x;
+	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
+		start	=	tree[nLevels][k]->nStart;
+		size	=	tree[nLevels][k]->nSize;
+		x.block(start, 0, size, r)	= M1[k];
+	}
+	b = x;
 
-            	for (int j=nLevels-1; j>=0; --j) {
-            	 Eigen::MatrixXd M2[nodesInLevel[j]];
-            		 #pragma omp parallel for
-            		for (int k=0; k<nodesInLevel[j]; ++k) {
-            			start	=	tree[j][k]->nStart;
-            			size	=	tree[j][k]->nSize;
-                        M2[k]	=	mult_Symmetric_transpose_Non_Leaf(j, k, b.block(start, 0, size, r));
-            		}
-            		for (int k=0; k<nodesInLevel[j]; ++k) {
-                        start	=	tree[j][k]->nStart;
-                        size	=	tree[j][k]->nSize;
-                        x.block(start, 0, size, r)	=	M2[k];
-                    }
-            		b=x;
-                }
-            	return(x);
-    }
+	for (int j=nLevels-1; j>=0; --j) {
+		Eigen::MatrixXd M2[nodesInLevel[j]];
+#pragma omp parallel for
+		for (int k=0; k<nodesInLevel[j]; ++k) {
+			start	=	tree[j][k]->nStart;
+			size	=	tree[j][k]->nSize;
+			M2[k]	=	mult_Symmetric_Factor_transpose_Non_Leaf(j, k, b.block(start, 0, size, r));
+		}
+		for (int k=0; k<nodesInLevel[j]; ++k) {
+			start	=	tree[j][k]->nStart;
+			size	=	tree[j][k]->nSize;
+			x.block(start, 0, size, r)	=	M2[k];
+		}
+		b=x;
+	}
+	return(x);
+}
 
-/************************************************************************************************************************************************/
+/************************************************************************************************/
 /*	PURPOSE OF EXISTENCE:	Routine for obtaining the product of (I+UXU')' with an input matrix	*/
-/************************************************************************************************************************************************/
+/************************************************************************************************/
 
 /************/
 /*	INPUTS	*/
@@ -970,14 +985,14 @@ Eigen::MatrixXd HODLR_Tree::symmetric_Factor_Product(Eigen::MatrixXd B){
 
 ///	matrix			-	(I+UXU')' * b
 
-    Eigen::MatrixXd HODLR_Tree::mult_Symmetric_transpose_Non_Leaf(int j, int k, Eigen::MatrixXd b){
-            int n0 = tree[j][k]->Q[0].rows();
-            int n1 = tree[j][k]->Q[1].rows();
-            Eigen::MatrixXd tmp = tree[j][k]->Qfactor[1].transpose()*b.block(n0,0,n1,b.cols());
-            b.block(0,0,n0,b.cols()) += tree[j][k]->Qfactor[0]*(tree[j][k]->R*tmp);
-            b.block(n0,0,n1,b.cols()) += tree[j][k]->Qfactor[1]*(((Eigen::MatrixXd)tree[j][k]->llt.matrixL().transpose() - Eigen::MatrixXd::Identity(tree[j][k]->sym_rank, tree[j][k]->sym_rank))*tmp);
-            return(b);
-    }
+Eigen::MatrixXd HODLR_Tree::mult_Symmetric_Factor_transpose_Non_Leaf(int j, int k, Eigen::MatrixXd b){
+	int n0 = tree[j][k]->Q[0].rows();
+	int n1 = tree[j][k]->Q[1].rows();
+	Eigen::MatrixXd tmp = tree[j][k]->Qfactor[1].transpose()*b.block(n0,0,n1,b.cols());
+	b.block(0,0,n0,b.cols()) += tree[j][k]->Qfactor[0]*(tree[j][k]->K*tmp);
+	b.block(n0,0,n1,b.cols()) += tree[j][k]->Qfactor[1]*(((Eigen::MatrixXd)tree[j][k]->llt.matrixL().transpose() - Eigen::MatrixXd::Identity(tree[j][k]->sym_rank, tree[j][k]->sym_rank))*tmp);
+	return(b);
+}
 
 /************************************************************************/
 /*	PURPOSE OF EXISTENCE:	Obtains the symmetric factor of the matrix	*/
@@ -989,39 +1004,39 @@ Eigen::MatrixXd HODLR_Tree::symmetric_Factor_Product(Eigen::MatrixXd B){
 
 ///	matrix			-	symmetric factor of the matrix
 
-    Eigen::MatrixXd HODLR_Tree::build_Symmetric_Matrix_Factor() {
+Eigen::MatrixXd HODLR_Tree::build_Symmetric_Matrix_Factor() {
 
-    if(nLevels == 0){
-        return tree[0][0]->llt.matrixL();
-    }
+	if(nLevels == 0){
+		return tree[0][0]->llt.matrixL();
+	}
 
-    Eigen::MatrixXd Wc;
-    Eigen::MatrixXd Rc = Eigen::MatrixXd::Identity(N,N);
-    for(int l=0;l<nLevels;++l){
-        Wc = Eigen::MatrixXd::Zero(N,N);
-        #pragma omp parallel for
-        for(int k=0; k<nodesInLevel[l]; ++k){
-                   int r = tree[l][k]->sym_rank;
-                   int n0 = tree[l][k]->Q[0].rows();
-                   int n1 = tree[l][k]->Q[1].rows();
-                   Eigen::MatrixXd T = Eigen::MatrixXd::Identity(n0+n1,n0+n1);
-                   T.block(n0,0,n1,n0) = tree[l][k]->Qfactor[1]*(tree[l][k]->R.transpose()*tree[l][k]->Qfactor[0].transpose());
-                   T.block(n0,n0,n1,n1) += tree[l][k]->Qfactor[1]*(((Eigen::MatrixXd)tree[l][k]->llt.matrixL() - Eigen::MatrixXd::Identity(r, r))*tree[l][k]->Qfactor[1].transpose());
-                   Wc.block(tree[l][k]->nStart, tree[l][k]->nStart, tree[l][k]->nSize, tree[l][k]->nSize) = T;
-        }
-        Rc = Wc*Rc;
-    }
+	Eigen::MatrixXd Wc;
+	Eigen::MatrixXd Rc = Eigen::MatrixXd::Identity(N,N);
+	for(int l=0;l<nLevels;++l){
+		Wc = Eigen::MatrixXd::Zero(N,N);
+#pragma omp parallel for
+		for(int k=0; k<nodesInLevel[l]; ++k){
+			int r = tree[l][k]->sym_rank;
+			int n0 = tree[l][k]->Q[0].rows();
+			int n1 = tree[l][k]->Q[1].rows();
+			Eigen::MatrixXd T = Eigen::MatrixXd::Identity(n0+n1,n0+n1);
+			T.block(n0,0,n1,n0) = tree[l][k]->Qfactor[1]*(tree[l][k]->K.transpose()*tree[l][k]->Qfactor[0].transpose());
+			T.block(n0,n0,n1,n1) += tree[l][k]->Qfactor[1]*(((Eigen::MatrixXd)tree[l][k]->llt.matrixL() - Eigen::MatrixXd::Identity(r, r))*tree[l][k]->Qfactor[1].transpose());
+			Wc.block(tree[l][k]->nStart, tree[l][k]->nStart, tree[l][k]->nSize, tree[l][k]->nSize) = T;
+		}
+		Rc = Wc*Rc;
+	}
 
-    Wc = Eigen::MatrixXd::Zero(N,N);
+	Wc = Eigen::MatrixXd::Zero(N,N);
 
-        #pragma omp parallel for
-    	for(int k=0; k<nodesInLevel[nLevels]; ++k){
-        Wc.block(tree[nLevels-1][k/2]->cStart[k%2], tree[nLevels-1][k/2]->cStart[k%2], tree[nLevels-1][k/2]->cSize[k%2], tree[nLevels-1][k/2]->cSize[k%2]) = tree[nLevels][k]->llt.matrixL();
-    }
+#pragma omp parallel for
+	for(int k=0; k<nodesInLevel[nLevels]; ++k){
+		Wc.block(tree[nLevels-1][k/2]->cStart[k%2], tree[nLevels-1][k/2]->cStart[k%2], tree[nLevels-1][k/2]->cSize[k%2], tree[nLevels-1][k/2]->cSize[k%2]) = tree[nLevels][k]->llt.matrixL();
+	}
 
-    Rc = Wc*Rc;
+	Rc = Wc*Rc;
 
-    return Rc;
-    }
+	return Rc;
+}
 
 #endif /*__HODLR_Tree__*/

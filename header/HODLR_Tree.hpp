@@ -159,12 +159,12 @@ void HODLR_Tree::createTree() {
 void HODLR_Tree::assembleTree() {
 	// // std::cout << "\nStart assembleTree\n";
 	for (int j=0; j<nLevels; ++j) {
-#pragma omp parallel for
+        #pragma omp parallel for
 		for (int k=0; k<nodesInLevel[j]; ++k) {
 			tree[j][k]->assemble_Non_Leaf_Node(A);
 		}
 	}
-#pragma omp parallel for
+    #pragma omp parallel for
 	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
 		tree[nLevels][k]->assemble_Leaf_Node(A);
 	}
@@ -192,12 +192,12 @@ void HODLR_Tree::matmat_Product(Eigen::MatrixXd x, Eigen::MatrixXd& b) {
 	int r	=	x.cols();
 	b		=	Eigen::MatrixXd::Zero(N,r);
 	for (int j=0; j<nLevels; ++j) {
-#pragma omp parallel for
+        #pragma omp parallel for
 		for (int k=0; k<nodesInLevel[j]; ++k) {
 			tree[j][k]->matmat_Product_Non_Leaf(x, b);
 		}
 	}
-#pragma omp parallel for
+    #pragma omp parallel for
 	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
 		tree[nLevels][k]->matmat_Product_Leaf(x, b);
 	}
@@ -223,7 +223,7 @@ void HODLR_Tree::factorize_Leaf(int k) {
 	int child	=	k;
 	int size	=	tree[nLevels][k]->nSize;
 	int tstart, r;
-#pragma omp parallel for
+    #pragma omp parallel for
 	for (int l=nLevels-1; l>=0; --l) {
 		child	=	parent%2;
 		parent	=	parent/2;
@@ -337,7 +337,7 @@ void HODLR_Tree::factorize() {
 	//	Set things for factorization
 	// std::cout << "Number of levels: " << nLevels << "\n";
 	for (int j=0; j<=nLevels; ++j) {
-#pragma omp parallel for
+    #pragma omp parallel for
 		for (int k=0; k<nodesInLevel[j]; ++k) {
 			for (int l=0; l<2; ++l) {
 				tree[j][k]->Ufactor[l]	=	tree[j][k]->U[l];
@@ -348,13 +348,13 @@ void HODLR_Tree::factorize() {
 	}
 
 	//	Factorize the leaf nodes
-#pragma omp parallel for
+    #pragma omp parallel for
 	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
 		factorize_Leaf(k);
 	}
 	//	Factorize the non-leaf nodes
 	for (int j=nLevels-1; j>=0; --j) {
-#pragma omp parallel for
+        #pragma omp parallel for
 		for (int k=0; k<nodesInLevel[j]; ++k) {
 			factorize_Non_Leaf(j, k);
 		}
@@ -410,12 +410,12 @@ Eigen::MatrixXd HODLR_Tree::solve(Eigen::MatrixXd b) {
 void HODLR_Tree::assembleSymmetricTree() {
 	std::cout << "\nStart Symmetric assembleTree\n";
 	for (int j=0; j<nLevels; ++j) {
-#pragma omp parallel for
+        #pragma omp parallel for
 		for (int k=0; k<nodesInLevel[j]; ++k) {
 			tree[j][k]->assemble_Symmetric_Non_Leaf_Node(A);
 		}
 	}
-#pragma omp parallel for
+    #pragma omp parallel for
 	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
 		tree[nLevels][k]->assemble_Leaf_Node(A);
 		//Storing Cholesky decomposition of leaf nodes
@@ -434,7 +434,7 @@ void HODLR_Tree::symmetric_factorize() {
 	std::cout << "\nStart Symmetric factorize\n";
 
 	for (int j=0; j<nLevels; ++j) {
-#pragma omp parallel for
+        #pragma omp parallel for
 		for (int k=0; k<nodesInLevel[j]; ++k) {
 			tree[j][k]->Qfactor[0]	=	tree[j][k]->Q[0];
 			tree[j][k]->Qfactor[1]	=	tree[j][k]->Q[1];
@@ -443,7 +443,7 @@ void HODLR_Tree::symmetric_factorize() {
 	}
 
 	//	Factorize the leaf nodes
-#pragma omp parallel for
+    #pragma omp parallel for
 	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
 		factorize_Symmetric_Leaf(k);
 	}
@@ -453,7 +453,7 @@ void HODLR_Tree::symmetric_factorize() {
 
 	//	Factorize the non-leaf nodes
 	for (int j=nLevels-1; j>0; --j) {
-#pragma omp parallel for
+        #pragma omp parallel for
 		for (int k=0; k<nodesInLevel[j]; ++k) {
 			factorize_Symmetric_Non_Leaf(j, k);
 		}
@@ -473,7 +473,7 @@ void HODLR_Tree::symmetric_factorize() {
 /******************************************************************************************************************/
 
 void HODLR_Tree::qr_Level(int level){
-#pragma omp parallel for
+    #pragma omp parallel for
 	for(int k=0; k<nodesInLevel[level]; ++k){
 		qr(level, k);
 	}
@@ -509,7 +509,7 @@ void HODLR_Tree::factorize_Symmetric_Leaf(int k) {
 	int child	=	k;
 	int size	=	tree[nLevels][k]->nSize;
 	int tstart, r;
-#pragma omp parallel for
+    #pragma omp parallel for
 	for (int l=nLevels-1; l>=0; --l) {
 		child	=	parent%2;
 		parent	=	parent/2;
@@ -553,7 +553,7 @@ void HODLR_Tree::factorize_Symmetric_Non_Leaf(int j, int k) {
 	int child	=	k;
 	int size	=	tree[j][k]->nSize;
 	int tstart, r;
-#pragma omp parallel for
+    #pragma omp parallel for
 	for (int l=j-1; l>=0; --l) {
 		child	=	parent%2;
 		parent	=	parent/2;
@@ -670,7 +670,7 @@ Eigen::MatrixXd HODLR_Tree::symmetric_Factor_Solve(Eigen::MatrixXd b1) {
 	Eigen::MatrixXd x	=	Eigen::MatrixXd::Zero(b.rows(),b.cols());
 	int r	=	b.cols();
 	Eigen::MatrixXd M1[nodesInLevel[nLevels]];
-#pragma omp parallel for
+    #pragma omp parallel for
 	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
 		start	=	tree[nLevels][k]->nStart;
 		size	=	tree[nLevels][k]->nSize;
@@ -686,7 +686,7 @@ Eigen::MatrixXd HODLR_Tree::symmetric_Factor_Solve(Eigen::MatrixXd b1) {
 	b=x;
 	for (int j=nLevels-1; j>=0; --j) {
 		Eigen::MatrixXd M2[nodesInLevel[j]];
-#pragma omp parallel for
+        #pragma omp parallel for
 		for (int k=0; k<nodesInLevel[j]; ++k) {
 			start	=	tree[j][k]->nStart;
 			size	=	tree[j][k]->nSize;
@@ -728,7 +728,7 @@ Eigen::MatrixXd HODLR_Tree::symmetric_Factor_Transpose_Solve(Eigen::MatrixXd B) 
 	Eigen::MatrixXd M1[nodesInLevel[nLevels]];
 	for (int j=0; j<nLevels; ++j) {
 		Eigen::MatrixXd M2[nodesInLevel[j]];
-#pragma omp parallel for
+        #pragma omp parallel for
 		for (int k=0; k<nodesInLevel[j]; ++k) {
 			start	=	tree[j][k]->nStart;
 			size	=	tree[j][k]->nSize;
@@ -742,7 +742,7 @@ Eigen::MatrixXd HODLR_Tree::symmetric_Factor_Transpose_Solve(Eigen::MatrixXd B) 
 		b=x;
 	}
 
-#pragma omp parallel for
+    #pragma omp parallel for
 	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
 		start	=	tree[nLevels][k]->nStart;
 		size	=	tree[nLevels][k]->nSize;
@@ -853,7 +853,7 @@ Eigen::MatrixXd HODLR_Tree::symmetric_Factor_Product(Eigen::MatrixXd B){
 
 	for (int j=0; j<nLevels; ++j) {
 		Eigen::MatrixXd M2[nodesInLevel[j]];
-#pragma omp parallel for
+        #pragma omp parallel for
 		for (int k=0; k<nodesInLevel[j]; ++k) {
 			start	=	tree[j][k]->nStart;
 			size	=	tree[j][k]->nSize;
@@ -868,7 +868,7 @@ Eigen::MatrixXd HODLR_Tree::symmetric_Factor_Product(Eigen::MatrixXd B){
 	}
 
 	Eigen::MatrixXd M1[nodesInLevel[nLevels]];
-#pragma omp parallel for
+    #pragma omp parallel for
 	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
 		start	=	tree[nLevels][k]->nStart;
 		size	=	tree[nLevels][k]->nSize;
@@ -935,7 +935,7 @@ Eigen::MatrixXd HODLR_Tree::symmetric_Factor_Transpose_Product(Eigen::MatrixXd B
 
 
 	Eigen::MatrixXd M1[nodesInLevel[nLevels]];
-#pragma omp parallel for
+    #pragma omp parallel for
 	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
 		start	=	tree[nLevels][k]->nStart;
 		size	=	tree[nLevels][k]->nSize;
@@ -951,7 +951,7 @@ Eigen::MatrixXd HODLR_Tree::symmetric_Factor_Transpose_Product(Eigen::MatrixXd B
 
 	for (int j=nLevels-1; j>=0; --j) {
 		Eigen::MatrixXd M2[nodesInLevel[j]];
-#pragma omp parallel for
+        #pragma omp parallel for
 		for (int k=0; k<nodesInLevel[j]; ++k) {
 			start	=	tree[j][k]->nStart;
 			size	=	tree[j][k]->nSize;
@@ -1014,7 +1014,7 @@ Eigen::MatrixXd HODLR_Tree::build_Symmetric_Matrix_Factor() {
 	Eigen::MatrixXd Rc = Eigen::MatrixXd::Identity(N,N);
 	for(int l=0;l<nLevels;++l){
 		Wc = Eigen::MatrixXd::Zero(N,N);
-#pragma omp parallel for
+        #pragma omp parallel for
 		for(int k=0; k<nodesInLevel[l]; ++k){
 			int r = tree[l][k]->sym_rank;
 			int n0 = tree[l][k]->Q[0].rows();
@@ -1029,7 +1029,7 @@ Eigen::MatrixXd HODLR_Tree::build_Symmetric_Matrix_Factor() {
 
 	Wc = Eigen::MatrixXd::Zero(N,N);
 
-#pragma omp parallel for
+    #pragma omp parallel for
 	for(int k=0; k<nodesInLevel[nLevels]; ++k){
 		Wc.block(tree[nLevels-1][k/2]->cStart[k%2], tree[nLevels-1][k/2]->cStart[k%2], tree[nLevels-1][k/2]->cSize[k%2], tree[nLevels-1][k/2]->cSize[k%2]) = tree[nLevels][k]->llt.matrixL();
 	}

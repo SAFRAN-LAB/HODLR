@@ -625,6 +625,7 @@ double HODLR_Tree::symmetric_Determinant() {
 	double det = 0.0;
 	for (int j=nLevels; j>=0; --j) {
 		for (int k=0; k<nodesInLevel[j]; ++k) {
+/////////////////////////////////////////////////////		std::cout<<log(tree[j][k]->llt.matrixL().determinant())<<"\n";
 			det += log(tree[j][k]->llt.matrixL().determinant());
 		}
 	}

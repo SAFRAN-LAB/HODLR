@@ -1,7 +1,7 @@
 CC		=g++-5
 CFLAGS	=-c -fopenmp -Wall -Ofast -funroll-loops -ffast-math -ffinite-math-only -I header/
 LDFLAGS	=-fopenmp
-SOURCES	=./examples/testHODLRSymmetric.cpp
+SOURCES	=./examples/testHODLRSymmetric.cpp ./examples/KDTree.cpp
 OBJECTS	=$(SOURCES:.cpp=.o)
 EXECUTABLE	=./exec/testHODLRSymmetric
 

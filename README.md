@@ -1,4 +1,4 @@
-#HODLR: Fast direct solver and determinant computation for dense linear systems
+# HODLR: Fast direct solver and determinant computation for dense linear systems
 
 This is an extension of the fast direct solver discussed in the article: "An O(N log (N)) Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices". The solver has also been extended to matrices not necessarily arising out of kernels and also to higher dimensions. Further, the solver has been optimized and the running time of the solver is now massively (a few orders of magnitude) faster than the running times reported in the article. Low-rank approximation of the appropriate blocks are obtained using partial pivoted LU algorithm. The domain is sub-divided based on a KDTree. The solver is fairly general and works with minimal restrictions. The key features of the solver include
 
@@ -17,7 +17,7 @@ This is an extension of the fast direct solver discussed in the article: "An O(N
 	Fast application of symmetric factor to a vector: Obtains W*x at a cost of O(N log N)
 
 
-###DIRECTORIES AND FILES
+### DIRECTORIES AND FILES
 
 
 	./examples/		:	Example input C++ codes; Needed to read input from user or from input file.
@@ -28,11 +28,11 @@ This is an extension of the fast direct solver discussed in the article: "An O(N
 	./LICENSE.md	:	License file
 	./makefile.mk	:	Makefile
 
-###DEPENDENCIES:
+### DEPENDENCIES:
 
 To run this package, you need to have **Eigen**. If you don't already have it, download and install Eigen following the instructions [here](http://eigen.tuxfamily.org/index.php?title=Main_Page).
 
-###CUSTOM BUILD:
+### CUSTOM BUILD:
 
 1. There is a sample input file named: "testHODLR.cpp" in the directory './examples/'.
 
@@ -59,7 +59,7 @@ More kernels can be added by editing the function
 
 Read through the comments in all the files. Most of the function/class/method/variable names are self-explanatory. Read the file HODLR_Test.cpp to understand how to assemble, factor, solve, symmetric factorization, determinant computation of a new HODLR system.
 
-**Version3.141**
+#### Version3.141
 
 Date: November 9th, 2016
 
@@ -67,5 +67,5 @@ Copyleft 2016: Sivaram Ambikasaran
 
 Developed by Sivaram Ambikasaran
 
-**License**
+#### License
 This program is free software; you can redistribute it and/or modify it under the terms of MPL2 license. The Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at <http://mozilla.org/MPL/2.0/.>

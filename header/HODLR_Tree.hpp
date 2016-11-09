@@ -63,6 +63,7 @@ class HODLR_Tree {
 		void assembleSymmetricTree();
 		void symmetric_factorize();
 		double symmetric_Determinant();
+		void matmat_Symmetric_Product(Eigen::MatrixXd x, Eigen::MatrixXd& b);
 		Eigen::MatrixXd symmetric_Solve(Eigen::MatrixXd b);
 		Eigen::MatrixXd symmetric_Factor_Solve(Eigen::MatrixXd b);
 		Eigen::MatrixXd symmetric_Factor_Transpose_Solve(Eigen::MatrixXd b);
@@ -423,6 +424,39 @@ void HODLR_Tree::assembleSymmetricTree() {
 
 	}
 	std::cout << "\nDone Symmetric assembleTree\n";
+}
+
+/*******************************************************/
+/*	PURPOSE OF EXISTENCE:	 Matrix-matrix product     */
+/*******************************************************/
+
+/************/
+/*	INPUTS	*/
+/************/
+
+/// x   -   Matrix to be multiplied on the right of the HODLR matrix
+
+/************/
+/*	OUTPUTS	*/
+/************/
+
+/// b   -   Matrix matrix product
+
+void HODLR_Tree::matmat_Symmetric_Product(Eigen::MatrixXd x, Eigen::MatrixXd& b) {
+	// // std::cout << "\nStart matmat_Product\n";
+	int r	=	x.cols();
+	b		=	Eigen::MatrixXd::Zero(N,r);
+	for (int j=0; j<nLevels; ++j) {
+        #pragma omp parallel for
+		for (int k=0; k<nodesInLevel[j]; ++k) {
+			tree[j][k]->matmat_Symmetric_Product_Non_Leaf(x, b);
+		}
+	}
+    #pragma omp parallel for
+	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
+		tree[nLevels][k]->matmat_Product_Leaf(x, b);
+	}
+	// // std::cout << "\nDone matmat_Product\n";
 }
 
 /******************************************************************************************************************/

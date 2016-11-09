@@ -17,6 +17,7 @@ class HODLR_Node {
 	double tolerance;
 	Eigen::MatrixXd K;
 	void assemble_Leaf_Node(HODLR_Matrix* A);
+	void matmat_Product_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b);
 
 	//  Variables and methods needed for HODLR solver
 	Eigen::MatrixXd U[2], V[2];
@@ -25,7 +26,6 @@ class HODLR_Node {
 	int rank[2];
 	void assemble_Non_Leaf_Node(HODLR_Matrix* A);
 	void matmat_Product_Non_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b);
-	void matmat_Product_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b);
 
 	//  Variables and methods needed for symmetric factorization
 	Eigen::MatrixXd Q[2];
@@ -33,6 +33,7 @@ class HODLR_Node {
 	Eigen::LLT<Eigen::MatrixXd> llt;
 	int sym_rank;
 	void assemble_Symmetric_Non_Leaf_Node(HODLR_Matrix* A);
+	void matmat_Symmetric_Product_Non_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b);
 };
 
 /********************************************************/
@@ -62,21 +63,6 @@ HODLR_Node::HODLR_Node(int nodeNumber, int levelNumber, int localNumber, int nSt
 	this->cSize[1]		=	nSize-this->cSize[0];
 	this->isLeaf		=	false;
 	this->tolerance		=	tolerance;
-}
-
-/**********************************************************************************************************************/
-/*	PURPOSE OF EXISTENCE:	Routine to obtain and store low-rank approximation of the off-diagonal blocks of the node.*/
-/**********************************************************************************************************************/
-
-/************/
-/*	INPUTS	*/
-/************/
-
-/// A  -  HODLR Matrix
-
-void HODLR_Node::assemble_Non_Leaf_Node(HODLR_Matrix* A) {
-	A->rook_Piv(cStart[0],cStart[1],cSize[0],cSize[1], tolerance, U[0], V[1], rank[0]);
-	A->rook_Piv(cStart[1],cStart[0],cSize[1],cSize[0], tolerance, U[1], V[0], rank[1]);
 }
 
 /**************************************************************************/
@@ -109,9 +95,23 @@ void HODLR_Node::assemble_Leaf_Node(HODLR_Matrix* A) {
 
 /// b   -   Matrix matrix product
 
-void HODLR_Node::matmat_Product_Non_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b) {
-	b.block(cStart[0],0,cSize[0],x.cols())+=(U[0]*(V[1].transpose()*x.block(cStart[1],0,cSize[1],x.cols())));
-	b.block(cStart[1],0,cSize[1],x.cols())+=(U[1]*(V[0].transpose()*x.block(cStart[0],0,cSize[0],x.cols())));
+void HODLR_Node::matmat_Product_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b) {
+	b.block(nStart,0,nSize,x.cols())+=K*x.block(nStart,0,nSize,x.cols());
+}
+
+/**********************************************************************************************************************/
+/*	PURPOSE OF EXISTENCE:	Routine to obtain and store low-rank approximation of the off-diagonal blocks of the node.*/
+/**********************************************************************************************************************/
+
+/************/
+/*	INPUTS	*/
+/************/
+
+/// A  -  HODLR Matrix
+
+void HODLR_Node::assemble_Non_Leaf_Node(HODLR_Matrix* A) {
+	A->rook_Piv(cStart[0],cStart[1],cSize[0],cSize[1], tolerance, U[0], V[1], rank[0]);
+	A->rook_Piv(cStart[1],cStart[0],cSize[1],cSize[0], tolerance, U[1], V[0], rank[1]);
 }
 
 /*******************************************************/
@@ -130,8 +130,9 @@ void HODLR_Node::matmat_Product_Non_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b) 
 
 /// b   -   Matrix matrix product
 
-void HODLR_Node::matmat_Product_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b) {
-	b.block(nStart,0,nSize,x.cols())+=K*x.block(nStart,0,nSize,x.cols());
+void HODLR_Node::matmat_Product_Non_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b) {
+	b.block(cStart[0],0,cSize[0],x.cols())+=(U[0]*(V[1].transpose()*x.block(cStart[1],0,cSize[1],x.cols())));
+	b.block(cStart[1],0,cSize[1],x.cols())+=(U[1]*(V[0].transpose()*x.block(cStart[0],0,cSize[0],x.cols())));
 }
 
 /*************************************************************************************************************************************************/
@@ -146,5 +147,26 @@ void HODLR_Node::matmat_Product_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b) {
 
 void HODLR_Node::assemble_Symmetric_Non_Leaf_Node(HODLR_Matrix* A) {
 	A->rook_Piv(cStart[0],cStart[1],cSize[0],cSize[1], tolerance, Q[0], Q[1], sym_rank);
+}
+
+/*****************************************************************/
+/*	PURPOSE OF EXISTENCE:	 Symmetric Matrix-matrix product     */
+/*****************************************************************/
+
+/************/
+/*	INPUTS	*/
+/************/
+
+/// x   -   Matrix to be multiplied on the right of the HODLR matrix
+
+/************/
+/*	OUTPUTS	*/
+/************/
+
+/// b   -   Matrix matrix product
+
+void HODLR_Node::matmat_Symmetric_Product_Non_Leaf(Eigen::MatrixXd x, Eigen::MatrixXd& b) {
+	b.block(cStart[0],0,cSize[0],x.cols())+=(Q[0]*(Q[1].transpose()*x.block(cStart[1],0,cSize[1],x.cols())));
+	b.block(cStart[1],0,cSize[1],x.cols())+=(Q[1]*(Q[0].transpose()*x.block(cStart[0],0,cSize[0],x.cols())));
 }
 #endif /*__HODLR_Node__*/

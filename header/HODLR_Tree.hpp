@@ -415,7 +415,7 @@ void HODLR_Tree::assembleSymmetricTree() {
 			tree[j][k]->assemble_Symmetric_Non_Leaf_Node(A);
 		}
 	}
-    #pragma omp parallel for
+        #pragma omp parallel for
 	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
 		tree[nLevels][k]->assemble_Leaf_Node(A);
 		//Storing Cholesky decomposition of leaf nodes

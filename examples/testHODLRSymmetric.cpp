@@ -187,7 +187,7 @@ int main(int argc, char* argv[]) {
 	/************************************/
 
 	std::cout << "\nAssemble the matrix...\n";
-	myMatrix->assembleTree();
+	myMatrix->assemble_Tree();
 	end		=	omp_get_wtime();
 	std::cout << "\nMatrix assembled.\n";
 	double time_assemble				=	(end-start)/CPS;

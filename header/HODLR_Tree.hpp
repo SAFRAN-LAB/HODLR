@@ -53,7 +53,7 @@ class HODLR_Tree {
 		}
 
 		//  Methods for HODLR solver
-		void assembleTree();
+		void assemble_Tree();
 		void factorize();
 		double determinant();
 		void matmat_Product(Eigen::MatrixXd x, Eigen::MatrixXd& b);
@@ -157,8 +157,8 @@ void HODLR_Tree::createTree() {
 /*	PURPOSE OF EXISTENCE: Obtains a factorization of the leaf nodes and computes the low rank approximations of the off-diagonal blocks, Z=UV'. */
 /************************************************************************************************************************************************/
 
-void HODLR_Tree::assembleTree() {
-	// // std::cout << "\nStart assembleTree\n";
+void HODLR_Tree::assemble_Tree() {
+	// // std::cout << "\nStart assemble_Tree\n";
 	for (int j=0; j<nLevels; ++j) {
         #pragma omp parallel for
 		for (int k=0; k<nodesInLevel[j]; ++k) {
@@ -169,7 +169,7 @@ void HODLR_Tree::assembleTree() {
 	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
 		tree[nLevels][k]->assemble_Leaf_Node(A);
 	}
-	// // std::cout << "\nDone assembleTree\n";
+	// // std::cout << "\nDone assemble_Tree\n";
 }
 
 /*******************************************************/
@@ -409,21 +409,21 @@ Eigen::MatrixXd HODLR_Tree::solve(Eigen::MatrixXd b) {
 /**********************************************************************************************************************************************************/
 
 void HODLR_Tree::assembleSymmetricTree() {
-	std::cout << "\nStart Symmetric assembleTree\n";
+	std::cout << "\nStart Symmetric assemble_Tree\n";
 	for (int j=0; j<nLevels; ++j) {
         #pragma omp parallel for
 		for (int k=0; k<nodesInLevel[j]; ++k) {
 			tree[j][k]->assemble_Symmetric_Non_Leaf_Node(A);
 		}
 	}
-        #pragma omp parallel for
+	#pragma omp parallel for
 	for (int k=0; k<nodesInLevel[nLevels]; ++k) {
 		tree[nLevels][k]->assemble_Leaf_Node(A);
 		//Storing Cholesky decomposition of leaf nodes
 		tree[nLevels][k]->llt.compute(tree[nLevels][k]->K);
 
 	}
-	std::cout << "\nDone Symmetric assembleTree\n";
+	std::cout << "\nDone Symmetric assemble_Tree\n";
 }
 
 /*******************************************************/
@@ -632,10 +632,7 @@ Eigen::MatrixXd HODLR_Tree::solve_Symmetric_Factor_Non_Leaf(int j, int k, Eigen:
 	//   std::cout<<"b.cols "<<b.cols()<<"\n";
 	Eigen::MatrixXd tmp = tree[j][k]->Qfactor[1].transpose()*b.block(n0,0,n1,b.cols());
 	b.block(n0,0,n1,b.cols()) -= tree[j][k]->Qfactor[1]*(tree[j][k]->llt.matrixL().solve((tree[j][k]->K.transpose()*(tree[j][k]->Qfactor[0].transpose()*b.block(0,0,n0,b.cols()))) - tmp) +tmp);
-
 	return(b);
-
-
 }
 
 /************************************************************************/

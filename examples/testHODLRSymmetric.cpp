@@ -20,7 +20,10 @@ class myHODLR_Matrix : public HODLR_Matrix {
 		};
 
 		double get_Matrix_Entry(int j, int k) {
-			return get_Gaussian_Kernel_Entry(j,k);
+			// return get_Gaussian_Kernel_Entry(j,k);
+			// double a	=	2.0/pow(N,1.0/dim);
+			// return get_RPY(j,k,a);
+			return get_Biharmonic(j,k);
 		}
 
 		double get_Gaussian_Kernel_Entry(int j, int k){
@@ -33,6 +36,47 @@ class myHODLR_Matrix : public HODLR_Matrix {
 					r += (Theta(j, i) - Theta(k, i)) * (Theta(j, i) - Theta(k, i));
 				}
 				return exp(-r);
+			}
+		}
+
+		double get_Biharmonic(int j, int k) {
+			if(j==k) {
+				return 2.0*N;
+			}
+			else {
+				double r2	=	(Theta.row(j)-Theta.row(k)).squaredNorm();
+				return 0.5*r2*log(r2);
+			}
+		}
+
+		double get_RPY(int j, int k, double a) {
+			if (j==k) {
+				return 1.0/a;
+			}
+			else {
+				Eigen::VectorXd R	=	(Theta.row(j)-Theta.row(k));
+				double RRT			=	R(j%dim)*R(k%dim);
+				double r			=	R.norm();
+				if (r<2.0*a) {
+					double temp		=	0.09375/a*RRT/r; //	3/32a RRT/r;
+					if (j%dim==k%dim) {
+						return 1.0/a*(1-0.28125*r/a+temp);
+					}
+					else {
+						return temp/a;
+					}
+				}
+				else {
+					double r2		=	r*r;
+					double r4		=	r2*r2;
+					double temp		=	RRT/r/r - 2.0*a*a/r4*RRT;
+					if (j%dim==k%dim) {
+						return 0.75*(1.0+2.0/3.0*a*a/r2 + temp)/r;
+					}
+					else {
+						return 0.75*temp/r;
+					}
+				}
 			}
 		}
 

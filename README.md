@@ -7,9 +7,9 @@ This is an extension of the fast direct solver discussed in the article: "An O(N
 	Fast matrix vector products: Obtains A*x at a cost of O(N log N)
 
 	Fast solution of linear systems: Solves linear systems Ax=b in O(N log^2N)
-	
+
 	Fast determinant computation: Compute the determinant at an additional cost of O(N log N)
-	
+
 	Fast symmetric factorization: Obtains the symmetric factorization of a symmetric positive definite matrix, i.e., A = WW^T, at a cost of O(N log^2 N)
 
 	Fast symmetric factorization: Solves the symmetric positive definite matrix, at a cost of O(N log N)
@@ -65,7 +65,7 @@ Date: November 9th, 2016
 
 Copyleft 2016: Sivaram Ambikasaran
 
-Developed by Sivaram Ambikasaran
+Developed by Sivaram Ambikasaran, Karan Raj Singh
 
 #### License
 This program is free software; you can redistribute it and/or modify it under the terms of MPL2 license. The Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at <http://mozilla.org/MPL/2.0/.>

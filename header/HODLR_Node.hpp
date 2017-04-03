@@ -65,6 +65,7 @@ public:
 		this->parent                    =	NULL;
 		this->child[0]                  =	NULL;
 		this->child[1]                  =	NULL;
+		this->determinant               =	0;
 	};
 
         /*!

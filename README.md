@@ -109,22 +109,28 @@ download and install Eigen following the instructions
 The easiest way to build this library is using [CMake](http://cmake.org/). In
 the project directory, run:
 
-    mkdir build
-    cd build
-    cmake ..
-    make
-    make test
-    [sudo] make install # optional
+```bash
+mkdir build
+cd build
+cmake ..
+make
+make test
+[sudo] make install # optional
+```
 
 this will build the static `hodlr` library and run a few tests. If your version
 of the Eigen headers is installed in a non-standard place, you can change the
 `cmake` line to:
 
-    cmake .. -DEIGEN_INCLUDE_DIR_HINTS=/path/to/eigen
+```bash
+cmake .. -DEIGEN_INCLUDE_DIR_HINTS=/path/to/eigen
+```
 
 Your code should include `get_Matrix.hpp` and implement the function
 
-    double get_Matrix_Entry (const unsigned i, const unsigned j)
+```c++
+double get_Matrix_Entry (const unsigned i, const unsigned j)
+```
 
 ### Custom makefile:
 

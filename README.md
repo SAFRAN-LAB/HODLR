@@ -1,4 +1,4 @@
-#HODLR: Fast direct solver and determinant computation for dense linear systems
+# HODLR: Fast direct solver and determinant computation for dense linear systems
 
 This is an extension of the fast direct solver discussed in the article: "An O(N log (N)) Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices". The solver has also been extended to matrices not necessarily arising out of kernels and also to higher dimensions. Further, the solver has been optimized and the running time of the solver is now massively (a few orders of magnitude) faster than the running times reported in the article. Low-rank approximation of the appropriate blocks are obtained using partial pivoted LU algorithm. The domain is sub-divided based on a KDTree. The solver is fairly general and works with minimal restrictions.
 
@@ -66,7 +66,7 @@ Developed by Sivaram Ambikasaran
 
 This program is free software; you can redistribute it and/or modify it under the terms of MPL2 license. The Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at <http://mozilla.org/MPL/2.0/.>
 
-###DIRECTORIES AND FILES
+### DIRECTORIES AND FILES
 
 
 	./examples/		:	Example input C++ codes; Needed to read input from user or from input file.
@@ -77,15 +77,15 @@ This program is free software; you can redistribute it and/or modify it under th
 	./LICENSE.md	:	License file
 	./makefile.mk	:	Makefile
 
-##Usage
+## Usage
 
-###DEPENDENCIES:
+### DEPENDENCIES:
 
 To run this package, you need to have **Eigen**. If you don't already have it,
 download and install Eigen following the instructions
 [here](http://eigen.tuxfamily.org/index.php?title=Main_Page).
 
-###BUILD USING CMAKE:
+### BUILD USING CMAKE:
 
 The easiest way to build this library is using [CMake](http://cmake.org/).
 In the project directory, run:
@@ -110,7 +110,7 @@ double get_Matrix_Entry (const unsigned i, const unsigned j)
 ```
 
 
-###CUSTOM MAKEFILE:
+### CUSTOM MAKEFILE:
 
 1. There is a sample input file named "HODLR_Test.cpp" in the directory './examples/'. This calls the features the code can handle.
 

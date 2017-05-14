@@ -134,30 +134,28 @@ double get_Matrix_Entry (const unsigned i, const unsigned j)
 
 ### Custom makefile:
 
-1.  There is a sample input file named "HODLR_Test.cpp" in the directory
-    './examples/'. This calls the features the code can handle.
+1.  There is a sample input file named `HODLR_Test.cpp` in the directory
+    `./examples/`. This calls the features the code can handle.
 
 2.  Go to the directory where makefile is in, then key in the following command
-    in the terminal:
-
-        make -f makefile.mk
+    in the terminal: `make -f makefile.mk`.
 
 3.  Once your run the make command, the executables are created in the
-    directory named './exec/'. To run the code, go into the 'exec' directory
-    and call './HODLR_Test'.
+    directory named `./exec/`. To run the code, go into the `exec` directory
+    and call `./HODLR_Test`.
 
 4.  You can change the kernels in the makefile by changing KERNEL. More kernels
-    can be added by editing the function
+    can be added by editing the following function in the file
+	`get_Matrix.cpp`:
 
-        double get_Matrix_Entry(const unsigned i, const unsigned j)
+	```c++
+	double get_Matrix_Entry(constunsigned i, const unsigned j)
+	```
 
- in the file
-
-        get_Matrix.cpp
-
-5.  The dimension of the problem can be changed by changing DIM in the makefile.
+5.  The dimension of the problem can be changed by changing DIM in the
+    makefile.
 
 6.  Read through the comments in all the files. Most of the
     function/class/method/variable names are self-explanatory. Read the file
-    HODLR_Test.cpp to understand how to assemble, factor, solver a new HODLR
+    `HODLR_Test.cpp` to understand how to assemble, factor, solver a new HODLR
     system.

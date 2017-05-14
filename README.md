@@ -15,7 +15,7 @@ solver takes 23 seconds for a 1D problem and 86 seconds for a 2D problem (this
 is time taken from the time you press the return key on the keyboard to run
 your code and to get the final result). The matrix is of the form
 
-    	A	=	s^2 I + B
+        A    =    s^2 I + B
 
 where B(i,j) depends on R(i,j), the distance between the points x(i) and x(j).
 The computed answer is accurate upto more than 10 digits. It is to be noted
@@ -88,13 +88,13 @@ this file, You can obtain one at <http://mozilla.org/MPL/2.0/.>
 
 ## Directories and files
 
-    ./examples/		:	Example input C++ codes; Needed to read input from user or from input file.
-    ./src/			:	Source code in C++
-    ./header/		:	Relevant header files
-    ./exec/			:	Executables for HODLR
-    ./README.md		:	This file
-    ./LICENSE.md	:	License file
-    ./makefile.mk	:	Makefile
+    ./examples/     :    Example input C++ codes; Needed to read input from user or from input file.
+    ./src/          :    Source code in C++
+    ./header/       :    Relevant header files
+    ./exec/         :    Executables for HODLR
+    ./README.md     :    This file
+    ./LICENSE.md    :    License file
+    ./makefile.mk   :    Makefile
 
 ## Usage
 
@@ -146,11 +146,11 @@ double get_Matrix_Entry (const unsigned i, const unsigned j)
 
 4.  You can change the kernels in the makefile by changing KERNEL. More kernels
     can be added by editing the following function in the file
-	`get_Matrix.cpp`:
+    `get_Matrix.cpp`:
 
-	```c++
-	double get_Matrix_Entry(constunsigned i, const unsigned j)
-	```
+    ```c++
+    double get_Matrix_Entry(constunsigned i, const unsigned j)
+    ```
 
 5.  The dimension of the problem can be changed by changing DIM in the
     makefile.

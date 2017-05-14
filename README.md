@@ -18,49 +18,49 @@ If you use the implementation or any part of the implementation in your work, ki
 
 ***Article***
 
-@article{ambikasaran2013fast,
+	@article{ambikasaran2013fast,
 
-  author={{A}mbikasaran, {S}ivaram and {D}arve, {E}ric},
-  
-  title={An $\mathcal{O}(N \log N)$ Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices},
-  
-  journal={Journal of Scientific Computing},
-  
-  year={2013},
-  
-  volume={57},
-  
-  number={3},
-  
-  pages={477--501},
-  
-  month={December},
-  
-  publisher={Springer}
-  
-}
+	  author={{A}mbikasaran, {S}ivaram and {D}arve, {E}ric},
+
+	  title={An $\mathcal{O}(N \log N)$ Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices},
+
+	  journal={Journal of Scientific Computing},
+
+	  year={2013},
+
+	  volume={57},
+
+	  number={3},
+
+	  pages={477--501},
+
+	  month={December},
+
+	  publisher={Springer}
+
+	}
 
 ***Code***
 
-@MISC{ambikasaran2013HODLR,
+	@MISC{ambikasaran2013HODLR,
 
-  author = {{A}mbikasaran, {S}ivaram},
-  
-  title = {A fast direct solver for dense linear systems},
-  
-  howpublished = {https://github.com/sivaramambikasaran/HODLR},
-  
-  year = {2013}
-  
- }
+	  author = {{A}mbikasaran, {S}ivaram},
+
+	  title = {A fast direct solver for dense linear systems},
+
+	  howpublished = {https://github.com/sivaramambikasaran/HODLR},
+
+	  year = {2013}
+
+	 }
 
 **Version 3.14**
 
-Date: November 14th, 2013
+	Date: November 14th, 2013
 
-Copyleft 2013: Sivaram Ambikasaran
+	Copyleft 2013: Sivaram Ambikasaran
 
-Developed by Sivaram Ambikasaran
+	Developed by Sivaram Ambikasaran
 
 ## License
 

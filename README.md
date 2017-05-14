@@ -12,7 +12,7 @@ where B(i,j) depends on R(i,j), the distance between the points x(i) and x(j). T
 
 Sivaram Ambikasaran <siva.1985@gmail.com>
 
-**Citation**
+## Citation
 
 If you use the implementation or any part of the implementation in your work, kindly cite as follows:
 
@@ -62,11 +62,11 @@ Copyleft 2013: Sivaram Ambikasaran
 
 Developed by Sivaram Ambikasaran
 
-**License**
+## License
 
 This program is free software; you can redistribute it and/or modify it under the terms of MPL2 license. The Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at <http://mozilla.org/MPL/2.0/.>
 
-### DIRECTORIES AND FILES
+## Directories and files
 
 
 	./examples/		:	Example input C++ codes; Needed to read input from user or from input file.
@@ -79,13 +79,13 @@ This program is free software; you can redistribute it and/or modify it under th
 
 ## Usage
 
-### DEPENDENCIES:
+### Dependencies:
 
 To run this package, you need to have **Eigen**. If you don't already have it,
 download and install Eigen following the instructions
 [here](http://eigen.tuxfamily.org/index.php?title=Main_Page).
 
-### BUILD USING CMAKE:
+### Build using cmake:
 
 The easiest way to build this library is using [CMake](http://cmake.org/).
 In the project directory, run:
@@ -110,7 +110,7 @@ double get_Matrix_Entry (const unsigned i, const unsigned j)
 ```
 
 
-### CUSTOM MAKEFILE:
+### Custom makefile:
 
 1. There is a sample input file named "HODLR_Test.cpp" in the directory './examples/'. This calls the features the code can handle.
 

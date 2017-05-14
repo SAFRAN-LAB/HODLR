@@ -12,11 +12,19 @@ where B(i,j) depends on R(i,j), the distance between the points x(i) and x(j). T
 
 Sivaram Ambikasaran <siva.1985@gmail.com>
 
+**Version 3.14**
+
+	Date: November 14th, 2013
+
+	Copyleft 2013: Sivaram Ambikasaran
+
+	Developed by Sivaram Ambikasaran
+
 ## Citation
 
 If you use the implementation or any part of the implementation in your work, kindly cite as follows:
 
-***Article***
+**Article**
 
 	@article{ambikasaran2013fast,
 
@@ -40,7 +48,7 @@ If you use the implementation or any part of the implementation in your work, ki
 
 	}
 
-***Code***
+**Code**
 
 	@MISC{ambikasaran2013HODLR,
 
@@ -53,14 +61,6 @@ If you use the implementation or any part of the implementation in your work, ki
 	  year = {2013}
 
 	 }
-
-**Version 3.14**
-
-	Date: November 14th, 2013
-
-	Copyleft 2013: Sivaram Ambikasaran
-
-	Developed by Sivaram Ambikasaran
 
 ## License
 

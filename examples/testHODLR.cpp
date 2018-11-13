@@ -1,112 +1,134 @@
+// This file serves as a gentle introduction to the usage of this library:
+
 #include <iostream>
 #include <cmath>
 #include <Eigen/Dense>
 #include "HODLR_Tree.hpp"
 #include "HODLR_Matrix.hpp"
 
-class myHODLR_Matrix : public HODLR_Matrix {
+using Eigen::MatrixXd;
+using Eigen::VectorXd;
+
+using std::cout;
+using std::endl;
+
+// Derived class of HODLR_Matrix
+class myHODLR_Matrix : public HODLR_Matrix 
+{
+
 private:
-	Eigen::VectorXd x;
+    
+    // This would be source / target points:
+    // DOUBT: What if my source and target points are different?
+    VectorXd x;
+
 public:
-	myHODLR_Matrix(int N) : HODLR_Matrix(N) {
-		x	=	Eigen::VectorXd::Random(N);
-		std::sort(x.data(),x.data()+x.size());
-	};
-	double get_Matrix_Entry(int j, int k) {
-		if(j==k) {
-			return 10;
-		}
-		else {
-			//return 1.0/(1.0+((x(j)-x(k))*(x(j)-x(k))));
-//			return sqrt(1.0 + ((x(j)-x(k))*(x(j)-x(k))));
-			// return exp(-fabs(x(j)-x(k)));
-			return exp(-(x(j)-x(k))*(x(j)-x(k)));
-		}
-	}
-	~myHODLR_Matrix() {};
-};
 
-int main(int argc, char* argv[]) {
-	int N					=	atoi(argv[1]);
-	myHODLR_Matrix* A		=	new myHODLR_Matrix(N);
-	int nLevels				=	log(N/200)/log(2);
-	double tolerance		=	1e-13;
-
-	double start, end;
-	// double CPS	=	CLOCKS_PER_SEC;
-	double CPS	=	1.0;
-
-	std::cout << "\nFast method...\n";
-	// start	=	clock();
-	start	=	omp_get_wtime();
-	HODLR_Tree* myMatrix	=	new HODLR_Tree(nLevels, tolerance, A);
-	Eigen::MatrixXd x		=	Eigen::MatrixXd::Random(N,1);
-	Eigen::MatrixXd bFast;
-	myMatrix->assembleTree();
-	// end		=	clock();
-	end		=	omp_get_wtime();
-	std::cout << "\nTime taken for assembling the matrix in HODLR form is: " << (end-start)/CPS << "\n";
-
-	// start	=	clock();
-	start	=	omp_get_wtime();
-	myMatrix->matmat_Product(x, bFast);
-	// end		=	clock();
-	end		=	omp_get_wtime();
-	std::cout << "\nTime for fast matrix-vector product is: " << (end-start)/CPS << "\n";
-
-
-	// std::cout << "\nExact method...\n";
-	// // start	=	clock();
-	// start	=	omp_get_wtime();
-	// Eigen::MatrixXd B		=	A->get_Matrix(0,0,N,N);
-	// // end		=	clock();
-	// end		=	omp_get_wtime();
-	// std::cout << "\nTime taken for assembling the matrix is: " << (end-start)/CPS << "\n";
-
-	// // start	=	clock();
-	// start	=	omp_get_wtime();
-	// Eigen::MatrixXd bExact	=	B*x;
-	// // end	=	clock();
-	// end	=	omp_get_wtime();
-	//
-	// std::cout << "\nTime for exact matrix-vector product is: " << (end-start)/CPS << "\n";
-	//
-	// std::cout << "\nError in the solution is: " << (bFast-bExact).norm()/(1.0+bExact.norm()) << "\n";
-
-	Eigen::MatrixXd xFast;
-	// start	=	clock();
-	start	=	omp_get_wtime();
-	myMatrix->factorize();
-	// end	=	clock();
-	end		=	omp_get_wtime();
-	std::cout << "\nTime taken to factorize is: " << (end-start)/CPS << "\n";
-
-	// start	=	clock();
-	start	=	omp_get_wtime();
-	xFast	=	myMatrix->solve(bFast);
-	// end	=	clock();
-	end	=	omp_get_wtime();
-	std::cout << "\nTime taken to solve is: " << (end-start)/CPS << "\n";
-
-	// start	=	clock();
-	// Eigen::MatrixXd xSolve	=	B.fullPivLu().solve(bExact);
-	// end		=	clock();
-	// std::cout << "\nTime taken to solve is: " << (end-start)/CPS << "\n";
-
-	std::cout << "\nError in the solution is: " << (xFast-x).norm()/*/(1.0+x.norm())*/ << "\n";
-
-  Eigen::MatrixXd M = A->get_Matrix(0,0,N,N);
-Eigen::LLT<Eigen::MatrixXd> P;
-    P.compute(M);
-    double det = 0.0;
-    for(int i=0; i<P.matrixL().rows(); ++i){
-        det += log(P.matrixL()(i,i));
+    // Constructor:
+    myHODLR_Matrix(int N) : HODLR_Matrix(N) 
+    {
+        x = VectorXd::Random(N);
+        // DOUBT: Why is this being sorted??
+        std::sort(x.data(),x.data()+x.size());
+    };
+    
+    double get_Matrix_Entry(int j, int k) 
+    {
+        // Value on the diagonal:
+        if(j==k) 
+        {
+            return 10;
+        }
+        
+        // Otherwise:
+        else 
+        {
+            return exp(-(x(j)-x(k))*(x(j)-x(k)));
+        }
     }
 
-	start = omp_get_wtime();
-           double det1 = myMatrix->hodlr_Determinant();
-           end = omp_get_wtime();
-           std::cout<<"\nTime taken for computing: "<<(end-start)/CPS<<"\n";
+    // Destructor:
+    ~myHODLR_Matrix() {};
+};
 
-           std::cout<<"fast determinant: "<<det1<<" Usual det: "<<2*det<<"\n";
+int main(int argc, char* argv[]) 
+{
+    // Size of the Matrix in consideration:
+    int N             = atoi(argv[1]);
+    // Declaration of HODLR_Matrix object that abstracts data in Matrix:
+    myHODLR_Matrix* A = new myHODLR_Matrix(N);
+    // Here it is assumed that size of leaf level is 200
+    int n_levels      = log(N / 200) / log(2);
+    double tolerance  = 1e-12;
+
+    // Variables used in timing:
+    double start, end;
+
+    cout << "Fast method..." << endl;
+    
+    start = omp_get_wtime();
+    HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, A);
+    T->assemble_Tree();
+    end   = omp_get_wtime();
+    
+    cout << "Time for assembly in HODLR form:" << (end - start) << endl;
+
+    // Random Matrix to multiply with
+    MatrixXd x = MatrixXd::Random(N, 1);
+    // Stores the result after multiplication:
+    MatrixXd b_fast;
+    
+    start = omp_get_wtime();
+    T->matmat_Product(x, b_fast);
+    end   = omp_get_wtime();
+    
+    cout << "Time for matrix-vector product:" << (end - start) << endl << endl;
+
+    cout << "Exact method..." << endl;
+
+    // What we are doing here is explicitly generating 
+    // the matrix from its entries
+    start = omp_get_wtime();
+    MatrixXd B = A->get_Matrix(0,0,N,N);
+    end   = omp_get_wtime();
+    
+    cout << "Time for matrix generation:" << (end-start) << endl;
+
+    start = omp_get_wtime();
+    MatrixXd b_exact = B * x;
+    end   = omp_get_wtime();
+    
+    cout << "Time for matrix-vector product:" << (end-start) << endl;
+    cout << "Error in the solution is:" << (b_fast-b_exact).norm() / (1.0 + b_exact.norm()) << endl << endl;
+
+    MatrixXd x_fast;
+    start = omp_get_wtime();
+    T->factorize();
+    end   = omp_get_wtime();
+    cout << "Time to factorize:" << (end-start) << endl;
+
+    start  = omp_get_wtime();
+    x_fast = T->solve(b_fast);
+    end    = omp_get_wtime();
+    cout << "Time to solve:" << (end-start) << endl;
+    cout << "Error in the solution:" << (x_fast - x).norm() / (1.0 + x.norm()) << endl << endl;
+
+    // Computing log-determinant using Cholesky:
+    Eigen::LLT<MatrixXd> P;
+    start = omp_get_wtime();
+    P.compute(B);
+    double log_det = 0.0;
+    for(int i=0; i<P.matrixL().rows(); ++i)
+    {
+        log_det += log(P.matrixL()(i,i));
+    }
+    end = omp_get_wtime();
+    log_det = 2 * log_det;
+    cout << "Time to calculate log determinant using Cholesky:" << (end-start) << endl;
+
+    start = omp_get_wtime();
+    double log_det_hodlr = T->determinant();
+    end = omp_get_wtime();
+    cout << "Time to calculate log determinant using HODLR:" << (end-start) << endl;
+    cout << "Error in computation:" << fabs(log_det_hodlr - log_det) << endl;
 }

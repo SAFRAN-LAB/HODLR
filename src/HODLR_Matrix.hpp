@@ -5,7 +5,8 @@
 #include <set>
 #include <vector>
 
-class HODLR_Matrix {
+class HODLR_Matrix 
+{
 	friend class HODLR_Tree;
 	private:
 	int N;
@@ -22,7 +23,7 @@ class HODLR_Matrix {
 	Eigen::MatrixXd get_Matrix(int j, int k, int nRows, int nCols);
 	int max_Abs_Vector(const Eigen::VectorXd& v, const std::set<int>& allowed_Indices, double& max);
 	void rook_Piv(int nRowStart, int nColStart, int nRows, int nCols, double tolerance, Eigen::MatrixXd& L, Eigen::MatrixXd& R, int& computedRank);
-	void queen_Piv(int nRowStart, int nColStart, int nRows, int nCols, double tolerance, Eigen::MatrixXd& L, Eigen::MatrixXd& R, int& computedRank);
+	// void queen_Piv(int nRowStart, int nColStart, int nRows, int nCols, double tolerance, Eigen::MatrixXd& L, Eigen::MatrixXd& R, int& computedRank);
 	~HODLR_Matrix();
 };
 

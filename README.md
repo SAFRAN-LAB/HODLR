@@ -69,3 +69,16 @@ Developed by Sivaram Ambikasaran, Karan Raj Singh
 
 #### License
 This program is free software; you can redistribute it and/or modify it under the terms of MPL2 license. The Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at <http://mozilla.org/MPL/2.0/.>
+
+#### In development:
+
+Currently, some changes are being made for certain bug fixes, support for later `Eigen` versions and unification of code conventions.
+
+#### Additional things to be noted:
+
+- Please set `$EIGEN_PATH` if the eigen headers are not in `\usr\include`
+- Change to conventions:
+	- Variables named with lower case with underscore. For example:`n_rows`, `n_columns`
+	- Functions are named following camelCase. For example: `getColumns`, `getRow`
+	- Classes are declared with the first letter being capitalized aswell in addition to separation using underscores. For example: `HODLR_Matrix`
+	- Constants are all defined using ALLCAPS. For example `PI`, `DIM`

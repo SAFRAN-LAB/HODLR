@@ -70,7 +70,9 @@ class HODLR_Tree {
 		Eigen::MatrixXd symmetric_Factor_Product(Eigen::MatrixXd b);
 		Eigen::MatrixXd symmetric_Factor_Transpose_Product(Eigen::MatrixXd b);
 
-		//  Don't use this for large N; Essentially builds the entire symmetric factor; Only for testing purposes;
+		//  Don't use this for large N; 
+		// Essentially builds the entire symmetric factor; 
+		// Only for testing purposes;
 		Eigen::MatrixXd build_Symmetric_Matrix_Factor();
 };
 

@@ -15,7 +15,7 @@
 
 using namespace Eigen;
 
-void mergeSortedLists(MatrixXd& list1, MatrixXd& list2, unsigned index, MatrixXd& finalList) 
+void mergeSortedLists(MatrixXd& list1, MatrixXd& list2, unsigned index, MatrixXd& final_list) 
 {
     unsigned N1 = list1.rows();
     unsigned N2 = list2.rows();
@@ -92,7 +92,7 @@ void mergeSort(MatrixXd& locations, unsigned index)
     }
 }
 
-void get_KDTree_Sorted(MatrixXd& locations, unsigned index) 
+void getKDTreeSorted(MatrixXd& locations, unsigned index) 
 {
     /// Get the total number of points
     unsigned N = locations.rows();

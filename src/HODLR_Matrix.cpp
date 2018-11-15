@@ -66,11 +66,12 @@ void HODLR_Matrix::maxAbsVector(const Eigen::VectorXd& v,
     }
 }
 
-
-void HODLR_Matrix::rook_Piv(int n_row_start, int n_col_start, 
-                            int n_rows, int n_cols, double tolerance, 
-                            Eigen::MatrixXd& L, Eigen::MatrixXd& R, int& computed_rank
-                           )
+// This performs ACA upon the input matrix and returns U and V such that
+// ||A - UV^T|| < tolerance
+void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start, 
+                           int n_rows, int n_cols, double tolerance, 
+                           Eigen::MatrixXd& L, Eigen::MatrixXd& R, int& computed_rank
+                          )
 {
     // Indices which have been used:
     std::vector<int> row_ind;      
@@ -94,21 +95,25 @@ void HODLR_Matrix::rook_Piv(int n_row_start, int n_col_start,
         remaining_col_ind.insert(k);
     }
 
-    // Passing the seed as time to the PRNG:
-    srand(time(NULL));
     double max, gamma, unused_max;
 
     // Initialize the matrix norm and the the first row index
     double matrix_norm = 0;
-    row_index.push_back(0);
+    row_ind.push_back(0);
     remaining_row_ind.erase(0);
 
+    // Stores the pivot entry of the considered row / col:
     int pivot;
 
+    // This would get updated:
     computed_rank = 0;
+
     Eigen::VectorXd a, row, col;
+
+    // These quantities in finding the stopping criteria:
     double row_squared_norm, row_norm, col_squared_norm, col_norm;
 
+    // So these would be particularly used for certain edge cases:
     int max_tries = 10;
     int count;
 
@@ -117,110 +122,146 @@ void HODLR_Matrix::rook_Piv(int n_row_start, int n_col_start,
     {
         // Generation of the row
         // Row of the residuum and the pivot column
-        // row = A.row(rowIndex.back());
-        row = get_Row(n_row_start+rowIndex.back(), n_col_start, n_cols);
+        // By calling row_ind.back(), we are getting the last pushed number
+        row = this->getRow(n_row_start + row_ind.back(), n_col_start, n_cols);
         
-        for (int l=0; l<computedRank; ++l) 
+        for(int i = 0; i < computed_rank; i++) 
         {
-            row = row - u[l](rowIndex.back()) * v[l];
+            row = row - u[i](row_ind.back()) * v[i];
         }
 
-        pivot   =   max_Abs_Vector(row, remainingColIndex, max);
-
-
-        count   =   0;
-
-        /// This randomization is needed if in the middle of the algorithm the row happens to be exactly the linear combination of the previous rows upto some tolerance.
-        while (fabs(max)<tolerance && count < max_tries && remainingColIndex.size() >0 && remainingRowIndex.size() >0) {
-            rowIndex.pop_back();
-            int new_rowIndex    =   *remainingRowIndex.begin();
-            rowIndex.push_back(new_rowIndex);
-            remainingRowIndex.erase(new_rowIndex);
-
-            /// Generation of the row
-            // a    =   A.row(new_rowIndex);
-            a   =   get_Row(n_row_start+new_rowIndex, n_col_start, n_cols);
-            /// Row of the residuum and the pivot column
-            row =   a;
-            for (int l=0; l<computedRank; ++l) {
-                row =   row-u[l](rowIndex.back())*v[l];
-            }
-            pivot   =   max_Abs_Vector(row, remainingColIndex, max);
-            ++count;
-        }
-
-        if (count == max_tries || remainingColIndex.size() == 0 || remainingRowIndex.size() == 0) break;
-
+        this->maxAbsVector(row, remaining_col_ind, max, pivot);
         count = 0;
 
-        colIndex.push_back(pivot);
-        remainingColIndex.erase(pivot);
+        // This randomization is needed if in the middle of the algorithm the 
+        // row happens to be exactly the linear combination of the previous rows 
+        // upto some tolerance.
+        while (fabs(max) < tolerance && 
+               count < max_tries   && 
+               remaining_col_ind.size() > 0 && 
+               remaining_row_ind.size() > 0
+              ) 
+        {
+            row_ind.pop_back();
+            int new_row_ind = *remaining_row_ind.begin();
+            row_ind.push_back(new_row_ind);
+            remaining_row_ind.erase(new_row_ind);
 
-        /// Normalizing constant
-        Gamma   =   1.0/max;
-
-        /// Generation of the column
-        // a    =   A.col(colIndex.back());
-        a   =   get_Col(n_col_start+colIndex.back(), n_row_start, n_rows);
-        /// Column of the residuum and the pivot row
-        col =   a;
-        for (int l=0; l<computedRank; ++l) {
-            col =   col-v[l](colIndex.back())*u[l];
-        }
-        pivot   =   max_Abs_Vector(col, remainingRowIndex, unused_max);
-
-        /// This randomization is needed if in the middle of the algorithm the columns happens to be exactly the linear combination of the previous columns.
-        while (fabs(max)<tolerance && count < max_tries && remainingColIndex.size() >0 && remainingRowIndex.size() >0) {
-            colIndex.pop_back();
-            int new_colIndex    =   *remainingColIndex.begin();
-            colIndex.push_back(new_colIndex);
-            remainingColIndex.erase(new_colIndex);
-
-            /// Generation of the column
-            // a    =   A.col(new_colIndex);
-            a   =   get_Col(n_col_start+new_colIndex, n_row_start, n_rows);
-
-            /// Column of the residuum and the pivot row
-            col =   a;
-            for (int l=0; l<computedRank; ++l) {
-                col =   col-u[l](colIndex.back())*v[l];
+            // Generation of the row
+            a = this->getRow(n_row_start + new_row_ind, n_col_start, n_cols);
+            // Row of the residuum and the pivot column
+            row = a;
+            
+            for(int i = 0; i < computed_rank; i++) 
+            {
+                row = row - u[i](row_ind.back()) * v[i];
             }
-            pivot   =   max_Abs_Vector(col, remainingRowIndex, unused_max);
-            ++count;
-            std::cout << count << "\n";
+
+            this->maxAbsVector(row, remaining_col_ind, max, pivot);
+            count++;
         }
 
-        if (count == max_tries || remainingColIndex.size() == 0 || remainingRowIndex.size() == 0) break;
+        // In case it failed to resolve in the previous step, 
+        // we break out of the dowhile loop:
+        if (count == max_tries || 
+            remaining_col_ind.size() == 0 || 
+            remaining_row_ind.size() == 0
+           )
+        {
+            break;
+        } 
 
+        // Now we will move onto doing this process for the column bases
+        // Resetting the count back to zero:
         count = 0;
 
-        rowIndex.push_back(pivot);
-        remainingRowIndex.erase(pivot);
+        col_ind.push_back(pivot);
+        remaining_col_ind.erase(pivot);
 
-        /// New vectors
-        u.push_back(Gamma*col);
+        // Normalizing constant
+        gamma = 1.0 / max;
+
+        // Generation of the column
+        a   = this->getCol(n_col_start + col_ind.back(), n_row_start, n_rows);
+        // Column of the residuum and the pivot row
+        col = a;
+        
+        for(int i = 0; i < computed_rank; i++) 
+        {
+            col = col - v[i](col_ind.back()) * u[i];
+        }
+
+        this->maxAbsVector(col, remaining_row_ind, unused_max, pivot);
+
+        // Repeating the same randomization we carried out for the rows, now for the columns:
+        while (fabs(max)<tolerance && 
+               count < max_tries && 
+               remaining_col_ind.size() >0 && 
+               remaining_row_ind.size() >0
+              ) 
+        {
+            col_ind.pop_back();
+            int new_col_ind = *remaining_col_ind.begin();
+            col_ind.push_back(new_col_ind);
+            remaining_col_ind.erase(new_col_ind);
+
+            // Generation of the column
+            a = this->getCol(n_col_start + new_col_ind, n_row_start, n_rows);
+
+            // Column of the residuum and the pivot row
+            col = a;
+            for(int i = 0; i < computed_rank; i++) 
+            {
+                col = col - v[i](col_ind.back()) * u[i];
+            }
+
+            this->maxAbsVector(col, remaining_row_ind, unused_max, pivot);
+            count++;
+        }
+
+        // In case it failed to resolve in the previous step, 
+        // we break out of the dowhile loop:
+        if (count == max_tries || 
+            remaining_col_ind.size() == 0 || 
+            remaining_row_ind.size() == 0
+           )
+        {
+            break;
+        } 
+
+        // Resetting back for next iteration:
+        count = 0;
+
+        row_ind.push_back(pivot);
+        remaining_row_ind.erase(pivot);
+
+        // New vectors
+        u.push_back(gamma * col);
         v.push_back(row);
 
-        /// New approximation of matrix norm
-        row_Squared_Norm    =   row.squaredNorm();
-        row_Norm            =   sqrt(row_Squared_Norm);
+        // New approximation of matrix norm
+        row_squared_norm = row.squaredNorm();
+        row_norm         = sqrt(row_squared_norm);
 
-        col_Squared_Norm    =   col.squaredNorm();
-        col_Norm            =   sqrt(col_Squared_Norm);
+        col_squared_norm = col.squaredNorm();
+        col_norm         = sqrt(col_squared_norm);
 
-        matrix_Norm         =   matrix_Norm +   Gamma*Gamma*row_Squared_Norm*col_Squared_Norm;
+        // Updating the matrix norm:
+        matrix_norm = matrix_norm + gamma * gamma * row_squared_norm * col_squared_norm;
 
-        for (int j=0; j<computedRank; ++j) {
-            matrix_Norm     =   matrix_Norm +   2.0*(u[j].dot(u.back()))*(v[j].dot(v.back()));
+        for(int j = 0; j < computed_rank; j++) 
+        {
+            matrix_norm = matrix_norm + 2.0 * (u[j].dot(u.back())) * (v[j].dot(v.back()));
         }
-        ++computedRank;
+        
+        computed_rank++;
     } 
     while(computed_rank * (n_rows + n_cols) * row_norm * col_norm > 
           fabs(max) * tolerance * matrix_norm && 
           computed_rank < fmin(n_rows, n_cols)
          );
 
-    // If the computedRank is >= to full-rank
+    // If the computed_rank is >= to full-rank
     // then return the trivial full-rank decomposition
     if (computed_rank >= fmin(n_rows, n_cols) - 1) 
     {
@@ -239,6 +280,7 @@ void HODLR_Matrix::rook_Piv(int n_row_start, int n_col_start,
         }
     }
     
+    // This is when ACA has succeeded:
     else 
     {
         L = Eigen::MatrixXd(n_rows, computed_rank);

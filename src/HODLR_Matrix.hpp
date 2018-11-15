@@ -36,19 +36,15 @@ public:
 
 	void maxAbsVector(const Eigen::VectorXd& v, 
                       const std::set<int>& allowed_indices, 
-                      double& max, int& index);
+                      double& max, int& index
+                     );
 	
-    void rookPiv(int nRowStart, int nColStart, int nRows, int nCols, double tolerance, Eigen::MatrixXd& L, Eigen::MatrixXd& R, int& computedRank);
+    void rookPiv(int n_row_start, int n_col_start, int n_rows, int n_cols, double tolerance, 
+                 Eigen::MatrixXd& L, Eigen::MatrixXd& R, int& computed_rank
+                );
 	
     // Destructor:
     ~HODLR_Matrix();
 };
-
-/****************************************************************************************************/
-/*	PURPOSE OF EXISTENCE:	Obtains the low-rank decomposition of the matrix to a desired tolerance	*/
-/* 	using rook pivoting, i.e., given a sub-matrix 'A' and tolerance 'epsilon', computes matrices	*/
-/*	'L' and 'R' such that ||A-LR'||_F < epsilon. The norm is Frobenius norm.						*/
-/****************************************************************************************************/
-
 
 #endif /*__HODLR_Matrix__*/

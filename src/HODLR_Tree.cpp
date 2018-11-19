@@ -154,19 +154,10 @@ void HODLR_Tree::factorizeNonLeaf(int j, int k)
 
     for(int l = j - 1; l >= 0; l--) 
     {
-        std::cout << l << std::endl;
-
-        std::cout << "r = " << tree[l][parent]->U_factor[child].rows() << std::endl;
-        std::cout << "c = " << tree[l][parent]->U_factor[child].cols() << std::endl;
-
         child   = parent % 2;
         parent  = parent / 2;
-        t_start = tree[n_levels][k]->n_start - tree[l][parent]->c_start[child];
+        t_start = tree[j][k]->n_start - tree[l][parent]->c_start[child];
         r       = tree[l][parent]->rank[child];
-
-        std::cout << "t_start = " << t_start << std::endl;
-        std::cout << "size = " << size << std::endl;
-        std::cout << "r = " << r << std::endl;
 
         tree[l][parent]->U_factor[child].block(t_start, 0, size, r) =   
         this->solveNonLeaf(j, k, tree[l][parent]->U_factor[child].block(t_start, 0, size, r));
@@ -221,10 +212,9 @@ void HODLR_Tree::factorize()
     // Factorizing the nonleaf levels:
     for(int j = n_levels - 1; j >= 0; j--) 
     {
-        // #pragma omp parallel for
+        #pragma omp parallel for
         for (int k = 0; k < nodes_in_level[j]; k++) 
         {
-            std::cout << j << ", " << k << std::endl;
             this->factorizeNonLeaf(j, k);
         }
     }
@@ -262,3 +252,21 @@ Eigen::MatrixXd HODLR_Tree::solve(Eigen::MatrixXd b)
 
     return x;
 } 
+
+double HODLR_Tree::logDeterminant()
+{
+    double log_det = 0.0;
+
+    for(int j = n_levels; j >= 0; j--) 
+    {
+        for(int k = 0; k < nodes_in_level[j]; k++) 
+        {
+            for(int l = 0; l < tree[j][k]->K_factor.matrixLU().rows(); l++) 
+            {
+                log_det += log(fabs(tree[j][k]->K_factor.matrixLU()(l,l)));
+            }
+        }
+    }
+
+    return(log_det);
+}

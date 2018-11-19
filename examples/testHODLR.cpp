@@ -65,8 +65,8 @@ int main(int argc, char* argv[])
     // Declaration of HODLR_Matrix object that abstracts data in Matrix:
     myHODLR_Matrix* A = new myHODLR_Matrix(N);
     // Here it is assumed that size of leaf level is 200
-    int n_levels      = log(N / 200) / log(2);
-    double tolerance  = 1e-12;
+    int n_levels      = log(N/200) / log(2);
+    double tolerance  = 1e-13;
 
     // Variables used in timing:
     double start, end;
@@ -124,21 +124,21 @@ int main(int argc, char* argv[])
     cout << "Error in the solution:" << (x_fast - x).norm() / (x.norm()) << endl << endl;
 
     // Computing log-determinant using Cholesky:
-    // Eigen::LLT<MatrixXd> P;
-    // start = omp_get_wtime();
-    // P.compute(B);
-    // double log_det = 0.0;
-    // for(int i=0; i<P.matrixL().rows(); ++i)
-    // {
-    //     log_det += log(P.matrixL()(i,i));
-    // }
-    // end = omp_get_wtime();
-    // log_det = 2 * log_det;
-    // cout << "Time to calculate log determinant using Cholesky:" << (end-start) << endl;
+    Eigen::LLT<MatrixXd> P;
+    start = omp_get_wtime();
+    P.compute(B);
+    double log_det = 0.0;
+    for(int i=0; i<P.matrixL().rows(); ++i)
+    {
+        log_det += log(P.matrixL()(i,i));
+    }
+    end = omp_get_wtime();
+    log_det = 2 * log_det;
+    cout << "Time to calculate log determinant using Cholesky:" << (end-start) << endl;
 
-    // start = omp_get_wtime();
-    // double log_det_hodlr = T->logDeterminant();
-    // end = omp_get_wtime();
-    // cout << "Time to calculate log determinant using HODLR:" << (end-start) << endl;
-    // cout << "Error in computation:" << fabs(log_det_hodlr - log_det) << endl;
+    start = omp_get_wtime();
+    double log_det_hodlr = T->logDeterminant();
+    end = omp_get_wtime();
+    cout << "Time to calculate log determinant using HODLR:" << (end-start) << endl;
+    cout << "Error in computation:" << fabs(log_det_hodlr - log_det) << endl;
 }

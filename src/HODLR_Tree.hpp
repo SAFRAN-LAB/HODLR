@@ -2,8 +2,6 @@
 #define __HODLR_Tree__
 
 #include <Eigen/Dense>
-#include <Eigen/Cholesky>
-#include <Eigen/QR>
 #include <vector>
 
 #include "HODLR_Matrix.hpp"
@@ -37,8 +35,8 @@ public:
 	//  Methods for HODLR solver
 	void assembleTree();
 	void factorize();
-	double determinant();
 	void matmatProduct(Eigen::MatrixXd x, Eigen::MatrixXd& b);
+	double logDeterminant();
 	Eigen::MatrixXd solve(Eigen::MatrixXd b);
 };
 

@@ -268,13 +268,13 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
         if (n_rows < n_cols) 
         {
             L = Eigen::MatrixXd::Identity(n_rows, n_rows);
-            R = get_Matrix(n_row_start, n_col_start, n_rows, n_cols).transpose();
+            R = getMatrix(n_row_start, n_col_start, n_rows, n_cols).transpose();
             computed_rank = n_rows;
         }
 
         else 
         {
-            L = get_Matrix(n_row_start, n_col_start, n_rows, n_cols);
+            L = getMatrix(n_row_start, n_col_start, n_rows, n_cols);
             R = Eigen::MatrixXd::Identity(n_cols, n_cols);
             computed_rank = n_cols;
         }

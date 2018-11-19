@@ -12,7 +12,9 @@ using Eigen::VectorXd;
 using std::cout;
 using std::endl;
 
-// Derived class of HODLR_Matrix
+// Derived class of HODLR_Matrix which is ultimately
+// passed to the HODLR_Tree class:
+
 class myHODLR_Matrix : public HODLR_Matrix 
 {
 
@@ -20,6 +22,8 @@ private:
     
     // This would be source / target points:
     // DOUBT: What if my source and target points are different?
+    // ANS: Turns out in these contexts source and target points are
+    // always taken to be the same.
     VectorXd x;
 
 public:
@@ -28,11 +32,14 @@ public:
     myHODLR_Matrix(int N) : HODLR_Matrix(N) 
     {
         x = VectorXd::Random(N);
-        // DOUBT: Why is this being sorted??
+        // This is being sorted to ensure that we get
+        // optimal low rank structure:
         std::sort(x.data(),x.data()+x.size());
     };
     
-    double get_Matrix_Entry(int j, int k) 
+    // In this example, we are illustrating usage using
+    // the gaussian kernel:
+    double getMatrixEntry(int j, int k) 
     {
         // Value on the diagonal:
         if(j==k) 
@@ -67,8 +74,9 @@ int main(int argc, char* argv[])
     cout << "Fast method..." << endl;
     
     start = omp_get_wtime();
+    // Creating a pointer to the HODLR Tree structure:
     HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, A);
-    T->assemble_Tree();
+    T->assembleTree();
     end   = omp_get_wtime();
     
     cout << "Time for assembly in HODLR form:" << (end - start) << endl;
@@ -79,7 +87,7 @@ int main(int argc, char* argv[])
     MatrixXd b_fast;
     
     start = omp_get_wtime();
-    T->matmat_Product(x, b_fast);
+    T->matmatProduct(x, b_fast);
     end   = omp_get_wtime();
     
     cout << "Time for matrix-vector product:" << (end - start) << endl << endl;
@@ -89,7 +97,7 @@ int main(int argc, char* argv[])
     // What we are doing here is explicitly generating 
     // the matrix from its entries
     start = omp_get_wtime();
-    MatrixXd B = A->get_Matrix(0,0,N,N);
+    MatrixXd B = A->getMatrix(0,0,N,N);
     end   = omp_get_wtime();
     
     cout << "Time for matrix generation:" << (end-start) << endl;
@@ -99,36 +107,38 @@ int main(int argc, char* argv[])
     end   = omp_get_wtime();
     
     cout << "Time for matrix-vector product:" << (end-start) << endl;
-    cout << "Error in the solution is:" << (b_fast-b_exact).norm() / (1.0 + b_exact.norm()) << endl << endl;
+    // Computing the relative error in the solution obtained:
+    cout << "Error in the solution is:" << (b_fast-b_exact).norm() / (b_exact.norm()) << endl << endl;
 
-    MatrixXd x_fast;
     start = omp_get_wtime();
     T->factorize();
     end   = omp_get_wtime();
     cout << "Time to factorize:" << (end-start) << endl;
 
+    MatrixXd x_fast;
     start  = omp_get_wtime();
     x_fast = T->solve(b_fast);
     end    = omp_get_wtime();
     cout << "Time to solve:" << (end-start) << endl;
-    cout << "Error in the solution:" << (x_fast - x).norm() / (1.0 + x.norm()) << endl << endl;
+    // Computing the relative error:
+    cout << "Error in the solution:" << (x_fast - x).norm() / (x.norm()) << endl << endl;
 
     // Computing log-determinant using Cholesky:
-    Eigen::LLT<MatrixXd> P;
-    start = omp_get_wtime();
-    P.compute(B);
-    double log_det = 0.0;
-    for(int i=0; i<P.matrixL().rows(); ++i)
-    {
-        log_det += log(P.matrixL()(i,i));
-    }
-    end = omp_get_wtime();
-    log_det = 2 * log_det;
-    cout << "Time to calculate log determinant using Cholesky:" << (end-start) << endl;
+    // Eigen::LLT<MatrixXd> P;
+    // start = omp_get_wtime();
+    // P.compute(B);
+    // double log_det = 0.0;
+    // for(int i=0; i<P.matrixL().rows(); ++i)
+    // {
+    //     log_det += log(P.matrixL()(i,i));
+    // }
+    // end = omp_get_wtime();
+    // log_det = 2 * log_det;
+    // cout << "Time to calculate log determinant using Cholesky:" << (end-start) << endl;
 
-    start = omp_get_wtime();
-    double log_det_hodlr = T->determinant();
-    end = omp_get_wtime();
-    cout << "Time to calculate log determinant using HODLR:" << (end-start) << endl;
-    cout << "Error in computation:" << fabs(log_det_hodlr - log_det) << endl;
+    // start = omp_get_wtime();
+    // double log_det_hodlr = T->logDeterminant();
+    // end = omp_get_wtime();
+    // cout << "Time to calculate log determinant using HODLR:" << (end-start) << endl;
+    // cout << "Error in computation:" << fabs(log_det_hodlr - log_det) << endl;
 }

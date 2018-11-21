@@ -56,7 +56,7 @@ void HODLR_Matrix::maxAbsVector(const Eigen::VectorXd& v,
     index = *allowed_indices.begin();
     max   = v(index);
 
-    for (it = allowed_indices.begin(); it != allowed_indices.end(); it++) 
+    for(it = allowed_indices.begin(); it != allowed_indices.end(); it++) 
     {
         if(fabs(v(*it))>fabs(max)) 
         {
@@ -109,7 +109,6 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
     computed_rank = 0;
 
     Eigen::VectorXd a, row, col;
-
     // These quantities in finding the stopping criteria:
     double row_squared_norm, row_norm, col_squared_norm, col_norm;
 

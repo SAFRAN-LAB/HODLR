@@ -19,11 +19,6 @@ class myHODLR_Matrix : public HODLR_Matrix
 {
 
 private:
-    
-    // This would be source / target points:
-    // DOUBT: What if my source and target points are different?
-    // ANS: Turns out in these contexts source and target points are
-    // always taken to be the same.
     VectorXd x;
 
 public:

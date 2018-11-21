@@ -60,7 +60,7 @@ void HODLR_Tree::createTree()
     }
 }
 
-void HODLR_Tree::assembleTree() 
+void HODLR_Tree::assembleTree(VectorXd &diag, bool is_sym) 
 {
     // Assembly of nonleaf nodes:
     for(int j = 0; j < n_levels; j++) 
@@ -68,7 +68,7 @@ void HODLR_Tree::assembleTree()
         #pragma omp parallel for
         for(int k = 0; k < nodes_in_level[j]; k++) 
         {
-            tree[j][k]->assembleNonLeafNode(A);
+            tree[j][k]->assembleNonLeafNode(A, is_sym);
         }
     }
 
@@ -76,14 +76,14 @@ void HODLR_Tree::assembleTree()
     #pragma omp parallel for
     for (int k = 0; k < nodes_in_level[n_levels]; k++) 
     {
-        tree[n_levels][k]->assembleLeafNode(A);
+        tree[n_levels][k]->assembleLeafNode(A, diag);
     }
 }
 
-void HODLR_Tree::matmatProduct(Eigen::MatrixXd x, Eigen::MatrixXd& b) 
+void HODLR_Tree::matmatProduct(MatrixXd x, MatrixXd& b) 
 {
     // Initializing matrix b:
-    b = Eigen::MatrixXd::Zero(N, x.cols());
+    b = MatrixXd::Zero(N, x.cols());
 
     // At non-leaf levels:
     for (int j = 0; j < n_levels; j++) 
@@ -127,9 +127,9 @@ void HODLR_Tree::factorizeLeaf(int k)
 }
 
 // Solve at the leaf is just directly performed:
-Eigen::MatrixXd HODLR_Tree::solveLeaf(int k, Eigen::MatrixXd b) 
+MatrixXd HODLR_Tree::solveLeaf(int k, MatrixXd b) 
 {
-    Eigen::MatrixXd x = tree[n_levels][k]->K_factor.solve(b);
+    MatrixXd x = tree[n_levels][k]->K_factor.solve(b);
     return x;
 }
 
@@ -137,7 +137,7 @@ void HODLR_Tree::factorizeNonLeaf(int j, int k)
 {
     int r0        = tree[j][k]->rank[0];
     int r1        = tree[j][k]->rank[1];
-    tree[j][k]->K = Eigen::MatrixXd::Identity(r0 + r1, r0 + r1);
+    tree[j][k]->K = MatrixXd::Identity(r0 + r1, r0 + r1);
 
     tree[j][k]->K.block(0, r0, r0, r1)  =   
     tree[j][k]->V_factor[1].transpose() * tree[j][k]->U_factor[1];
@@ -164,7 +164,7 @@ void HODLR_Tree::factorizeNonLeaf(int j, int k)
     }
 }
 
-Eigen::MatrixXd HODLR_Tree::solveNonLeaf(int j, int k, Eigen::MatrixXd b) 
+MatrixXd HODLR_Tree::solveNonLeaf(int j, int k, MatrixXd b) 
 {
     int r0 = tree[j][k]->rank[0];
     int r1 = tree[j][k]->rank[1];
@@ -173,12 +173,12 @@ Eigen::MatrixXd HODLR_Tree::solveNonLeaf(int j, int k, Eigen::MatrixXd b)
     int r  = b.cols();
 
     // Initializing the temp matrix that is then factorized:
-    Eigen::MatrixXd temp(r0 + r1, r);
+    MatrixXd temp(r0 + r1, r);
     temp << tree[j][k]->V_factor[1].transpose() * b.block(n0, 0, n1, r),
             tree[j][k]->V_factor[0].transpose() * b.block(0,  0, n0, r);
     temp = tree[j][k]->K_factor.solve(temp);
     
-    Eigen::MatrixXd y(n0 + n1, r);
+    MatrixXd y(n0 + n1, r);
     y << tree[j][k]->U_factor[0] * temp.block(0,  0, r0, r), 
          tree[j][k]->U_factor[1] * temp.block(r0, 0, r1, r);
     
@@ -220,10 +220,10 @@ void HODLR_Tree::factorize()
     }
 }
 
-Eigen::MatrixXd HODLR_Tree::solve(Eigen::MatrixXd b) 
+MatrixXd HODLR_Tree::solve(MatrixXd b) 
 {
     int start, size;
-    Eigen::MatrixXd x = Eigen::MatrixXd::Zero(b.rows(),b.cols());
+    MatrixXd x = MatrixXd::Zero(b.rows(),b.cols());
     
     int r = b.cols();
 

@@ -1,3 +1,4 @@
+#include <iostream>
 #include "HODLR_Node.hpp"
 
 HODLR_Node::HODLR_Node(int node_number, int level_number, int local_number, 
@@ -21,11 +22,20 @@ HODLR_Node::HODLR_Node(int node_number, int level_number, int local_number,
     this->tolerance    = tolerance;
 }
 
-void HODLR_Node::assembleLeafNode(HODLR_Matrix* A) 
+void HODLR_Node::assembleLeafNode(HODLR_Matrix* A, VectorXd &diag) 
 {
     // At the leaf level we are just going to be building the matrix
     // directly since it's a full rank block:
     K = A->getMatrix(n_start, n_start, n_size, n_size);
+
+    if(diag.size() > 0)
+    {   
+        std::cout << "in the block!" << std::endl;
+        for(int i = 0; i < n_size; i++)
+        {
+            K(i, i) = diag(n_start + i);
+        }
+    }
 }
 
 void HODLR_Node::matmatProductLeaf(Eigen::MatrixXd x, Eigen::MatrixXd& b) 
@@ -33,10 +43,21 @@ void HODLR_Node::matmatProductLeaf(Eigen::MatrixXd x, Eigen::MatrixXd& b)
     b.block(n_start, 0, n_size, x.cols()) += K * x.block(n_start, 0, n_size, x.cols());
 }
 
-void HODLR_Node::assembleNonLeafNode(HODLR_Matrix* A) 
+void HODLR_Node::assembleNonLeafNode(HODLR_Matrix* A, bool is_sym) 
 {
     A->rookPiv(c_start[0], c_start[1], c_size[0], c_size[1], tolerance, U[0], V[1], rank[0]);
-    A->rookPiv(c_start[1], c_start[0], c_size[1], c_size[0], tolerance, U[1], V[0], rank[1]);
+    
+    if(is_sym == true)
+    {
+        V[0]    = U[0];
+        U[1]    = V[1];
+        rank[1] = rank[0];
+    }
+    
+    else
+    {
+        A->rookPiv(c_start[1], c_start[0], c_size[1], c_size[0], tolerance, U[1], V[0], rank[1]);
+    }
 }
 
 void HODLR_Node::matmatProductNonLeaf(Eigen::MatrixXd x, Eigen::MatrixXd& b) 

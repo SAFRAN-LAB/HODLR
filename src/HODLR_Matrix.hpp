@@ -5,6 +5,12 @@
 #include <set>
 #include <vector>
 
+using Eigen::MatrixXd;
+using Eigen::VectorXd;
+
+// Default argument for certain functions:
+static VectorXd EMPTY_VECTOR = VectorXd();
+
 class HODLR_Matrix 
 {
 

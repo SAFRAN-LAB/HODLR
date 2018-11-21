@@ -25,19 +25,19 @@ private:
 	// Variables and methods needed for HODLR solver
 	void factorizeLeaf(int k);
 	void factorizeNonLeaf(int j, int k);
-	Eigen::MatrixXd solveLeaf(int k, Eigen::MatrixXd b);
-	Eigen::MatrixXd solveNonLeaf(int j, int k, Eigen::MatrixXd b);
+	MatrixXd solveLeaf(int k, MatrixXd b);
+	MatrixXd solveNonLeaf(int j, int k, MatrixXd b);
 
 public:
 	HODLR_Tree(int n_levels, double tolerance, HODLR_Matrix* A);
 	~HODLR_Tree();
 
 	//  Methods for HODLR solver
-	void assembleTree();
+	void assembleTree(VectorXd &diag = EMPTY_VECTOR, bool is_sym = false);
 	void factorize();
-	void matmatProduct(Eigen::MatrixXd x, Eigen::MatrixXd& b);
+	void matmatProduct(MatrixXd x, MatrixXd& b);
 	double logDeterminant();
-	Eigen::MatrixXd solve(Eigen::MatrixXd b);
+	MatrixXd solve(MatrixXd b);
 };
 
 #endif /*__HODLR_Tree__*/

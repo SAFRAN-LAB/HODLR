@@ -34,6 +34,10 @@ public:
 
 	//  Methods for HODLR solver
 	void assembleTree(VectorXd &diag = EMPTY_VECTOR, bool is_sym = false);
+    // Gives the box details of the prescribed box and level number:
+    void printNodeDetails(int N_level, int N_box);
+    // Lists details of all boxes in the tree
+    void printTreeDetails();
 	void factorize();
 	void matmatProduct(MatrixXd x, MatrixXd& b);
 	double logDeterminant();

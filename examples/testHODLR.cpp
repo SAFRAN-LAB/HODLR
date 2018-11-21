@@ -76,6 +76,9 @@ int main(int argc, char* argv[])
     
     cout << "Time for assembly in HODLR form:" << (end - start) << endl;
 
+    // This is used in debugging mainly:
+    T->printTreeDetails();
+
     // Random Matrix to multiply with
     MatrixXd x = MatrixXd::Random(N, 1);
     // Stores the result after multiplication:

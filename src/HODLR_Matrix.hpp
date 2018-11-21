@@ -2,11 +2,14 @@
 #define __HODLR_Matrix__
 
 #include <Eigen/Dense>
+#include <iostream>
 #include <set>
 #include <vector>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
+using std::cout;
+using std::endl;
 
 // Default argument for certain functions:
 static VectorXd EMPTY_VECTOR = VectorXd();

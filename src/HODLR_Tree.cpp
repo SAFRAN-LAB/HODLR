@@ -1,5 +1,4 @@
 #include "HODLR_Tree.hpp"
-#include <iostream>
 
 HODLR_Tree::HODLR_Tree(int n_levels, double tolerance, HODLR_Matrix* A) 
 {
@@ -77,6 +76,24 @@ void HODLR_Tree::assembleTree(VectorXd &diag, bool is_sym)
     for (int k = 0; k < nodes_in_level[n_levels]; k++) 
     {
         tree[n_levels][k]->assembleLeafNode(A, diag);
+    }
+}
+
+void HODLR_Tree::printNodeDetails(int N_level, int N_box)
+{
+    tree[N_level][N_box]->printNodeDetails();
+}
+
+void HODLR_Tree::printTreeDetails()
+{
+    for(int j = 0; j <= n_levels; j++)
+    {
+        for(int k = 0; k < nodes_in_level[j]; k++)
+        {
+            this->printNodeDetails(j, k);
+            cout << "=======================================================================================================================================" << endl;
+        }
+        cout << endl << endl;
     }
 }
 

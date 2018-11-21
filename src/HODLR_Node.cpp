@@ -17,8 +17,6 @@ HODLR_Node::HODLR_Node(int node_number, int level_number, int local_number,
     // Start location and size for the child on the right:
     this->c_start[1]   = n_start + c_size[0];
     this->c_size[1]    = n_size  - c_size[0];
-    // By default we set that created node isn't a leaf node:
-    this->is_leaf      = false;
     this->tolerance    = tolerance;
 }
 
@@ -30,7 +28,6 @@ void HODLR_Node::assembleLeafNode(HODLR_Matrix* A, VectorXd &diag)
 
     if(diag.size() > 0)
     {   
-        std::cout << "in the block!" << std::endl;
         for(int i = 0; i < n_size; i++)
         {
             K(i, i) = diag(n_start + i);
@@ -67,4 +64,32 @@ void HODLR_Node::matmatProductNonLeaf(Eigen::MatrixXd x, Eigen::MatrixXd& b)
 
     b.block(c_start[1], 0, c_size[1], x.cols()) += 
     (U[1] * (V[0].transpose() * x.block(c_start[0], 0, c_size[0], x.cols())));
+}
+
+void HODLR_Node::printNodeDetails()
+{
+    cout << "Node Number        :" << node_number << endl;
+    cout << "Level Number       :" << level_number << endl;
+    cout << "Local Number       :" << local_number << endl;
+    cout << "Start of Node      :" << n_start <<  endl;
+    cout << "Size of Node       :" << n_size <<  endl;
+    cout << "Size of Node       :" << n_size <<  endl;
+    cout << "Tolerance          :" << tolerance << endl;
+
+    for(int i = 0; i < 2; i++)
+    {
+        if(i == 0)
+            cout << "Left Child:" << endl;
+        else
+            cout << "Right Child:" << endl;
+
+        cout << "Start of Child Node:" << c_start[i] <<  endl;
+        cout << "Size of Child Node :" << c_size[i]  <<  endl;
+    }
+
+    cout << "Shape of U[0]      :" << U[0].rows() << ", " << U[0].cols() << endl;
+    cout << "Shape of U[1]      :" << U[1].rows() << ", " << U[1].cols() << endl;
+    cout << "Shape of V[0]      :" << V[0].rows() << ", " << V[0].cols() << endl;
+    cout << "Shape of V[1]      :" << V[1].rows() << ", " << V[1].cols() << endl;
+    cout << "Shape of K         :" << K.rows() << ", " << K.cols() << endl;
 }

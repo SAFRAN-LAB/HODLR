@@ -24,23 +24,23 @@ void HODLR_Tree::createRoot()
     tree.push_back(level);
 }
 
-void HODLR_Tree::createChildren(int j, int k) 
+void HODLR_Tree::createChildren(int level_number, int node_number) 
 {
     //  Adding left child:
-    HODLR_Node* left = new HODLR_Node(2 * j, k + 1, 0, 
-                                      tree[j][k]->c_start[0], 
-                                      tree[j][k]->c_size[0], 
+    HODLR_Node* left = new HODLR_Node(level_number + 1, 2 * node_number, 0, 
+                                      tree[level_number][node_number]->c_start[0], 
+                                      tree[level_number][node_number]->c_size[0], 
                                       tolerance
                                      );
-    tree[j+1].push_back(left);
+    tree[level_number + 1].push_back(left);
 
     //  Adding right child
-    HODLR_Node* right = new HODLR_Node(2 * j + 1, k + 1, 1, 
-                                       tree[j][k]->c_start[1], 
-                                       tree[j][k]->c_size[1], 
+    HODLR_Node* right = new HODLR_Node(level_number + 1, 2 * node_number + 1, 1, 
+                                       tree[level_number][node_number]->c_start[1], 
+                                       tree[level_number][node_number]->c_size[1], 
                                        tolerance
                                       );
-    tree[j+1].push_back(right);
+    tree[level_number + 1].push_back(right);
 }
 
 void HODLR_Tree::createTree() 
@@ -79,9 +79,9 @@ void HODLR_Tree::assembleTree(VectorXd &diag, bool is_sym)
     }
 }
 
-void HODLR_Tree::printNodeDetails(int N_level, int N_box)
+void HODLR_Tree::printNodeDetails(int level_number, int node_number)
 {
-    tree[N_level][N_box]->printNodeDetails();
+    tree[level_number][node_number]->printNodeDetails();
 }
 
 void HODLR_Tree::printTreeDetails()
@@ -156,28 +156,34 @@ void HODLR_Tree::factorizeNonLeaf(int j, int k)
     int r1        = tree[j][k]->rank[1];
     tree[j][k]->K = MatrixXd::Identity(r0 + r1, r0 + r1);
 
-    tree[j][k]->K.block(0, r0, r0, r1)  =   
-    tree[j][k]->V_factor[1].transpose() * tree[j][k]->U_factor[1];
-    
-    tree[j][k]->K.block(r0, 0, r1, r0)  =   
-    tree[j][k]->V_factor[0].transpose() * tree[j][k]->U_factor[0];
-    
-    tree[j][k]->K_factor.compute(tree[j][k]->K);
-
-    int parent = k;
-    int child  = k;
-    int size   = tree[j][k]->n_size;
-    int t_start, r;
-
-    for(int l = j - 1; l >= 0; l--) 
+    if(r0 > 0 || r1 > 0)
     {
-        child   = parent % 2;
-        parent  = parent / 2;
-        t_start = tree[j][k]->n_start - tree[l][parent]->c_start[child];
-        r       = tree[l][parent]->rank[child];
+        tree[j][k]->K.block(0, r0, r0, r1)  =   
+        tree[j][k]->V_factor[1].transpose() * tree[j][k]->U_factor[1];
 
-        tree[l][parent]->U_factor[child].block(t_start, 0, size, r) =   
-        this->solveNonLeaf(j, k, tree[l][parent]->U_factor[child].block(t_start, 0, size, r));
+        tree[j][k]->K.block(r0, 0, r1, r0)  =   
+        tree[j][k]->V_factor[0].transpose() * tree[j][k]->U_factor[0];
+
+        tree[j][k]->K_factor.compute(tree[j][k]->K);
+
+        int parent = k;
+        int child  = k;
+        int size   = tree[j][k]->n_size;
+        int t_start, r;
+
+        for(int l = j - 1; l >= 0; l--) 
+        {
+            child   = parent % 2;
+            parent  = parent / 2;
+            t_start = tree[j][k]->n_start - tree[l][parent]->c_start[child];
+            r       = tree[l][parent]->rank[child];
+
+            if(tree[l][parent]->U_factor[child].cols() > 0)
+            {
+                tree[l][parent]->U_factor[child].block(t_start, 0, size, r) =   
+                this->solveNonLeaf(j, k, tree[l][parent]->U_factor[child].block(t_start, 0, size, r));
+            }
+        }
     }
 }
 
@@ -278,9 +284,12 @@ double HODLR_Tree::logDeterminant()
     {
         for(int k = 0; k < nodes_in_level[j]; k++) 
         {
-            for(int l = 0; l < tree[j][k]->K_factor.matrixLU().rows(); l++) 
+            if(tree[j][k]->K.size() > 0)
             {
-                log_det += log(fabs(tree[j][k]->K_factor.matrixLU()(l,l)));
+                for(int l = 0; l < tree[j][k]->K_factor.matrixLU().rows(); l++) 
+                {   
+                    log_det += log(fabs(tree[j][k]->K_factor.matrixLU()(l,l)));
+                }
             }
         }
     }

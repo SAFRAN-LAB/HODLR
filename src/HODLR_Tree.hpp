@@ -20,13 +20,13 @@ private:
     std::vector<std::vector<HODLR_Node*>> tree;
 	void createTree();
 	void createRoot();
-	void createChildren(int j, int k);
+	void createChildren(int level_number, int node_number);
 
 	// Variables and methods needed for HODLR solver
-	void factorizeLeaf(int k);
-	void factorizeNonLeaf(int j, int k);
-	MatrixXd solveLeaf(int k, MatrixXd b);
-	MatrixXd solveNonLeaf(int j, int k, MatrixXd b);
+	void factorizeLeaf(int node_number);
+	void factorizeNonLeaf(int level_number, int node_number);
+	MatrixXd solveLeaf(int node_number, MatrixXd b);
+	MatrixXd solveNonLeaf(int level_number, int node_number, MatrixXd b);
 
 public:
 	HODLR_Tree(int n_levels, double tolerance, HODLR_Matrix* A);
@@ -35,7 +35,7 @@ public:
 	//  Methods for HODLR solver
 	void assembleTree(VectorXd &diag = EMPTY_VECTOR, bool is_sym = false);
     // Gives the box details of the prescribed box and level number:
-    void printNodeDetails(int N_level, int N_box);
+    void printNodeDetails(int level_number, int box_number);
     // Lists details of all boxes in the tree
     void printTreeDetails();
 	void factorize();

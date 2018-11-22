@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
     myHODLR_Matrix* A = new myHODLR_Matrix(N);
     // Here it is assumed that size of leaf level is 200
     int n_levels      = log(N/200) / log(2);
-    double tolerance  = 1e-13;
+    double tolerance  = 1e-12;
 
     // Variables used in timing:
     double start, end;

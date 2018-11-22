@@ -36,6 +36,7 @@ public:
     // Returns individual matrix 
     virtual double getMatrixEntry(int j, int k) 
     {
+        cout << "Returning zero! Ensure that derived class is properly set!" << endl;
         return 0.0;
     }
 

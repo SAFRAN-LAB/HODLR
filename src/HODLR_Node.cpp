@@ -1,13 +1,12 @@
-#include <iostream>
 #include "HODLR_Node.hpp"
 
-HODLR_Node::HODLR_Node(int node_number, int level_number, int local_number, 
+HODLR_Node::HODLR_Node(int level_number, int node_number, int local_number, 
                        int n_start, int n_size, double tolerance
                       ) 
 {
     // Storing the passed parameters as the attributes of the created object:
-    this->node_number  = node_number;
     this->level_number = level_number;
+    this->node_number  = node_number;
     this->local_number = local_number;
     this->n_start      = n_start;
     this->n_size       = n_size;
@@ -68,8 +67,8 @@ void HODLR_Node::matmatProductNonLeaf(Eigen::MatrixXd x, Eigen::MatrixXd& b)
 
 void HODLR_Node::printNodeDetails()
 {
-    cout << "Node Number        :" << node_number << endl;
     cout << "Level Number       :" << level_number << endl;
+    cout << "Node Number        :" << node_number << endl;
     cout << "Local Number       :" << local_number << endl;
     cout << "Start of Node      :" << n_start <<  endl;
     cout << "Size of Node       :" << n_size <<  endl;

@@ -1,13 +1,11 @@
 #include "HODLR_Matrix.hpp"
-#include "Eigen/Dense"
 
 Eigen::VectorXd HODLR_Matrix::getRow(const int j, const int n_col_start, const int n_cols) 
 {
     Eigen::VectorXd row(n_cols);
-    
     #pragma omp parallel for
-    for (int k = 0; k < n_cols; k++) 
-    {
+    for(int k = 0; k < n_cols; k++) 
+    {   
         row(k) = this->getMatrixEntry(j,  k + n_col_start);
     }
     

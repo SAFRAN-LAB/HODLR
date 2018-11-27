@@ -15,7 +15,7 @@ using std::endl;
 // Derived class of HODLR_Matrix which is ultimately
 // passed to the HODLR_Tree class:
 
-class myHODLR_Matrix : public HODLR_Matrix 
+class Kernel : public HODLR_Matrix 
 {
 
 private:
@@ -24,7 +24,7 @@ private:
 public:
 
     // Constructor:
-    myHODLR_Matrix(int N) : HODLR_Matrix(N) 
+    Kernel(int N) : HODLR_Matrix(N) 
     {
         x = VectorXd::Random(N);
         // This is being sorted to ensure that we get
@@ -50,7 +50,7 @@ public:
     }
 
     // Destructor:
-    ~myHODLR_Matrix() {};
+    ~Kernel() {};
 };
 
 int main(int argc, char* argv[]) 
@@ -58,9 +58,9 @@ int main(int argc, char* argv[])
     // Size of the Matrix in consideration:
     int N             = atoi(argv[1]);
     // Declaration of HODLR_Matrix object that abstracts data in Matrix:
-    myHODLR_Matrix* A = new myHODLR_Matrix(N);
+    Kernel* K         = new Kernel(N);
     // Here it is assumed that size of leaf level is 200
-    int n_levels      = log(N/200) / log(2);
+    int n_levels      = log(N / 200) / log(2);
     double tolerance  = 1e-12;
 
     // Variables used in timing:
@@ -70,8 +70,8 @@ int main(int argc, char* argv[])
     
     start = omp_get_wtime();
     // Creating a pointer to the HODLR Tree structure:
-    HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, A);
-    T->assembleTree();
+    HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, K);
+    T->assembleTree(true);
     end   = omp_get_wtime();
     
     cout << "Time for assembly in HODLR form:" << (end - start) << endl;
@@ -95,7 +95,7 @@ int main(int argc, char* argv[])
     // What we are doing here is explicitly generating 
     // the matrix from its entries
     start = omp_get_wtime();
-    MatrixXd B = A->getMatrix(0,0,N,N);
+    MatrixXd B = K->getMatrix(0, 0, N, N);
     end   = omp_get_wtime();
     
     cout << "Time for matrix generation:" << (end-start) << endl;

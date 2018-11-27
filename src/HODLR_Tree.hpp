@@ -33,7 +33,7 @@ public:
 	~HODLR_Tree();
 
 	//  Methods for HODLR solver
-	void assembleTree(VectorXd &diag = EMPTY_VECTOR, bool is_sym = false);
+	void assembleTree(bool is_sym = false);
     // Gives the box details of the prescribed box and level number:
     void printNodeDetails(int level_number, int box_number);
     // Lists details of all boxes in the tree

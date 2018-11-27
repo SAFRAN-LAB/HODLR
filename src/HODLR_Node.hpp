@@ -32,7 +32,7 @@ private:
     int rank[2];
 
     // Methods for Leaf Nodes:
-    void assembleLeafNode(HODLR_Matrix* A, VectorXd& diag);
+    void assembleLeafNode(HODLR_Matrix* A);
     void matmatProductLeaf(MatrixXd x, MatrixXd& b);
 
     // Methods for Non-leaf Nodes:

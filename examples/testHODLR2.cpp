@@ -39,9 +39,17 @@ public:
 
     double getMatrixEntry(int i, int j) 
     {
-        // std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        // cout << std::setprecision(15) << __kernel(this->y, i, j) << endl;
-        return __kernel(this->y, i, j);
+        // Value on the diagonal:
+        if(i == j) 
+        {
+            return (1 + __kernel(this->y, i, j));
+        }
+        
+        // Otherwise:
+        else 
+        {
+            return __kernel(this->y, i, j);
+        }
     };
 };
 
@@ -60,7 +68,7 @@ int main(int argc, char *argv[])
     const unsigned int dim = 10 * RbyL;
 
     // Hyper parameters for HODLR 
-    const double tolerance = 1e-15;
+    const double tolerance = 1e-8;
     const int nLeaf = 100;
 
     // the "interesting" seed is 1522913970 
@@ -77,13 +85,8 @@ int main(int argc, char *argv[])
     int n_levels  = log(dim / nLeaf) / log(2);
     HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, &K);
 
-    // Compute diagonal entries 
-    VectorXd diagonal = VectorXd::Ones(dim);
-    for(int n = 0; n < dim; n++)
-        diagonal(n) = 1 + K.getMatrixEntry(n, n);
-
     // Assemble symmetric matrix 
-    T->assembleTree(diagonal, true);
+    T->assembleTree(true);
     // Printing the tree details. Used to debug:
     // T->printTreeDetails();
 

@@ -7,7 +7,6 @@ HODLR_Node::HODLR_Node(int level_number, int node_number, int local_number,
     // Storing the passed parameters as the attributes of the created object:
     this->level_number = level_number;
     this->node_number  = node_number;
-    this->local_number = local_number;
     this->n_start      = n_start;
     this->n_size       = n_size;
     // Start location and size for the child on the left:
@@ -19,19 +18,11 @@ HODLR_Node::HODLR_Node(int level_number, int node_number, int local_number,
     this->tolerance    = tolerance;
 }
 
-void HODLR_Node::assembleLeafNode(HODLR_Matrix* A, VectorXd &diag) 
+void HODLR_Node::assembleLeafNode(HODLR_Matrix* A) 
 {
     // At the leaf level we are just going to be building the matrix
     // directly since it's a full rank block:
     K = A->getMatrix(n_start, n_start, n_size, n_size);
-
-    if(diag.size() > 0)
-    {   
-        for(int i = 0; i < n_size; i++)
-        {
-            K(i, i) = diag(n_start + i);
-        }
-    }
 }
 
 void HODLR_Node::matmatProductLeaf(Eigen::MatrixXd x, Eigen::MatrixXd& b) 
@@ -69,7 +60,6 @@ void HODLR_Node::printNodeDetails()
 {
     cout << "Level Number       :" << level_number << endl;
     cout << "Node Number        :" << node_number << endl;
-    cout << "Local Number       :" << local_number << endl;
     cout << "Start of Node      :" << n_start <<  endl;
     cout << "Size of Node       :" << n_size <<  endl;
     cout << "Size of Node       :" << n_size <<  endl;

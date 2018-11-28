@@ -5,6 +5,7 @@
 #include <Eigen/Dense>
 #include "HODLR_Tree.hpp"
 #include "HODLR_Matrix.hpp"
+#include "KDTree.hpp"
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
@@ -19,33 +20,90 @@ class Kernel : public HODLR_Matrix
 {
 
 private:
+    // When data is 1D:
     VectorXd x;
+    // When data is > 1D:
+    MatrixXd xm;
 
 public:
 
     // Constructor:
-    Kernel(int N) : HODLR_Matrix(N) 
+    Kernel(int N, int dim) : HODLR_Matrix(N) 
     {
-        x = VectorXd::Random(N);
-        // This is being sorted to ensure that we get
-        // optimal low rank structure:
-        std::sort(x.data(),x.data()+x.size());
+        if(dim == 1)
+        {
+            x = VectorXd::Random(N);
+            // This is being sorted to ensure that we get
+            // optimal low rank structure:
+            std::sort(x.data(),x.data()+x.size());
+        }
+
+        else
+        {
+            xm = MatrixXd::Random(N, dim);
+            // This is being sorted to ensure that we get
+            // optimal low rank structure:
+            getKDTreeSorted(xm, 0);
+        }
     };
     
     // In this example, we are illustrating usage using
     // the gaussian kernel:
-    double getMatrixEntry(int j, int k) 
+    double getMatrixEntry(int i, int j) 
     {
+        size_t dim = xm.cols();
+
         // Value on the diagonal:
-        if(j==k) 
+        if(i == j) 
         {
             return 10;
         }
         
         // Otherwise:
-        else 
-        {
-            return exp(-(x(j)-x(k))*(x(j)-x(k)));
+        else
+        {   
+            double R, R2;
+            // Initializing:
+            R = R2 = 0;
+
+            if(dim == 1)
+            {
+                R  = fabs(x(i) - x(j));
+                R2 = R * R;
+            }
+
+            else
+            {
+                for(int k = 0; k < dim; k++) 
+                {
+                    R2 += (xm(i,k) - xm(j,k)) * (xm(i,k) - xm(j,k));
+                }
+
+                R = sqrt(R2);
+            }
+
+            // Exponential: exp(-R)
+            // return exp(-R);
+            // Gaussian Kernel: e(-R^2)
+            return exp(-R2);
+            // Sinc Kernel: sin(R) / R
+            // return (sin(R) / R);
+            // // Quadric Kernel: (1 + R^2)
+            // return (1 + R2);
+            // // Inverse-Quadric Kernel: 1 / (1 + R^2)
+            // return (1 / (1 + R2));
+            // // Multi-Quadric Kernel: sqrt(1 + R^2)
+            // return sqrt(1 + R2);
+            // // Inverse-Multiquadric Kernel: 1 / sqrt(1 + R^2)
+            // return (1 / sqrt(1 + R2));
+            // // Log(R) Kernel:
+            // return log(R);
+            // // R^2 log(R) Kernel:
+            // return (R2 * log(R));
+            // // 1 / R Kernel:
+            // return (1 / R);
+            // // log(1 + R) Kernel:
+            // return log(1 + R);
         }
     }
 
@@ -57,8 +115,9 @@ int main(int argc, char* argv[])
 {
     // Size of the Matrix in consideration:
     int N             = atoi(argv[1]);
+    int dim           = atoi(argv[2]);
     // Declaration of HODLR_Matrix object that abstracts data in Matrix:
-    Kernel* K         = new Kernel(N);
+    Kernel* K         = new Kernel(N, dim);
     // Here it is assumed that size of leaf level is 200
     int n_levels      = log(N / 200) / log(2);
     double tolerance  = 1e-12;
@@ -71,13 +130,14 @@ int main(int argc, char* argv[])
     start = omp_get_wtime();
     // Creating a pointer to the HODLR Tree structure:
     HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, K);
+    // We are assembling a symmetric matrix. Hence we pass the flag as true:
     T->assembleTree(true);
     end   = omp_get_wtime();
     
     cout << "Time for assembly in HODLR form:" << (end - start) << endl;
 
     // This is used in debugging mainly:
-    T->printTreeDetails();
+    // T->printTreeDetails();
 
     // Random Matrix to multiply with
     MatrixXd x = MatrixXd::Random(N, 1);

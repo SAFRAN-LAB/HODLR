@@ -44,21 +44,21 @@ Eigen::MatrixXd HODLR_Matrix::getMatrix(const int n_row_start, const int n_col_s
     return mat;
 }
 
-
 void HODLR_Matrix::maxAbsVector(const Eigen::VectorXd& v, 
-                                const std::vector<int>& allowed_indices, 
+                                const std::set<int>& allowed_indices, 
                                 double& max, int& index
                                ) 
 {
-    index = allowed_indices.front();
-    max   = v[index];
+    std::set<int>::iterator it;
+    index = *allowed_indices.begin();
+    max   = v(index);
 
-    for(int i = 0; i < allowed_indices.size(); i++)
+    for(it = allowed_indices.begin(); it != allowed_indices.end(); it++) 
     {
-        if(fabs(v[i]>fabs(max)))
+        if(fabs(v(*it))>fabs(max)) 
         {
-            index   =   i;
-            max     =   v[index];
+            index   =   *it;
+            max     =   v(index);
         }
     }
 }
@@ -75,8 +75,8 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
     std::vector<int> col_ind;
 
     // Indices that are remaining:
-    std::vector<int> remaining_row_ind;
-    std::vector<int> remaining_col_ind;
+    std::set<int> remaining_row_ind;
+    std::set<int> remaining_col_ind;
     
     // Bases:
     std::vector<Eigen::VectorXd> u; 
@@ -84,12 +84,12 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
 
     for(int k = 0; k < n_rows; k++) 
     {
-        remaining_row_ind.push_back(k);
+        remaining_row_ind.insert(k);
     }
     
     for(int k = 0; k < n_cols; k++) 
     {
-        remaining_col_ind.push_back(k);
+        remaining_col_ind.insert(k);
     }
 
     double max, gamma, unused_max;
@@ -97,20 +97,19 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
     // Initialize the matrix norm and the the first row index
     double matrix_norm = 0;
     row_ind.push_back(0);
-    remaining_row_ind.erase(remaining_row_ind.begin());
+    remaining_row_ind.erase(0);
 
     // Stores the pivot entry of the considered row / col:
     int pivot;
 
     // This would get updated:
     computed_rank = 0;
-
-    Eigen::VectorXd a, row, col;
+    Eigen::VectorXd row, col;
     // These quantities in finding the stopping criteria:
     double row_squared_norm, row_norm, col_squared_norm, col_norm;
 
     // So these would be particularly used for certain edge cases:
-    int max_tries = 200;// std::max(n_rows, n_cols);
+    int max_tries = 20;
     int count;
 
     // Repeat till the desired tolerance is obtained
@@ -132,6 +131,9 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
         // This randomization is needed if in the middle of the algorithm the 
         // row happens to be exactly the linear combination of the previous rows 
         // upto some tolerance.
+        // Alternating upon each call:
+        bool eval_at_end = false;
+        
         while (fabs(max) < tolerance && 
                count < max_tries   && 
                remaining_col_ind.size() > 0 && 
@@ -139,24 +141,25 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
               ) 
         {
             row_ind.pop_back();
+            int new_row_ind;
 
-            int new_row_ind = remaining_row_ind.back();
-            // while(1)
-            // {
-            //     new_row_ind = rand() % n_rows;
-            //     if(std::find(remaining_row_ind.begin(), remaining_row_ind.end(), new_row_ind) != remaining_row_ind.end())
-            //         break;
-            // }
+            if(eval_at_end)
+            {
+                new_row_ind = *remaining_row_ind.end();
+            }
 
+            else
+            {
+                new_row_ind = *remaining_row_ind.begin();
+            }
+
+            eval_at_end = !eval_at_end;
             row_ind.push_back(new_row_ind);
-            remaining_row_ind.pop_back();
-            // remaining_row_ind.erase(std::find(remaining_row_ind.begin(), remaining_row_ind.end(), new_row_ind));
+            remaining_row_ind.erase(new_row_ind);
 
             // Generation of the row
-            a = this->getRow(n_row_start + new_row_ind, n_col_start, n_cols);
             // Row of the residuum and the pivot column
-            row = a;
-            
+            row = this->getRow(n_row_start + new_row_ind, n_col_start, n_cols);
             for(int i = 0; i < computed_rank; i++) 
             {
                 row = row - u[i](row_ind.back()) * v[i];
@@ -168,28 +171,27 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
 
         // In case it failed to resolve in the previous step, 
         // we break out of the dowhile loop:
-        // if (count == max_tries || 
-        //     remaining_col_ind.size() == 0 || 
-        //     remaining_row_ind.size() == 0
-        //    )
-        // {
-        //     break;
-        // } 
+        if (count == max_tries || 
+            remaining_col_ind.size() == 0 || 
+            remaining_row_ind.size() == 0
+           )
+        {
+            break;
+        } 
 
         // Now we will move onto doing this process for the column bases
         // Resetting the count back to zero:
         count = 0;
 
         col_ind.push_back(pivot);
-        remaining_col_ind.erase(remaining_col_ind.begin() + pivot);
+        remaining_col_ind.erase(pivot);
 
         // Normalizing constant
         gamma = 1.0 / max;
 
         // Generation of the column
-        a   = this->getCol(n_col_start + col_ind.back(), n_row_start, n_rows);
         // Column of the residuum and the pivot row
-        col = a;
+        col = this->getCol(n_col_start + col_ind.back(), n_row_start, n_rows);
         
         for(int i = 0; i < computed_rank; i++) 
         {
@@ -206,26 +208,27 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
               ) 
         {
             col_ind.pop_back();
-            
-            int new_col_ind = remaining_row_ind.back();
+         
+            int new_col_ind;
 
-            // int new_col_ind;
-            while(1)
+            if(eval_at_end)
             {
-                new_col_ind = rand() % n_cols;
-                if(std::find(remaining_col_ind.begin(), remaining_col_ind.end(), new_col_ind) != remaining_col_ind.end())
-                    break;
+                new_col_ind = *remaining_col_ind.end();
             }
 
+            else
+            {
+                new_col_ind = *remaining_col_ind.begin();
+            }
+
+            eval_at_end = !eval_at_end;
+
             col_ind.push_back(new_col_ind);
-            remaining_col_ind.pop_back();
-            // remaining_col_ind.erase(std::find(remaining_col_ind.begin(), remaining_col_ind.end(), new_col_ind));
+            remaining_col_ind.erase(new_col_ind);
 
             // Generation of the column
-            a = this->getCol(n_col_start + new_col_ind, n_row_start, n_rows);
-
             // Column of the residuum and the pivot row
-            col = a;
+            col = this->getCol(n_col_start + new_col_ind, n_row_start, n_rows);
             for(int i = 0; i < computed_rank; i++) 
             {
                 col = col - v[i](col_ind.back()) * u[i];
@@ -234,10 +237,6 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
             this->maxAbsVector(col, remaining_row_ind, unused_max, pivot);
             count++;
         }
-
-        // New vectors
-        u.push_back(gamma * col);
-        v.push_back(row);
 
         // In case it failed to resolve in the previous step, 
         // we break out of the dowhile loop:
@@ -253,8 +252,11 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
         count = 0;
 
         row_ind.push_back(pivot);
-        remaining_row_ind.erase(remaining_row_ind.begin() + pivot);
+        remaining_row_ind.erase(pivot);
 
+        // New vectors
+        u.push_back(gamma * col);
+        v.push_back(row);
 
         // New approximation of matrix norm
         row_squared_norm = row.squaredNorm();

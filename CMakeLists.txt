@@ -14,8 +14,9 @@ ENDIF()
 INCLUDE_DIRECTORIES("${EIGEN_PATH}" "src")
 
 add_executable(HODLR 
-               examples/testHODLR2.cpp
+               examples/testHODLR.cpp
                src/HODLR_Matrix.cpp
                src/HODLR_Node.cpp
                src/HODLR_Tree.cpp
+               src/KDTree.cpp
               )

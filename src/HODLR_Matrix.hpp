@@ -45,7 +45,7 @@ public:
     Eigen::MatrixXd getMatrix(int j, int k, int n_rows, int n_cols);
 
     void maxAbsVector(const Eigen::VectorXd& v, 
-                      const std::vector<int>& allowed_indices, 
+                      const std::set<int>& allowed_indices, 
                       double& max, int& index
                      );
   

@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
     const unsigned int dim = 10 * RbyL;
 
     // Hyper parameters for HODLR 
-    const double tolerance = 1e-8;
+    const double tolerance = 1e-11;
     const int nLeaf = 100;
 
     // the "interesting" seed is 1522913970 
@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
     if(argc > 1)
         seed = atoi(argv[1]);
 
-    /* initialize PRNG */
+    // initialize PRNG 
     printf("initialize PRNG with seed %u\n", seed);
     srand(seed);
 

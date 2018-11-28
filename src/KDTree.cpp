@@ -27,13 +27,13 @@ void mergeSortedLists(MatrixXd& list1, MatrixXd& list2, unsigned index, MatrixXd
     {
         if (list1(j1,index) < list2(j2,index)) 
         {
-            finalList.row(j) = list1.row(j1);
+            final_list.row(j) = list1.row(j1);
             ++j1;
         }
     
         else 
         {
-            finalList.row(j)    =   list2.row(j2);
+            final_list.row(j)    =   list2.row(j2);
             ++j2;
         }
     
@@ -42,14 +42,14 @@ void mergeSortedLists(MatrixXd& list1, MatrixXd& list2, unsigned index, MatrixXd
 
     while (j1<N1) 
     {
-        finalList.row(j) = list1.row(j1);
+        final_list.row(j) = list1.row(j1);
         ++j1;
         ++j;
     }
 
     while (j2<N2) 
     {
-        finalList.row(j) = list2.row(j2);
+        final_list.row(j) = list2.row(j2);
         ++j2;
         ++j;
     }
@@ -66,35 +66,35 @@ void mergeSort(MatrixXd& locations, unsigned index)
     
     else 
     {
-        /// Number of points in the left cluster.
-        unsigned Nleft = N / 2;
+        // Number of points in the left cluster.
+        unsigned N_left = N / 2;
         
-        /// Number of points in the right cluster.
-        unsigned Nright = N - Nleft;
+        // Number of points in the right cluster.
+        unsigned N_right = N - N_left;
         
-        /// Dimension of the space.
-        unsigned nDimensions = locations.cols();
+        // Dimension of the space.
+        unsigned dims = locations.cols();
         
-        /// Left locations.
-        MatrixXd leftLocations = locations.block(0,0,Nleft,nDimensions);
+        // Left locations.
+        MatrixXd left_locations = locations.block(0,0,N_left,dims);
         
-        /// Right locations.
-        MatrixXd rightLocations = locations.block(Nleft,0,Nright,nDimensions);
+        // Right locations.
+        MatrixXd right_locations = locations.block(N_left,0,N_right,dims);
         
-        /// Mergesort for the left.
-        mergeSort(leftLocations, index);
+        // Mergesort for the left.
+        mergeSort(left_locations, index);
         
-        /// Mergesort for the right.
-        mergeSort(rightLocations, index);
+        // Mergesort for the right.
+        mergeSort(right_locations, index);
         
-        /// Merge the sorted left and right lists.
-        mergeSortedLists(leftLocations, rightLocations, index, locations);
+        // Merge the sorted left and right lists.
+        mergeSortedLists(left_locations, right_locations, index, locations);
     }
 }
 
 void getKDTreeSorted(MatrixXd& locations, unsigned index) 
 {
-    /// Get the total number of points
+    // Get the total number of points
     unsigned N = locations.rows();
     
     if(N == 1) 
@@ -104,28 +104,28 @@ void getKDTreeSorted(MatrixXd& locations, unsigned index)
     
     else 
     {
-        /// Number of points in the left cluster.
-        unsigned Nleft = N / 2;
+        // Number of points in the left cluster.
+        unsigned N_left = N / 2;
 
-        /// Number of points in the right cluster.
-        unsigned Nright = N - Nleft;
+        // Number of points in the right cluster.
+        unsigned N_right = N - N_left;
 
-        /// Dimension of the space.
-        unsigned nDimensions = locations.cols();
+        // Dimension of the space.
+        unsigned dims = locations.cols();
 
-        /// Merge sort on the input locations based on the coordinate index%2.
-        mergeSort(locations, index%nDimensions);
+        // Merge sort on the input locations based on the coordinate index%2.
+        mergeSort(locations, index % dims);
 
         /// Obtain the left and right locations.
-        MatrixXd leftLocations  = locations.block(0,0,Nleft,nDimensions);
-        MatrixXd rightLocations = locations.block(Nleft,0,Nright,nDimensions);
+        MatrixXd left_locations  = locations.block(0, 0, N_left, dims);
+        MatrixXd right_locations = locations.block(N_left, 0, N_right, dims);
 
         /// Sort the left and right locations based on a KDTree.
-        get_KDTree_Sorted(leftLocations, index + 1);
-        get_KDTree_Sorted(rightLocations, index + 1);
+        getKDTreeSorted(left_locations, index + 1);
+        getKDTreeSorted(right_locations, index + 1);
 
         /// Output the locations.
-        locations.block(0,0,Nleft,nDimensions)      =   leftLocations;
-        locations.block(Nleft,0,Nright,nDimensions) =   rightLocations;
+        locations.block(0, 0, N_left, dims)       = left_locations;
+        locations.block(N_left, 0, N_right, dims) = right_locations;
     }
 }

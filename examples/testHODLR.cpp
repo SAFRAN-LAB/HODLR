@@ -192,4 +192,7 @@ int main(int argc, char* argv[])
     end = omp_get_wtime();
     cout << "Time to calculate log determinant using HODLR:" << (end-start) << endl;
     cout << "Error in computation:" << fabs(log_det_hodlr - log_det) << endl;
+
+    assert(1 - fabs(log_det_hodlr/log_det) < tolerance);
+    return 0;
 }

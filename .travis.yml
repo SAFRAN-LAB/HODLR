@@ -19,7 +19,7 @@ install:
   - export PATH=${DEPS_DIR}/cmake/bin:${PATH}
 
   # Getting Eigen:
-  - wget http://bitbucket.org/eigen/eigen/get/3.3.5.tar.bz2"
+  - wget http://bitbucket.org/eigen/eigen/get/3.3.5.tar.bz2
   - tar xjf 3.3.5.tar.bz2
   - mv eigen-eigen-b3f3d4950030 eigen
   - export EIGEN_PATH=$PWD/eigen/

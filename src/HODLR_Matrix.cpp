@@ -108,7 +108,7 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
     // These quantities in finding the stopping criteria:
     double row_squared_norm, row_norm, col_squared_norm, col_norm;
 
-    // So these would be particularly used for certain edge cases:
+    // So these would be particularly useful for poorly conditioned matrices:
     int max_tries = 20;
     int count;
 

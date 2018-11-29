@@ -1,14 +1,3 @@
-#include <iostream>
-#include <iomanip>
-#include <stdio.h>
-#include <vector>
-
-#include "HODLR_Tree.hpp"
-#include "HODLR_Matrix.hpp"
-
-using std::vector;
-using Eigen::MatrixXd;
-
 // Example provided by Michael-Hartmann:
 // The matrix is given by:
 //       D = Id - M_ij
@@ -16,7 +5,12 @@ using Eigen::MatrixXd;
 //       M_ij = y^(i+j+1) * (i+j)!/(i! j!)
 //  with the indices 1 <= i,j <= ldim, and
 //       y = 0.5*R/(R+L).
- 
+
+#include "HODLR_Tree.hpp"
+#include "HODLR_Matrix.hpp"
+
+using std::setprecision;
+
 double __kernel(double y, int i, int j)
 {
     const int l1 = i+1, l2 = j+1;
@@ -87,18 +81,14 @@ int main(int argc, char *argv[])
 
     // Assemble symmetric matrix 
     T->assembleTree(true);
-    // Printing the tree details. Used to debug:
-    // T->printTreeDetails();
-
     // Compute factorization 
     T->factorize();
-
     // Compute determinant 
     logdet = T->logDeterminant();
 
-    printf("Exact: %.14g\n", exact);
-    printf("HODLR: %.14g\n", logdet);
-    printf("Relative Error: %g\n", 1 - fabs(logdet / exact));
+    cout << "Log determinant(Exact):" << setprecision(16) << exact << endl;
+    cout << "Log determinant(HODLR):" << setprecision(16) << logdet << endl;
+    cout << "Relative error is: "  << setprecision(16) << fabs(1 - logdet / exact) << endl;
 
     return 0;
 }

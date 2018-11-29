@@ -1,21 +1,11 @@
 // This file serves as a gentle introduction to the usage of this library:
 
-#include <iostream>
-#include <cmath>
-#include <Eigen/Dense>
 #include "HODLR_Tree.hpp"
 #include "HODLR_Matrix.hpp"
 #include "KDTree.hpp"
 
-using Eigen::MatrixXd;
-using Eigen::VectorXd;
-
-using std::cout;
-using std::endl;
-
 // Derived class of HODLR_Matrix which is ultimately
 // passed to the HODLR_Tree class:
-
 class Kernel : public HODLR_Matrix 
 {
 
@@ -115,11 +105,14 @@ int main(int argc, char* argv[])
 {
     // Size of the Matrix in consideration:
     int N             = atoi(argv[1]);
-    int dim           = atoi(argv[2]);
+    // Size of Matrices at leaf level:
+    int M             = atoi(argv[2]);
+    // Dimensionality of the problem:
+    int dim           = atoi(argv[3]);
     // Declaration of HODLR_Matrix object that abstracts data in Matrix:
     Kernel* K         = new Kernel(N, dim);
     // Here it is assumed that size of leaf level is 200
-    int n_levels      = log(N / 200) / log(2);
+    int n_levels      = log(N / M) / log(2);
     double tolerance  = 1e-12;
 
     // Variables used in timing:

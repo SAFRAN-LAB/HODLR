@@ -1,4 +1,4 @@
-project(tryingOut)
+project(HODLR)
 cmake_minimum_required (VERSION 3.0)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -13,7 +13,7 @@ ENDIF()
 # Adding folders which contain necessary header files:
 INCLUDE_DIRECTORIES("${EIGEN_PATH}" "src")
 
-add_executable(HODLR 
+add_executable(example 
                examples/testHODLR.cpp
                src/HODLR_Matrix.cpp
                src/HODLR_Node.cpp

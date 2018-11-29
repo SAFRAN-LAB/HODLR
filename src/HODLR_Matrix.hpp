@@ -3,11 +3,13 @@
 
 #include <Eigen/Dense>
 #include <iostream>
+#include <iomanip>
 #include <set>
 #include <vector>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;
+
 using std::cout;
 using std::endl;
 

@@ -1,5 +1,0 @@
-*.pyc
-.syntastic_cpp_config
-build
-dist
-*.egg-info

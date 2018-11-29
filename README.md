@@ -1,161 +1,74 @@
 # HODLR: Fast direct solver and determinant computation for dense linear systems
 
-This is an extension of the fast direct solver discussed in the article: "An
-O(N log (N)) Fast Direct Solver for Partial Hierarchically Semi-Separable
-Matrices". The solver has also been extended to matrices not necessarily
-arising out of kernels and also to higher dimensions. Further, the solver has
-been optimized and the running time of the solver is now massively (a few
-orders of magnitude) faster than the running times reported in the article.
-Low-rank approximation of the appropriate blocks are obtained using partial
-pivoted LU algorithm. The domain is sub-divided based on a KDTree. The solver
-is fairly general and works with minimal restrictions.
+This is an extension of the fast direct solver discussed in the article: "An O(N log (N)) Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices". The solver has also been extended to matrices not necessarily arising out of kernels and also to higher dimensions. Further, the solver has been optimized and the running time of the solver is now massively (a few orders of magnitude) faster than the running times reported in the article. Low-rank approximation of the appropriate blocks are obtained using partial pivoted LU algorithm. The domain is sub-divided based on a KDTree. The solver is fairly general, works with minimal restrictions and has been parallelized using OpenMP. The key features of the solver include
 
-To give a rough idea of the running time, for a system size of 1 million the
-solver takes 23 seconds for a 1D problem and 86 seconds for a 2D problem (this
-is time taken from the time you press the return key on the keyboard to run
-your code and to get the final result). The matrix is of the form
+### FEATURES
+	
+	Fast matrix vector products: Obtains A*x at a cost of O(N log N)
 
-        A    =    s^2 I + B
+	Fast solution of linear systems: Solves linear systems Ax = b in O(N log^2N)
 
-where B(i,j) depends on R(i,j), the distance between the points x(i) and x(j).
-The computed answer is accurate upto more than 10 digits. It is to be noted
-that even for higher dimensions (2D and 3D), the solver is still way faster
-than the conventional direct solvers, though the scaling may no longer be
-almost linear. The scaling depends on the smoothness of the kernel near the
-diagonal of the matrix.
+	Fast determinant computation: Compute the determinant at an additional cost of O(N log N)
 
-**Author**
 
-Sivaram Ambikasaran <mailto:siva.1985@gmail.com>
+### DIRECTORIES AND FILES
 
-**Version 3.14**
+	./examples/		:	Example codes; These is where features of the code are called
+	./src/			:   Header and source code for the library.
+	./README.md		:	This file
+	./LICENSE.md	:	License file
 
-    Date: November 14th, 2013
+### DEPENDENCIES:
 
-    Copyleft 2013: Sivaram Ambikasaran
+To run this package, you need to have **Eigen**. If you don't already have it, download and install Eigen following the instructions [here](http://eigen.tuxfamily.org/index.php?title=Main_Page).
 
-    Developed by Sivaram Ambikasaran
+### CUSTOM BUILD:
 
-## Citation
+1. There is a sample input file named: "testHODLR.cpp" in the directory './examples/'.
 
-If you use the implementation or any part of the implementation in your work,
-kindly cite as follows:
+2. This calls the features of the code and reports the timings and the errors.
 
-**Article**
+3. Go to the directory where the makefile is and key in the following command in the terminal:
+	make -f makefile.mk
 
-    @article{ambikasaran2013fast,
+4. Once your run the make command, the executables are created in the directory named './exec/'. To run the code, key in
 
-      author={{A}mbikasaran, {S}ivaram and {D}arve, {E}ric},
+		./exec/HODLR_Test N M d
 
-      title={An $\mathcal{O}(N \log N)$ Fast Direct Solver for Partial Hierarchically Semi-Separable Matrices},
+where 'N' is the size of the system you like to handle, 'M' is the size of the smallest system you can handle without the fast code (essentially M is the size of the matrix at the leaf nodes) and 'd' is the (rough) number of digits of accuracy you need. For instance,
+		
+		./exec/HODLR_Test 100000 200 12
 
-      journal={Journal of Scientific Computing},
+More kernels can be added by editing the function
 
-      year={2013},
+		double getMatrixEntry(int i, int j)
 
-      volume={57},
+ in the file
 
-      number={3},
+		HODLR_Matrix.hpp
 
-      pages={477--501},
+Read through the comments in all the files. Most of the function/class/method/variable names are self-explanatory. Read the file HODLR_Test.cpp to understand how to assemble, factor, solve, symmetric factorization, determinant computation of a new HODLR system.
 
-      month={December},
+#### Version 3.141
 
-      publisher={Springer}
+Date: November 9th, 2016
 
-    }
+Copyleft 2016: Sivaram Ambikasaran
 
-**Code**
+Developed by Sivaram Ambikasaran, Karan Raj Singh
 
-    @MISC{ambikasaran2013HODLR,
+#### License
+This program is free software; you can redistribute it and/or modify it under the terms of MPL2 license. The Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at <http://mozilla.org/MPL/2.0/.>
 
-      author = {{A}mbikasaran, {S}ivaram},
+#### November 2016 : In development:
 
-      title = {A fast direct solver for dense linear systems},
+Currently, some changes are being made for certain bug fixes, support for later `Eigen` versions and unification of code conventions.
 
-      howpublished = {https://github.com/sivaramambikasaran/HODLR},
+#### Additional things to be noted:
 
-      year = {2013}
-
-     }
-
-## License
-
-This program is free software; you can redistribute it and/or modify it under
-the terms of MPL2 license. The Source Code Form is subject to the terms of the
-Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with
-this file, You can obtain one at <http://mozilla.org/MPL/2.0/.>
-
-## Directories and files
-
-    ./examples/     :    Example input C++ codes; Needed to read input from user or from input file.
-    ./src/          :    Source code in C++
-    ./header/       :    Relevant header files
-    ./exec/         :    Executables for HODLR
-    ./README.md     :    This file
-    ./LICENSE.md    :    License file
-    ./makefile.mk   :    Makefile
-
-## Usage
-
-### Dependencies:
-
-To run this package, you need to have **Eigen**. If you don't already have it,
-download and install Eigen following the instructions
-[here](http://eigen.tuxfamily.org/index.php?title=Main_Page).
-
-### Build using cmake:
-
-The easiest way to build this library is using [CMake](http://cmake.org/). In
-the project directory, run:
-
-```bash
-mkdir build
-cd build
-cmake ..
-make
-make test
-[sudo] make install # optional
-```
-
-this will build the static `hodlr` library and run a few tests. If your version
-of the Eigen headers is installed in a non-standard place, you can change the
-`cmake` line to:
-
-```bash
-cmake .. -DEIGEN_INCLUDE_DIR_HINTS=/path/to/eigen
-```
-
-Your code should include `get_Matrix.hpp` and implement the function
-
-```c++
-double get_Matrix_Entry (const unsigned i, const unsigned j)
-```
-
-### Custom makefile:
-
-1.  There is a sample input file named `HODLR_Test.cpp` in the directory
-    `./examples/`. This calls the features the code can handle.
-
-2.  Go to the directory where makefile is in, then key in the following command
-    in the terminal: `make -f makefile.mk`.
-
-3.  Once your run the make command, the executables are created in the
-    directory named `./exec/`. To run the code, go into the `exec` directory
-    and call `./HODLR_Test`.
-
-4.  You can change the kernels in the makefile by changing KERNEL. More kernels
-    can be added by editing the following function in the file
-    `get_Matrix.cpp`:
-
-    ```c++
-    double get_Matrix_Entry(constunsigned i, const unsigned j)
-    ```
-
-5.  The dimension of the problem can be changed by changing DIM in the
-    makefile.
-
-6.  Read through the comments in all the files. Most of the
-    function/class/method/variable names are self-explanatory. Read the file
-    `HODLR_Test.cpp` to understand how to assemble, factor, solver a new HODLR
-    system.
+- Please set `$EIGEN_PATH` if the eigen headers are not in `\usr\include`
+- Change to conventions:
+	- Variables named with lower case with underscore. For example:`n_rows`, `n_columns`
+	- Functions are named following camelCase. For example: `getColumns`, `getRow`
+	- Classes are declared with the first letter being capitalized aswell in addition to separation using underscores. For example: `HODLR_Matrix`
+	- Constants are all defined using ALLCAPS. For example `PI`, `DIM`

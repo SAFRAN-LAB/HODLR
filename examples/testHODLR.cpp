@@ -109,11 +109,12 @@ int main(int argc, char* argv[])
     int M             = atoi(argv[2]);
     // Dimensionality of the problem:
     int dim           = atoi(argv[3]);
+    // Tolerance of problem
+    double tolerance  = pow(10, -atoi(argv[4]));
     // Declaration of HODLR_Matrix object that abstracts data in Matrix:
     Kernel* K         = new Kernel(N, dim);
     // Here it is assumed that size of leaf level is 200
     int n_levels      = log(N / M) / log(2);
-    double tolerance  = 1e-12;
 
     // Variables used in timing:
     double start, end;
@@ -192,4 +193,7 @@ int main(int argc, char* argv[])
     end = omp_get_wtime();
     cout << "Time to calculate log determinant using HODLR:" << (end-start) << endl;
     cout << "Error in computation:" << fabs(log_det_hodlr - log_det) << endl;
+
+    assert(1 - fabs(log_det_hodlr/log_det) < tolerance);
+    return 0;
 }

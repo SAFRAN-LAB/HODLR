@@ -25,31 +25,33 @@ To run this package, you need to have **Eigen**. If you don't already have it, d
 
 4. For the sake of demonstration, we will be creating the build folder in the current directory itself. This is done using:
 
-```
-mkdir build
-cd build
-```
+    ```
+    mkdir build
+    cd build
+    ```
 
 5. Now in this build folder generate the appropriate `Makefile` by running `cmake ..`. You can now build the system using this `Makefile` to produce the executable:
 
-```
-make -j n_threads
-```
+    ```
+    make -j n_threads
+    ```
 
-5. Once your run the make command, the executable `example` should be created in the current directory. To run the code, key in:
+6. Once your run the make command, the executable `example` should be created in the current directory. To run the code, key in:
 
-```
-./example N M d
-```
+    ```
+    ./example N M d tol
+    ```
 
-where 'N' is the size of the system you like to handle, 'M' is the size of the smallest system you can handle without the fast code (essentially 'M' is the size of the matrix at the leaf nodes) and 'd' is the dimensionality of the problem considered.
+where `N` is the size of the system you like to handle, `M` is the size of the smallest system you can handle without the fast code (essentially 'M' is the size of the matrix at the leaf nodes), `d` is the dimensionality of the problem considered.`tol` is used to set the tolerance of the computation as `10^{-tol}`
         
 Read the file `testHODLR.cpp` to understand how to assemble, factor, solve, and evaluate the log-determinant of a HODLR system. In this example, the matrix assembled is using the gaussian kernel. You can introduce your own kernel function by changing the `getMatrixEntry` function.
 
 #### Version 3.1415
 
 Date: November 29th, 2018
+
 Copyleft 2018: Sivaram Ambikasaran
+
 Developed by Sivaram Ambikasaran, Karan Raj Singh, Shyam Sundar Sankaran
 
 #### License:

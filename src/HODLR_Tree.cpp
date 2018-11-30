@@ -16,6 +16,19 @@ HODLR_Tree::HODLR_Tree(int n_levels, double tolerance, HODLR_Matrix* A)
     this->createTree();
 }
 
+// Destructor:
+HODLR_Tree::~HODLR_Tree() 
+{
+    for(int j = 0; j <= n_levels; j++) 
+    {
+        #pragma omp parallel for
+        for(int k = 0; k < nodes_in_level[j]; k++) 
+        {
+            delete tree[j][k];
+        }
+    }
+}
+
 void HODLR_Tree::createRoot() 
 {
     HODLR_Node* root = new HODLR_Node(0, 0, 0, 0, N, tolerance);
@@ -47,7 +60,7 @@ void HODLR_Tree::createTree()
 {
     this->createRoot();
     
-    for (int j = 0; j < n_levels; j++) 
+    for(int j = 0; j < n_levels; j++) 
     {
         std::vector<HODLR_Node*> level;
         tree.push_back(level);

@@ -195,5 +195,9 @@ int main(int argc, char* argv[])
     cout << "Error in computation:" << fabs(log_det_hodlr - log_det) << endl;
 
     assert(1 - fabs(log_det_hodlr/log_det) < tolerance);
+
+    delete K;
+    delete T;
+
     return 0;
 }

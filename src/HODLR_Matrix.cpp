@@ -143,20 +143,46 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
             row_ind.pop_back();
             int new_row_ind;
 
-            if(eval_at_end)
+            if(row_ind.size() < 3)
             {
-                new_row_ind = *remaining_row_ind.end();
+                if(eval_at_end)
+                {
+                    new_row_ind = *remaining_row_ind.end();
+                }
+
+                else
+                {
+                    new_row_ind = *remaining_row_ind.begin();
+                }
+    
+                eval_at_end = !eval_at_end;
             }
 
             else
             {
-                new_row_ind = *remaining_row_ind.begin();
+                std::vector<int> row_ind_sort(row_ind);
+                std::sort(row_ind_sort.begin(), row_ind_sort.end());
+                std::vector<int> row_ind_diff(row_ind_sort.size() - 1);
+
+                int max = 0;
+                int idx = 0;
+
+                for(int i = 0; i < row_ind_sort.size() - 1; i++)
+                {
+                    row_ind_diff[i] = row_ind_sort[i+1] - row_ind_sort[i];
+                    if(row_ind_diff[i] > max)
+                    {
+                        idx = i;
+                        max = row_ind_diff[i];
+                    }
+                }
+                
+                int rnd = rand() % max;
+                new_row_ind = row_ind_sort[idx] + rnd;
             }
 
-            eval_at_end = !eval_at_end;
             row_ind.push_back(new_row_ind);
             remaining_row_ind.erase(new_row_ind);
-
             // Generation of the row
             // Row of the residuum and the pivot column
             row = this->getRow(n_row_start + new_row_ind, n_col_start, n_cols);
@@ -208,26 +234,52 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
               ) 
         {
             col_ind.pop_back();
-         
+
             int new_col_ind;
 
-            if(eval_at_end)
+            if(col_ind.size() < 3)
             {
-                new_col_ind = *remaining_col_ind.end();
+                if(eval_at_end)
+                {
+                    new_col_ind = *remaining_col_ind.end();
+                }
+
+                else
+                {
+                    new_col_ind = *remaining_col_ind.begin();
+                }
+    
+                eval_at_end = !eval_at_end;
             }
 
             else
             {
-                new_col_ind = *remaining_col_ind.begin();
-            }
+                std::vector<int> col_ind_sort(col_ind);
+                std::sort(col_ind_sort.begin(), col_ind_sort.end());
+                std::vector<int> col_ind_diff(col_ind_sort.size() - 1);
 
-            eval_at_end = !eval_at_end;
+                int max = 0;
+                int idx = 0;
+
+                for(int i = 0; i < col_ind_sort.size() - 1; i++)
+                {
+                    col_ind_diff[i] = col_ind_sort[i+1] - col_ind_sort[i];
+                    if(col_ind_diff[i] > max)
+                    {
+                        idx = i;
+                        max = col_ind_diff[i];
+                    }
+                }
+                
+                int rnd = rand() % max;
+                new_col_ind = col_ind_sort[idx] + rnd;
+            }
 
             col_ind.push_back(new_col_ind);
             remaining_col_ind.erase(new_col_ind);
 
             // Generation of the column
-            // Column of the residuum and the pivot row
+            // Column of the residuum and the pivot row:
             col = this->getCol(n_col_start + new_col_ind, n_row_start, n_rows);
             for(int i = 0; i < computed_rank; i++) 
             {

@@ -11,7 +11,7 @@ if (DEFINED ENV{MKLROOT})
 endif ()
 
 # Toggle this to 1 when Intel Compilers are available:
-if (1)
+if (0)
     message("Using Intel Compilers!")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MKL_FLAGS} -O3 -xHost -ipo -fopenmp -ffast-math -g -liomp5 -lpthread -ldl")
 else()

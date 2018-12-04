@@ -109,7 +109,7 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
     double row_squared_norm, row_norm, col_squared_norm, col_norm;
 
     // So these would be particularly useful for poorly conditioned matrices:
-    int max_tries = 20;
+    int max_tries = 10;
     int count;
 
     // Repeat till the desired tolerance is obtained
@@ -130,7 +130,8 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
 
         // This randomization is needed if in the middle of the algorithm the 
         // row happens to be exactly the linear combination of the previous rows 
-        // upto some tolerance.
+        // upto some tolerance. i.e. prevents from ACA throwing false positives
+        
         // Alternating upon each call:
         bool eval_at_end = false;
         
@@ -143,6 +144,7 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
             row_ind.pop_back();
             int new_row_ind;
 
+            // When rank < 3, we will just choose entries from the ends of the matrix:
             if(row_ind.size() < 3)
             {
                 if(eval_at_end)
@@ -158,6 +160,8 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
                 eval_at_end = !eval_at_end;
             }
 
+            // However, when we have rank >=3, we will choose the entries such that
+            // the newly picked entry is at the mid-point of the already chosen ones:
             else
             {
                 std::vector<int> row_ind_sort(row_ind);
@@ -176,9 +180,8 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
                         max = row_ind_diff[i];
                     }
                 }
-                
-                int rnd = rand() % max;
-                new_row_ind = row_ind_sort[idx] + rnd;
+
+                new_row_ind = row_ind_sort[idx] + max / 2;
             }
 
             row_ind.push_back(new_row_ind);
@@ -270,9 +273,8 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
                         max = col_ind_diff[i];
                     }
                 }
-                
-                int rnd = rand() % max;
-                new_col_ind = col_ind_sort[idx] + rnd;
+
+                new_col_ind = col_ind_sort[idx] + max / 2;
             }
 
             col_ind.push_back(new_col_ind);

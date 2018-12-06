@@ -42,6 +42,7 @@ public:
 	void matmatProduct(MatrixXd x, MatrixXd& b);
 	double logDeterminant();
 	MatrixXd solve(MatrixXd b);
+    void plotTree();
 };
 
 #endif /*__HODLR_Tree__*/

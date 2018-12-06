@@ -7,26 +7,9 @@ set (CMAKE_CXX_STANDARD 11)
 # Checking for MKL:
 if (DEFINED ENV{MKLROOT})
     set (MKLROOT "$ENV{MKLROOT}")
-    # set (LDFLAGS "${LDFLAGS} -Wl,--start-group ${MKLROOT}/lib/intel64/libmkl_intel_lp64.a ${MKLROOT}/lib/intel64/libmkl_intel_thread.a ${MKLROOT}/lib/intel64/libmkl_core.a -Wl,--end-group")
+    set (LDFLAGS "${LDFLAGS} -Wl,--start-group ${MKLROOT}/lib/intel64/libmkl_intel_lp64.a ${MKLROOT}/lib/intel64/libmkl_intel_thread.a ${MKLROOT}/lib/intel64/libmkl_core.a -Wl,--end-group")
     set (MKL_FLAGS "-DMKL_LP64 -I${MKLROOT}/include")
 endif ()
-
-################ FINDING HDF5 ####################
-
-# Set this to the root folder of the HDF5 installation:
-set (HDF5_DIR "$ENV{HDF5_DIR}")
-if(NOT HDF5_DIR)
-    message ( FATAL_ERROR "Please point the environment variable HDF5_DIR to the root directory of the HDF5 installation.")
-endif()
-set (LDFLAGS "${LDFLAGS} -Wl,--start-group -lhdf5 -Wl,--end-group")
-
-################ FINDING HIGHFIVE ####################
-
-# Change this to point to the HighFive root directory:
-set(HIGHFIVE_PATH "$ENV{HIGHFIVE_PATH}")
-if(NOT HIGHFIVE_PATH)
-    message ( FATAL_ERROR "Please point the environment variable HIGHFIVE_PATH to the root directory of the HighFive repository.")
-endif()
 
 ################ FINDING EIGEN ####################
 
@@ -40,16 +23,14 @@ endif()
 
 # Toggle this to 1 when Intel Compilers are available:
 if (0)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MKL_FLAGS} -L ${HDF5_DIR}/lib -O3 -xHost -ipo -fopenmp -ffast-math -g -liomp5 -lpthread -ldl -lhdf5")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MKL_FLAGS} -O3 -xHost -ipo -fopenmp -ffast-math -g -liomp5 -lpthread -ldl")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MKL_FLAGS} -L ${HDF5_DIR}/lib -O3 -ffast-math -g -fopenmp -lpthread -ldl -lhdf5")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MKL_FLAGS} -O3 -ffast-math -g -fopenmp -lpthread -ldl")
 endif ()
 
 ################ ADDING OF THE NECESSARY HEADER FOLDERS ####################
 # Adding folders which contain necessary header files:
 include_directories("${EIGEN_PATH}" 
-                    "${HIGHFIVE_PATH}/include" 
-                    "${HDF5_DIR}/include"
                     "src"
                    )
 
@@ -73,7 +54,5 @@ message("CXX Compiler     : " ${CMAKE_CXX_COMPILER})
 message("CXX_FLAGS        : " ${CMAKE_CXX_FLAGS})
 message("Eigen dir        : " ${EIGEN_PATH})
 message("MKL dir          : " ${MKLROOT})
-message("HDF5 dir         : " ${HDF5_DIR})
-message("HighFive dir     : " ${HIGHFIVE_PATH})
 message("Build dir        : " ${CMAKE_BINARY_DIR})
 message("")

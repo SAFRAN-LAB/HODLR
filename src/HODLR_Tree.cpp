@@ -312,85 +312,40 @@ double HODLR_Tree::logDeterminant()
 
 void HODLR_Tree::plotTree()
 {
-//     // Data is being dumped in 1D form, which will then need to be reshaped:
-//     HighFive::File file("./tree_data.h5", 
-//                         HighFive::File::ReadWrite | 
-//                         HighFive::File::Create    | 
-//                         HighFive::File::Truncate
-//                        );
+    std::ofstream myfile;
+    myfile.open ("level_number.txt");
+    for(int j = 0; j <= n_levels; j++)
+    {
+        for(int k = 0; k < nodes_in_level[j]; k++)
+        {
+            myfile << tree[j][k]->level_number << endl;
+        }
+    }
+    // Closing the file:
+    myfile.close();
 
-//     std::vector<size_t> dims(1);
-//     dims[0] = nodes_in_level.size();
+    myfile.open ("node_number.txt");
+    for(int j = 0; j <= n_levels; j++)
+    {
+        for(int k = 0; k < nodes_in_level[j]; k++)
+        {
+            myfile << tree[j][k]->node_number << endl;
+        }
+    }
+    // Closing the file:
+    myfile.close();
 
-//     HighFive::DataSet dataset = file.createDataSet<double>("level_number", HighFive::DataSpace(dims));
-//     // Allocating a temporary variable used for file writing:
-//     double temp[dims[0]];
-//     int i, j, k;
-//     i = 0;
-//     for(j = 0; j <= n_levels; j++) 
-//     {
-//         for(k = 0; k <= nodes_in_level[j]; k++) 
-//         {
-//             temp[i] = tree[j][k]->level_number;
-//             i++;
-//         }
-//     }
-
-//     // Write it
-//     dataset.write(temp);
-
-//     dataset = file.createDataSet<double>("node_number", HighFive::DataSpace(dims));
-//     i = 0;
-//     for(j = 0; j <= n_levels; j++) 
-//     {
-//         for(k = 0; k <= nodes_in_level[j]; k++) 
-//         {
-//             temp[i] = tree[j][k]->node_number;
-//             i++;
-//         }
-//     }
-
-//     // Write it
-//     dataset.write(temp);
-
-//     dataset = file.createDataSet<double>("rank_left", HighFive::DataSpace(dims));
-//     i = 0;
-//     for(j = 0; j <= n_levels; j++) 
-//     {
-//         for(k = 0; k <= nodes_in_level[j]; k++) 
-//         {
-//             temp[i] = tree[j][k]->rank[0];
-//             i++;
-//         }
-//     }
-
-//     for(; k < nodes_in_level[n_levels]; k++) 
-//     {
-//         temp[i] = tree[j][k]->K.cols();
-//     }
-
-//     // Write it
-//     dataset.write(temp);
-
-//     dataset = file.createDataSet<double>("rank_right", HighFive::DataSpace(dims));
-//     i = 0;
-//     for(j = 0; j <= n_levels; j++) 
-//     {
-//         for(k = 0; k <= nodes_in_level[j]; k++) 
-//         {
-//             temp[i] = tree[j][k]->rank[1];
-//             i++;
-//         }
-//     }
-
-//     for(; k < nodes_in_level[n_levels]; k++) 
-//     {
-//         temp[i] = tree[j][k]->K.cols();
-//     }
-
-//     // Write it
-//     dataset.write(temp);
-//     file.flush();
-
-//     // system("python ./header/FMM/2D/plot_tree.py");
+    myfile.open ("rank.txt");
+    for(int j = 0; j <= n_levels; j++)
+    {
+        for(int k = 0; k < nodes_in_level[j]; k++)
+        {
+            if(j == n_levels)
+                myfile << tree[j][k]->K.cols() << endl;
+            else
+                myfile << tree[j][k]->rank[0] << endl;
+        }
+    }
+    // Closing the file:
+    myfile.close();
 }

@@ -7,10 +7,8 @@
 #include <iomanip>
 #include <set>
 #include <vector>
-// Used to dump data in the HDF5 format:
-#include <highfive/H5DataSet.hpp>
-#include <highfive/H5DataSpace.hpp>
-#include <highfive/H5File.hpp>
+// Used to dump data:
+#include <fstream>
 
 using Eigen::MatrixXd;
 using Eigen::VectorXd;

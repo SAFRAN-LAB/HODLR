@@ -108,6 +108,7 @@ int main(int argc, char* argv[])
     cout << "Time for assembly in HODLR form:" << (end - start) << endl;
 
     // This is used in debugging mainly:
+    T->plotTree();
     // T->printTreeDetails();
 
     // Random Matrix to multiply with

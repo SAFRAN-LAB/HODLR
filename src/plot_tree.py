@@ -3,8 +3,8 @@ import matplotlib.patches as patches
 import pylab as pl
 
 # Setting plot parameters for nicer plots:
-pl.rcParams['figure.figsize']  = 9, 4
-pl.rcParams['figure.dpi']      = 300
+pl.rcParams['figure.figsize']  = 15, 10
+pl.rcParams['figure.dpi']      = 500
 pl.rcParams['image.cmap']      = 'jet'
 pl.rcParams['lines.linewidth'] = 1.5
 pl.rcParams['font.family']     = 'serif'
@@ -127,16 +127,34 @@ def plot_graph(cx, cy, rx, ry, rank):
                                            edgecolor = 'black'))
         
         else:
-            intensity = ((rank[i] - np.min(rank)) / (np.max(rank) - np.min(rank)))
-            # ax.text(cx[i], cy[i], str(rank[i]))
-            ax.add_patch(patches.Rectangle((cx[i] - rx[i], cy[i] - ry[i]), 
-                                           2 * rx[i], 2 * ry[i], facecolor = 'cyan', 
-                                           edgecolor = 'black', linewidth = 0.1, 
-                                           alpha = intensity))
+            ax.text(cx[i] + rx[i] / 2, cy[i] + ry[i] / 2, '%02d'%(rank[i]), 
+                    fontsize = 30 / (1 + int(np.sqrt(i))))
+            ax.text(cx[i] - rx[i] / 2, cy[i] - ry[i] / 2, '%02d'%(rank[i]), 
+                    fontsize = 30 / (1 + int(np.sqrt(i))))
+
+            if(rank[i] > 0):
+                intensity = 0.2 + 0.8 * ((rank[i] - np.min(rank)) / (np.max(rank) - np.min(rank)))
+                if(np.min(rank) == np.max(rank)):
+                    intensity = 1
+
+                ax.add_patch(patches.Rectangle((cx[i], cy[i]), 
+                                               rx[i], ry[i], facecolor = 'green', 
+                                               edgecolor = 'black', linewidth = 0.1, 
+                                               alpha = intensity))
+                ax.add_patch(patches.Rectangle((cx[i], cy[i]), 
+                                               -rx[i], -ry[i], facecolor = 'green', 
+                                               edgecolor = 'black', linewidth = 0.1, 
+                                               alpha = intensity))
+            else:
+                ax.add_patch(patches.Rectangle((cx[i], cy[i]), 
+                                               rx[i], ry[i], facecolor = 'white', 
+                                               edgecolor = 'black', linewidth = 0.1))
+                ax.add_patch(patches.Rectangle((cx[i], cy[i]), 
+                                               -rx[i], -ry[i], facecolor = 'white', 
+                                               edgecolor = 'black', linewidth = 0.1))
 
 rank   = np.loadtxt("rank.txt")
-levels = int(np.loadtxt("level_number.txt").max())
+levels = int(rank[0])
 cx, cy, rx, ry = extract_centers_radii(return_HODLR_tree(levels))
-print(rx)
-plot_graph(cx, cy, rx, ry, rank[:2**levels - 1])
-pl.savefig('plot.png', bbox_inches = 'tight')
+plot_graph(cx, cy, rx, ry, rank[1:])
+pl.savefig('plot.svg', bbox_inches = 'tight')

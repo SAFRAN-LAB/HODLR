@@ -64,13 +64,13 @@ public:
             // // Inverse-Multiquadric Kernel: 1 / sqrt(1 + R^2)
             // return (1 / sqrt(1 + R2));
             // // Log(R) Kernel:
-            // return log(R);
+            return log(R);
             // // R^2 log(R) Kernel:
             // return (R2 * log(R));
             // // 1 / R Kernel:
             // return (1 / R);
             // // log(1 + R) Kernel:
-            return log(1 + R);
+            // return log(1 + R);
         }
     }
 

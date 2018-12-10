@@ -81,6 +81,7 @@ int main(int argc, char *argv[])
 
     // Assemble symmetric matrix 
     T->assembleTree(true);
+    T->plotTree();
     // Compute factorization 
     T->factorize();
     // Compute determinant 

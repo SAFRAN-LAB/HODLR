@@ -313,37 +313,14 @@ double HODLR_Tree::logDeterminant()
 void HODLR_Tree::plotTree()
 {
     std::ofstream myfile;
-    myfile.open ("level_number.txt");
-    for(int j = 0; j <= n_levels; j++)
-    {
-        for(int k = 0; k < nodes_in_level[j]; k++)
-        {
-            myfile << tree[j][k]->level_number << endl;
-        }
-    }
-    // Closing the file:
-    myfile.close();
-
-    myfile.open ("node_number.txt");
-    for(int j = 0; j <= n_levels; j++)
-    {
-        for(int k = 0; k < nodes_in_level[j]; k++)
-        {
-            myfile << tree[j][k]->node_number << endl;
-        }
-    }
-    // Closing the file:
-    myfile.close();
-
     myfile.open ("rank.txt");
-    for(int j = 0; j <= n_levels; j++)
+    // First entry is the number of levels:
+    myfile << n_levels << endl;
+    for(int j = 0; j < n_levels; j++)
     {
         for(int k = 0; k < nodes_in_level[j]; k++)
         {
-            if(j == n_levels)
-                myfile << tree[j][k]->K.cols() << endl;
-            else
-                myfile << tree[j][k]->rank[0] << endl;
+            myfile << tree[j][k]->rank[0] << endl;
         }
     }
     // Closing the file:

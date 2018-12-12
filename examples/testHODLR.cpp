@@ -140,40 +140,40 @@ int main(int argc, char* argv[])
     // Computing the relative error in the solution obtained:
     cout << "Error in the solution is:" << (b_fast-b_exact).norm() / (b_exact.norm()) << endl << endl;
 
-    start = omp_get_wtime();
-    T->factorize();
-    end   = omp_get_wtime();
-    cout << "Time to factorize:" << (end-start) << endl;
+    // start = omp_get_wtime();
+    // T->factorize();
+    // end   = omp_get_wtime();
+    // cout << "Time to factorize:" << (end-start) << endl;
 
-    MatrixXd x_fast;
-    start  = omp_get_wtime();
-    x_fast = T->solve(b_exact);
-    end    = omp_get_wtime();
-    cout << "Time to solve:" << (end-start) << endl;
-    // Computing the relative error:
-    cout << "Error in the solution:" << (x_fast - x).norm() / (x.norm()) << endl << endl;
+    // MatrixXd x_fast;
+    // start  = omp_get_wtime();
+    // x_fast = T->solve(b_exact);
+    // end    = omp_get_wtime();
+    // cout << "Time to solve:" << (end-start) << endl;
+    // // Computing the relative error:
+    // cout << "Error in the solution:" << (x_fast - x).norm() / (x.norm()) << endl << endl;
 
-    // Computing log-determinant using LU:
-    Eigen::PartialPivLU<MatrixXd> P;
-    start = omp_get_wtime();
-    P.compute(B);
-    double log_det = 0.0;
-    for(int i=0; i<P.matrixLU().rows(); ++i)
-    {
-        log_det += log(abs(P.matrixLU()(i,i)));
-    }
-    end = omp_get_wtime();
-    cout << "Time to calculate log determinant using LU:" << (end-start) << endl;
-    cout << "Calculated Log Determinant:" << log_det << endl;
+    // // Computing log-determinant using LU:
+    // Eigen::PartialPivLU<MatrixXd> P;
+    // start = omp_get_wtime();
+    // P.compute(B);
+    // double log_det = 0.0;
+    // for(int i=0; i<P.matrixLU().rows(); ++i)
+    // {
+    //     log_det += log(abs(P.matrixLU()(i,i)));
+    // }
+    // end = omp_get_wtime();
+    // cout << "Time to calculate log determinant using LU:" << (end-start) << endl;
+    // cout << "Calculated Log Determinant:" << log_det << endl;
 
-    start = omp_get_wtime();
-    double log_det_hodlr = T->logDeterminant();
-    end = omp_get_wtime();
-    cout << "Time to calculate log determinant using HODLR:" << (end-start) << endl;
-    cout << "Calculated Log Determinant:" << log_det_hodlr << endl;
-    cout << "Relative Error in computation:" << fabs(1 - fabs(log_det_hodlr/log_det)) << endl;
+    // start = omp_get_wtime();
+    // double log_det_hodlr = T->logDeterminant();
+    // end = omp_get_wtime();
+    // cout << "Time to calculate log determinant using HODLR:" << (end-start) << endl;
+    // cout << "Calculated Log Determinant:" << log_det_hodlr << endl;
+    // cout << "Relative Error in computation:" << fabs(1 - fabs(log_det_hodlr/log_det)) << endl;
 
-    assert(fabs(1 - fabs(log_det_hodlr/log_det)) < tolerance);
+    // assert(fabs(1 - fabs(log_det_hodlr/log_det)) < tolerance);
 
     delete K;
     delete T;

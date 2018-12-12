@@ -15,6 +15,7 @@ private:
 	double tolerance;
 	std::vector<int> nodes_in_level;
 	HODLR_Matrix* A;
+    bool is_sym;
 	
     // Vector of levels(which contain nodes) thereby giving the tree:
     std::vector<std::vector<HODLR_Node*>> tree;
@@ -25,6 +26,7 @@ private:
 	// Variables and methods needed for HODLR solver
 	void factorizeLeaf(int node_number);
 	void factorizeNonLeaf(int level_number, int node_number);
+    void qr(int level_number, int node_number);
 	MatrixXd solveLeaf(int node_number, MatrixXd b);
 	MatrixXd solveNonLeaf(int level_number, int node_number, MatrixXd b);
 

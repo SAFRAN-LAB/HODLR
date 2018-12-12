@@ -22,7 +22,7 @@ endif()
 ################ COMPILERS: APPROPRIATELY USE INTEL OR GNU ####################
 
 # Toggle this to 1 when Intel Compilers are available:
-if (0)
+if (1)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MKL_FLAGS} -O3 -xHost -ipo -fopenmp -ffast-math -g -liomp5 -lpthread -ldl")
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MKL_FLAGS} -O3 -ffast-math -g -fopenmp -lpthread -ldl")

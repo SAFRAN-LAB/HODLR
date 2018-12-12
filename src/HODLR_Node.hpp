@@ -28,8 +28,12 @@ private:
     //  Variables and methods needed for HODLR solver
     MatrixXd U[2], V[2];
     MatrixXd U_factor[2], V_factor[2];
-    Eigen::PartialPivLU<MatrixXd> K_factor;
+    Eigen::PartialPivLU<MatrixXd> K_factor_LU;
     int rank[2];
+    //  Variables needed for symmetric factorization
+    Eigen::MatrixXd Q[2];
+    Eigen::MatrixXd Q_factor[2];
+    Eigen::LLT<MatrixXd> K_factor_LLT;
 
     // Methods for Leaf Nodes:
     void assembleLeafNode(HODLR_Matrix* A);
@@ -37,7 +41,7 @@ private:
 
     // Methods for Non-leaf Nodes:
     void assembleNonLeafNode(HODLR_Matrix* A, bool is_sym);
-    void matmatProductNonLeaf(MatrixXd x, MatrixXd& b);
+    void matmatProductNonLeaf(MatrixXd x, MatrixXd& b, bool is_sym);
 
     // Method to print the parameters of the node(mainly used to debug)
     void printNodeDetails();

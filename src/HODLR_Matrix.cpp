@@ -248,9 +248,6 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
             break;
         } 
 
-        // Resetting back for next iteration:
-        count = 0;
-
         row_ind.push_back(pivot);
         remaining_row_ind.erase(pivot);
 

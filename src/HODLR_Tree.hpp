@@ -27,6 +27,7 @@ private:
 	void factorizeLeaf(int node_number);
 	void factorizeNonLeaf(int level_number, int node_number);
     void qr(int level_number, int node_number);
+    void qrForLevel(int level_number);
 	MatrixXd solveLeaf(int node_number, MatrixXd b);
 	MatrixXd solveNonLeaf(int level_number, int node_number, MatrixXd b);
 
@@ -42,6 +43,8 @@ public:
     void printTreeDetails();
 	void factorize();
 	void matmatProduct(MatrixXd x, MatrixXd& b);
+    void symmetricFactorProduct(MatrixXd x, MatrixXd& b);
+    void symmetricFactorTransposeProduct(MatrixXd x, MatrixXd& b);
 	double logDeterminant();
 	MatrixXd solve(MatrixXd b);
     void plotTree();

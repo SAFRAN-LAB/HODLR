@@ -32,7 +32,7 @@ public:
         // Value on the diagonal:
         if(i == j) 
         {
-            return 2;
+            return 10;
         }
         
         // Otherwise:
@@ -52,7 +52,7 @@ public:
             // Exponential: exp(-R)
             // return exp(-R);
             // Gaussian Kernel: e(-R^2)
-            // return exp(-R2);
+            return exp(-R2);
             // Sinc Kernel: sin(R) / R
             // return (sin(R) / R);
             // // Quadric Kernel: (1 + R^2)
@@ -64,7 +64,7 @@ public:
             // // Inverse-Multiquadric Kernel: 1 / sqrt(1 + R^2)
             // return (1 / sqrt(1 + R2));
             // // Log(R) Kernel:
-            return log(R);
+            // return log(R);
             // // R^2 log(R) Kernel:
             // return (R2 * log(R));
             // // 1 / R Kernel:
@@ -101,15 +101,16 @@ int main(int argc, char* argv[])
     start = omp_get_wtime();
     // Creating a pointer to the HODLR Tree structure:
     HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, K);
-    // We are assembling a symmetric matrix. Hence we pass the flag as true:
-    T->assembleTree(true);
+    // We are assembling a SPD matrix:
+    bool is_spd = true;
+    T->assembleTree(is_spd);
     end   = omp_get_wtime();
     
     cout << "Time for assembly in HODLR form:" << (end - start) << endl;
 
-    // This is used in debugging mainly:
-    T->plotTree();
-    // T->printTreeDetails();
+    // These are used in debugging mainly:
+    // T->plotTree();
+    T->printTreeDetails();
 
     // Random Matrix to multiply with
     MatrixXd x = MatrixXd::Random(N, 1);
@@ -153,18 +154,39 @@ int main(int argc, char* argv[])
     // Computing the relative error:
     cout << "Error in the solution:" << (x_fast - x).norm() / (x.norm()) << endl << endl;
 
-    // // Computing log-determinant using LU:
-    Eigen::PartialPivLU<MatrixXd> P;
-    start = omp_get_wtime();
-    P.compute(B);
-    double log_det = 0.0;
-    for(int i=0; i<P.matrixLU().rows(); ++i)
+    double log_det;
+    // Computing log-determinant using Cholesky:
+    if(is_spd == true)
     {
-        log_det += log(abs(P.matrixLU()(i,i)));
+        Eigen::LLT<MatrixXd> llt;
+        start = omp_get_wtime();
+        llt.compute(B);
+        log_det = 0.0;
+        for(int i=0; i<llt.matrixL().rows(); ++i)
+        {
+            log_det += log(abs(llt.matrixL()(i,i)));
+        }
+        log_det *= 2;
+        end = omp_get_wtime();
+        cout << "Time to calculate log determinant using Cholesky:" << (end - start) << endl;
+        cout << "Calculated Log Determinant:" << log_det << endl;
     }
-    end = omp_get_wtime();
-    cout << "Time to calculate log determinant using LU:" << (end-start) << endl;
-    cout << "Calculated Log Determinant:" << log_det << endl;
+
+    // Computing log-determinant using LU:
+    else
+    {
+        Eigen::PartialPivLU<MatrixXd> lu;
+        start = omp_get_wtime();
+        lu.compute(B);
+        log_det = 0.0;
+        for(int i=0; i<lu.matrixLU().rows(); ++i)
+        {
+            log_det += log(abs(lu.matrixLU()(i,i)));
+        }
+        end = omp_get_wtime();
+        cout << "Time to calculate log determinant using LU:" << (end - start) << endl;
+        cout << "Calculated Log Determinant:" << log_det << endl;
+    }
 
     start = omp_get_wtime();
     double log_det_hodlr = T->logDeterminant();

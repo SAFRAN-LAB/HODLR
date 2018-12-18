@@ -195,7 +195,7 @@ void HODLR_Tree::qr(int j, int k)
                                                   tree[j][k]->Q_factor[0].cols()
                                                  ).triangularView<Eigen::Upper>();
 
-    qr(tree[j][k]->Q_factor[1]);
+    qr = Eigen::HouseholderQR<Eigen::MatrixXd>(tree[j][k]->Q_factor[1]);
     tree[j][k]->Q_factor[1] = qr.householderQ() * 
                               Eigen::MatrixXd::Identity(tree[j][k]->Q_factor[1].rows(), r1);
     tree[j][k]->K          *= qr.matrixQR().block(0, 0, r1, 
@@ -207,7 +207,7 @@ void HODLR_Tree::qr(int j, int k)
 void HODLR_Tree::qrForLevel(int level)
 {
     #pragma omp parallel for
-    for(int k = 0; k < nodesInLevel[level]; k++)
+    for(int k = 0; k < nodes_in_level[level]; k++)
     {
         qr(level, k);
     }
@@ -215,16 +215,14 @@ void HODLR_Tree::qrForLevel(int level)
 
 void HODLR_Tree::factorizeNonLeaf(int j, int k) 
 {
-    int r0        = tree[j][k]->rank[0];
-    int r1        = tree[j][k]->rank[1];
+    int r0 = tree[j][k]->rank[0];
+    int r1 = tree[j][k]->rank[1];
 
     if(is_sym == true)
     {
-        tree[j][k]->K_factor.compute(  MatrixXd::Identity(tree[j][k]->rank[0], 
-                                                          tree[j][k]->rank[1]
-                                                         ) 
-                                     - tree[j][k]->K.transpose() * tree[j][k]->K
-                                    );
+        tree[j][k]->K_factor_LLT.compute(  MatrixXd::Identity(r0, r1) 
+                                         - tree[j][k]->K.transpose() * tree[j][k]->K
+                                        );
 
         int parent = k;
         int child  = k;
@@ -256,7 +254,7 @@ void HODLR_Tree::factorizeNonLeaf(int j, int k)
             tree[j][k]->K.block(r0, 0, r1, r0)  =   
             tree[j][k]->V_factor[0].transpose() * tree[j][k]->U_factor[0];
 
-            tree[j][k]->K_factor.compute(tree[j][k]->K);
+            tree[j][k]->K_factor_LU.compute(tree[j][k]->K);
 
             int parent = k;
             int child  = k;
@@ -283,53 +281,67 @@ void HODLR_Tree::factorizeNonLeaf(int j, int k)
 void HODLR_Tree::factorize() 
 {
     // Initializing for the non-leaf levels:
-    for(int j = 0; j <= n_levels; j++) 
+    for(int j = 0; j < n_levels; j++) 
     {
-        #pragma omp parallel for
+        // #pragma omp parallel for
         for(int k = 0; k < nodes_in_level[j]; k++) 
         {
-            // Initializing the factorized matrices for the leaf and right child:
-            for (int l = 0; l < 2; l++) 
-            {
-                if(is_sym == true)
-                {
-                    tree[j][k]->Q_factor[l] = tree[j][k]->Q[l];
-                    tree[j][k]->K           = MatrixXd::Identity(tree[j][k]->rank[0], 
-                                                                 tree[j][k]->rank[1]
-                                                                );
-                }
+            int &r0 = tree[j][k]->rank[0];
+            int &r1 = tree[j][k]->rank[1];
 
-                else
-                {
-                    tree[j][k]->U_factor[l] = tree[j][k]->U[l];
-                    tree[j][k]->V_factor[l] = tree[j][k]->V[l];
-                    tree[j][k]->K           = MatrixXd::Identity(tree[j][k]->rank[0] + tree[j][k]->rank[1], 
-                                                                 tree[j][k]->rank[0] + tree[j][k]->rank[1]
-                                                                );
-                }
+            // Initializing the factorized matrices for the left and right child:
+            if(is_sym == true)
+            {
+                tree[j][k]->Q_factor[0] = tree[j][k]->Q[0];
+                tree[j][k]->Q_factor[1] = tree[j][k]->Q[1];
+                tree[j][k]->K           = MatrixXd::Identity(r0, r1); // NOTE: r0 == r1
+            }
+
+            // Initializing the factorized matrices for the left and right child:
+            else
+            {
+                tree[j][k]->U_factor[0] = tree[j][k]->U[0];
+                tree[j][k]->U_factor[1] = tree[j][k]->U[1];
+                tree[j][k]->V_factor[0] = tree[j][k]->V[0];
+                tree[j][k]->V_factor[1] = tree[j][k]->V[1];
+                tree[j][k]->K           = MatrixXd::Identity(r0 + r1, r0 + r1);
             }
         }
     }
 
-    // Factorizing the leaf levels:
-    #pragma omp parallel for
+    // #pragma omp parallel for
     for(int k = 0; k < nodes_in_level[n_levels]; k++) 
     {
         this->factorizeLeaf(k);
     }
 
-    // Factorizing the nonleaf levels:
-    for(int j = n_levels - 1; j >= 0; j--) 
+    if(is_sym == true)
     {
-        if(is_sym == true)
-        {
-            qrForLevel(j);
-        }
+        qrForLevel(n_levels - 1);
+    }
 
+    // Factorizing the nonleaf levels:
+    for(int j = n_levels - 1; j > 0; j--) 
+    {
         #pragma omp parallel for
         for(int k = 0; k < nodes_in_level[j]; k++) 
         {
             this->factorizeNonLeaf(j, k);
+        }
+
+        if(is_sym == true)
+        {
+            qrForLevel(j-1);
+        }
+    }
+
+    if(is_sym == true)
+    {
+        if(n_levels > 0)
+        {
+            tree[0][0]->K_factor_LLT.compute(  MatrixXd::Identity(tree[0][0]->rank[0], tree[0][0]->rank[1]) 
+                                             - tree[0][0]->K.transpose() * tree[0][0]->K
+                                            );
         }
     }
 }
@@ -360,10 +372,12 @@ MatrixXd HODLR_Tree::solveNonLeaf(int j, int k, MatrixXd b)
         int n1 = tree[j][k]->Q[1].rows();
         int r  = b.cols();
 
-        MatrixXd tmp = tree[j][k]->Qfactor[1].transpose()*b.block(n0,0,n1,b.cols());
+        MatrixXd tmp = tree[j][k]->Q_factor[1].transpose() * b.block(n0, 0, n1, r);
         // TODO:Not clear about this yet
-        b.block(n0,0,n1,b.cols()) -=   tree[j][k]->Q_factor[1]
-                                     * (tree[j][k]->K_factor.matrixL().solve((tree[j][k]->K.transpose()*(tree[j][k]->Q_factor[0].transpose()*b.block(0,0,n0,b.cols()))) - tmp) +tmp);
+        b.block(n0, 0, n1, r) -=   tree[j][k]->Q_factor[1]
+                                     * (  tree[j][k]->K_factor_LLT.matrixL().solve((tree[j][k]->K.transpose()
+                                        *(tree[j][k]->Q_factor[0].transpose() * b.block(0, 0, n0, r))) - tmp) + tmp
+                                       );
         return(b);
     }
 
@@ -379,7 +393,7 @@ MatrixXd HODLR_Tree::solveNonLeaf(int j, int k, MatrixXd b)
         MatrixXd temp(r0 + r1, r);
         temp << tree[j][k]->V_factor[1].transpose() * b.block(n0, 0, n1, r),
                 tree[j][k]->V_factor[0].transpose() * b.block(0,  0, n0, r);
-        temp = tree[j][k]->K_factor.solve(temp);
+        temp = tree[j][k]->K_factor_LU.solve(temp);
         
         MatrixXd y(n0 + n1, r);
         y << tree[j][k]->U_factor[0] * temp.block(0,  0, r0, r), 

@@ -30,14 +30,22 @@ void HODLR_Node::matmatProductLeaf(Eigen::MatrixXd x, Eigen::MatrixXd& b)
     b.block(n_start, 0, n_size, x.cols()) += K * x.block(n_start, 0, n_size, x.cols());
 }
 
-void HODLR_Node::assembleNonLeafNode(HODLR_Matrix* A, bool is_sym) 
+void HODLR_Node::assembleNonLeafNode(HODLR_Matrix* A, bool is_spd, bool is_sym) 
 {
-    if(is_sym == true)
+    if(is_spd == true)
     {
         A->rookPiv(c_start[0], c_start[1], c_size[0], c_size[1], tolerance, Q[0], Q[1], rank[0]);
         rank[1] = rank[0];
     }
     
+    else if(is_spd == false && is_sym == true)
+    {
+        A->rookPiv(c_start[0], c_start[1], c_size[0], c_size[1], tolerance, U[0], V[1], rank[0]);
+        V[0]    = U[0];
+        U[1]    = V[1];
+        rank[1] = rank[0];
+    }
+
     else
     {
         A->rookPiv(c_start[0], c_start[1], c_size[0], c_size[1], tolerance, U[0], V[1], rank[0]);
@@ -45,9 +53,9 @@ void HODLR_Node::assembleNonLeafNode(HODLR_Matrix* A, bool is_sym)
     }
 }
 
-void HODLR_Node::matmatProductNonLeaf(Eigen::MatrixXd x, Eigen::MatrixXd& b, bool is_sym) 
+void HODLR_Node::matmatProductNonLeaf(Eigen::MatrixXd x, Eigen::MatrixXd& b, bool is_spd) 
 {
-    if(is_sym == true)
+    if(is_spd == true)
     {
         b.block(c_start[0], 0, c_size[0], x.cols()) += 
         (Q[0] * (Q[1].transpose() * x.block(c_start[1], 0, c_size[1], x.cols())));

@@ -1,6 +1,9 @@
 #ifndef __HODLR_Matrix__
 #define __HODLR_Matrix__
-#define EIGEN_USE_MKL_ALL
+
+#ifdef MKL_ENABLED
+    #define EIGEN_USE_MKL_ALL
+#endif
 
 #include <Eigen/Dense>
 #include <iostream>

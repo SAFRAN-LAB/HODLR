@@ -101,16 +101,17 @@ int main(int argc, char* argv[])
     start = omp_get_wtime();
     // Creating a pointer to the HODLR Tree structure:
     HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, K);
-    // We are assembling a SPD matrix:
+    // If we are assembling a SPD matrix:
     bool is_spd = true;
-    T->assembleTree(is_spd);
-    end   = omp_get_wtime();
-    
+    // If we have a matrix that is symmetric but NOT PD:
+    bool is_sym = false;
+    T->assembleTree(is_spd, is_sym);
+    end = omp_get_wtime();
     cout << "Time for assembly in HODLR form:" << (end - start) << endl;
 
     // These are used in debugging mainly:
     // T->plotTree();
-    T->printTreeDetails();
+    // T->printTreeDetails();
 
     // Random Matrix to multiply with
     MatrixXd x = MatrixXd::Random(N, 1);

@@ -15,7 +15,7 @@ private:
 	double tolerance;
 	std::vector<int> nodes_in_level;
 	HODLR_Matrix* A;
-    bool is_sym;
+    bool is_spd, is_sym;
 	
     // Vector of levels(which contain nodes) thereby giving the tree:
     std::vector<std::vector<HODLR_Node*>> tree;
@@ -36,7 +36,7 @@ public:
 	~HODLR_Tree();
 
 	//  Methods for HODLR solver
-	void assembleTree(bool is_sym = false);
+	void assembleTree(bool is_spd = false, bool is_sym = false);
     // Gives the box details of the prescribed box and level number:
     void printNodeDetails(int level_number, int box_number);
     // Lists details of all boxes in the tree

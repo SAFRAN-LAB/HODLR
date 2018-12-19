@@ -6,9 +6,10 @@ set (CMAKE_CXX_STANDARD 11)
 
 # Checking for MKL:
 if (DEFINED ENV{MKLROOT})
+    add_compile_definitions(MKL_ENABLED)
     set (MKLROOT "$ENV{MKLROOT}")
-    set (LDFLAGS "${LDFLAGS} -Wl,--start-group ${MKLROOT}/lib/intel64/libmkl_intel_lp64.a ${MKLROOT}/lib/intel64/libmkl_intel_thread.a ${MKLROOT}/lib/intel64/libmkl_core.a -Wl,--end-group")
-    set (MKL_FLAGS "-DMKL_LP64 -I${MKLROOT}/include")
+    set (LDFLAGS "${LDFLAGS} -DMKL_ENABLED -Wl,--start-group ${MKLROOT}/lib/intel64/libmkl_intel_lp64.a ${MKLROOT}/lib/intel64/libmkl_intel_thread.a ${MKLROOT}/lib/intel64/libmkl_core.a -Wl,--end-group")
+    set (MKL_FLAGS "-DMKL_LP64 -DMKL_ENABLED -I${MKLROOT}/include")
 endif ()
 
 ################ FINDING EIGEN ####################
@@ -22,10 +23,10 @@ endif()
 ################ COMPILERS: APPROPRIATELY USE INTEL OR GNU ####################
 
 # Toggle this to 1 when Intel Compilers are available:
-if (1)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MKL_FLAGS} -O3 -ipo -qopenmp -xHost -ffast-math -g -liomp5 -lpthread -ldl")
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MKL_FLAGS} -O3 -ipo -qopenmp -xHost -funroll-loops -ffast-math -ffinite-math-only -g -liomp5 -lpthread -ldl")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MKL_FLAGS} -O3 -ffast-math -g -fopenmp -lpthread -ldl")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MKL_FLAGS} -O3 -funroll-loops -ffast-math -ffinite-math-only -g -fopenmp -lpthread -ldl")
 endif ()
 
 ################ ADDING OF THE NECESSARY HEADER FOLDERS ####################

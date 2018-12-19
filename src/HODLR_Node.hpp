@@ -40,8 +40,8 @@ private:
     void matmatProductLeaf(MatrixXd x, MatrixXd& b);
 
     // Methods for Non-leaf Nodes:
-    void assembleNonLeafNode(HODLR_Matrix* A, bool is_sym);
-    void matmatProductNonLeaf(MatrixXd x, MatrixXd& b, bool is_sym);
+    void assembleNonLeafNode(HODLR_Matrix* A, bool is_spd, bool is_sym);
+    void matmatProductNonLeaf(MatrixXd x, MatrixXd& b, bool is_spd);
 
     // Method to print the parameters of the node(mainly used to debug)
     void printNodeDetails();

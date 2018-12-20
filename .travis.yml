@@ -31,4 +31,4 @@ script:
   - mkdir build
   - cd build
   - ${DEPS_DIR}/cmake/bin/cmake .. && make
-  - ./example 1600 100 1 12
+  - ./example 1000 100 1 12

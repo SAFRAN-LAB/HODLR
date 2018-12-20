@@ -41,6 +41,8 @@ add_executable(example
                src/HODLR_Matrix.cpp
                src/HODLR_Node.cpp
                src/HODLR_Tree.cpp
+               src/HODLR_Tree_NonSPD.cpp
+               src/HODLR_Tree_SPD.cpp
                src/KDTree.cpp
               )
 

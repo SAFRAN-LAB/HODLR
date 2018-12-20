@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
     // If we are assembling a SPD matrix:
     bool is_spd = true;
     // If we have a matrix that is symmetric but NOT PD:
-    bool is_sym = false;
+    bool is_sym = true;
     T->assembleTree(is_spd, is_sym);
     end = omp_get_wtime();
     cout << "Time for assembly in HODLR form:" << (end - start) << endl;
@@ -154,6 +154,20 @@ int main(int argc, char* argv[])
     cout << "Time to solve:" << (end-start) << endl;
     // Computing the relative error:
     cout << "Error in the solution:" << (x_fast - x).norm() / (x.norm()) << endl << endl;
+
+    // Checking symmetric factor product:
+    if(is_spd == true)
+    {
+        start = omp_get_wtime();
+        T->matmatProduct(x, b_fast);
+        end = omp_get_wtime();
+        cout << "Time to calculate product of factor transpose with given vector:" << (end - start) << endl;
+        start = omp_get_wtime();
+        T->matmatProduct(x, b_fast);
+        end = omp_get_wtime();
+        cout << "Time to calculate product of factor with given vector:" << (end - start) << endl;
+        cout << "Error in the solution is:" << (b_fast-b_exact).norm() / (b_exact.norm()) << endl << endl;
+    }
 
     double log_det;
     // Computing log-determinant using Cholesky:

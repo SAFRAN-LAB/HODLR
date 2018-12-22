@@ -101,11 +101,13 @@ int main(int argc, char* argv[])
     start = omp_get_wtime();
     // Creating a pointer to the HODLR Tree structure:
     HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, K);
-    // If we are assembling a SPD matrix:
-    bool is_spd = true;
-    // If we have a matrix that is symmetric but NOT PD:
+    // If we are assembling a symmetric matrix:
     bool is_sym = true;
-    T->assembleTree(is_spd, is_sym);
+    // If we know that the matrix is also PD:
+    // By toggling this flag to true, the factorizations are performed using Cholesky
+    // Useful when you want the factorization as WW^T 
+    bool is_pd = true;
+    T->assembleTree(is_sym, is_pd);
     end = omp_get_wtime();
     cout << "Time for assembly in HODLR form:" << (end - start) << endl;
 
@@ -116,11 +118,11 @@ int main(int argc, char* argv[])
     // Random Matrix to multiply with
     MatrixXd x = MatrixXd::Random(N, 1);
     // Stores the result after multiplication:
-    MatrixXd b_fast;
+    MatrixXd y_fast, b_fast;
     
-    start = omp_get_wtime();
-    T->matmatProduct(x, b_fast);
-    end   = omp_get_wtime();
+    start  = omp_get_wtime();
+    b_fast = T->matmatProduct(x);
+    end    = omp_get_wtime();
     
     cout << "Time for matrix-vector product:" << (end - start) << endl << endl;
 
@@ -156,28 +158,30 @@ int main(int argc, char* argv[])
     cout << "Error in the solution:" << (x_fast - x).norm() / (x.norm()) << endl << endl;
 
     // Checking symmetric factor product:
-    if(is_spd == true)
+    if(is_sym == true && is_pd == true)
     {
-        start = omp_get_wtime();
-        T->matmatProduct(x, b_fast);
-        end = omp_get_wtime();
+        start  = omp_get_wtime();
+        y_fast = T->symmetricFactorTransposeProduct(x);
+        end    = omp_get_wtime();
         cout << "Time to calculate product of factor transpose with given vector:" << (end - start) << endl;
-        start = omp_get_wtime();
-        T->matmatProduct(x, b_fast);
-        end = omp_get_wtime();
+        
+        start  = omp_get_wtime();
+        b_fast = T->symmetricFactorProduct(y_fast);
+        end    = omp_get_wtime();
         cout << "Time to calculate product of factor with given vector:" << (end - start) << endl;
-        cout << "Error in the solution is:" << (b_fast-b_exact).norm() / (b_exact.norm()) << endl << endl;
+        
+        cout << "Error in the solution is:" << (b_fast - b_exact).norm() / (b_exact.norm()) << endl << endl;
     }
 
     double log_det;
     // Computing log-determinant using Cholesky:
-    if(is_spd == true)
+    if(is_sym == true && is_pd == true)
     {
         Eigen::LLT<MatrixXd> llt;
         start = omp_get_wtime();
         llt.compute(B);
         log_det = 0.0;
-        for(int i=0; i<llt.matrixL().rows(); ++i)
+        for(int i = 0; i < llt.matrixL().rows(); i++)
         {
             log_det += log(abs(llt.matrixL()(i,i)));
         }
@@ -194,7 +198,7 @@ int main(int argc, char* argv[])
         start = omp_get_wtime();
         lu.compute(B);
         log_det = 0.0;
-        for(int i=0; i<lu.matrixLU().rows(); ++i)
+        for(int i = 0; i < lu.matrixLU().rows(); i++)
         {
             log_det += log(abs(lu.matrixLU()(i,i)));
         }

@@ -30,15 +30,9 @@ void HODLR_Node::matmatProductLeaf(Eigen::MatrixXd x, Eigen::MatrixXd& b)
     b.block(n_start, 0, n_size, x.cols()) += K * x.block(n_start, 0, n_size, x.cols());
 }
 
-void HODLR_Node::assembleNonLeafNode(HODLR_Matrix* A, bool is_spd, bool is_sym) 
+void HODLR_Node::assembleNonLeafNode(HODLR_Matrix* A, bool is_sym) 
 {
-    if(is_spd == true)
-    {
-        A->rookPiv(c_start[0], c_start[1], c_size[0], c_size[1], tolerance, Q[0], Q[1], rank[0]);
-        rank[1] = rank[0];
-    }
-    
-    else if(is_spd == false && is_sym == true)
+    if(is_sym == true)
     {
         A->rookPiv(c_start[0], c_start[1], c_size[0], c_size[1], tolerance, U[0], V[1], rank[0]);
         V[0]    = U[0];
@@ -53,25 +47,13 @@ void HODLR_Node::assembleNonLeafNode(HODLR_Matrix* A, bool is_spd, bool is_sym)
     }
 }
 
-void HODLR_Node::matmatProductNonLeaf(Eigen::MatrixXd x, Eigen::MatrixXd& b, bool is_spd) 
+void HODLR_Node::matmatProductNonLeaf(Eigen::MatrixXd x, Eigen::MatrixXd& b) 
 {
-    if(is_spd == true)
-    {
-        b.block(c_start[0], 0, c_size[0], x.cols()) += 
-        (Q[0] * (Q[1].transpose() * x.block(c_start[1], 0, c_size[1], x.cols())));
+    b.block(c_start[0], 0, c_size[0], x.cols()) += 
+    (U[0] * (V[1].transpose() * x.block(c_start[1], 0, c_size[1], x.cols())));
 
-        b.block(c_start[1], 0, c_size[1], x.cols()) += 
-        (Q[1] * (Q[0].transpose() * x.block(c_start[0], 0, c_size[0], x.cols())));
-    }
-
-    else
-    {
-        b.block(c_start[0], 0, c_size[0], x.cols()) += 
-        (U[0] * (V[1].transpose() * x.block(c_start[1], 0, c_size[1], x.cols())));
-
-        b.block(c_start[1], 0, c_size[1], x.cols()) += 
-        (U[1] * (V[0].transpose() * x.block(c_start[0], 0, c_size[0], x.cols())));
-    }
+    b.block(c_start[1], 0, c_size[1], x.cols()) += 
+    (U[1] * (V[0].transpose() * x.block(c_start[0], 0, c_size[0], x.cols())));
 }
 
 void HODLR_Node::printNodeDetails()
@@ -94,8 +76,6 @@ void HODLR_Node::printNodeDetails()
         cout << "Size of Child Node :" << c_size[i]  <<  endl;
     }
 
-    cout << "Shape of Q[0]      :" << Q[0].rows() << ", " << Q[0].cols() << endl;
-    cout << "Shape of Q[1]      :" << Q[1].rows() << ", " << Q[1].cols() << endl;
     cout << "Shape of U[0]      :" << U[0].rows() << ", " << U[0].cols() << endl;
     cout << "Shape of U[1]      :" << U[1].rows() << ", " << U[1].cols() << endl;
     cout << "Shape of V[0]      :" << V[0].rows() << ", " << V[0].cols() << endl;

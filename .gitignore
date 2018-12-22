@@ -47,6 +47,7 @@
 ._*
 .Spotlight-V100
 .Trashes
+.directory
 ehthumbs.db
 Thumbs.db
 
@@ -76,9 +77,10 @@ __pycache__/
 *.log*
 *ffmpeg*
 
-# Including Pictures under Documentation #
-##########################################
-!doc*.png
+# Including Pictures that are prefixed with HODLR #
+###################################################
+!HODLR*.png
+!HODLR*.svg
 
 # Nontexed file which used by Readme2Tex #
 ##########################################

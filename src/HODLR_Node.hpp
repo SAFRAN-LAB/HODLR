@@ -31,7 +31,6 @@ private:
     Eigen::PartialPivLU<MatrixXd> K_factor_LU;
     int rank[2];
     //  Variables needed for symmetric factorization
-    Eigen::MatrixXd Q[2];
     Eigen::MatrixXd Q_factor[2];
     Eigen::LLT<MatrixXd> K_factor_LLT;
 
@@ -40,8 +39,8 @@ private:
     void matmatProductLeaf(MatrixXd x, MatrixXd& b);
 
     // Methods for Non-leaf Nodes:
-    void assembleNonLeafNode(HODLR_Matrix* A, bool is_spd, bool is_sym);
-    void matmatProductNonLeaf(MatrixXd x, MatrixXd& b, bool is_spd);
+    void assembleNonLeafNode(HODLR_Matrix* A, bool is_sym);
+    void matmatProductNonLeaf(MatrixXd x, MatrixXd& b);
 
     // Method to print the parameters of the node(mainly used to debug)
     void printNodeDetails();

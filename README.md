@@ -1,3 +1,5 @@
+![Image of HODLRlib](docs/source/images/HODLR.svg)
+
 # HODLR: Fast direct solver and determinant computation for dense linear systems
 [![Build Status](https://travis-ci.org/sivaramambikasaran/HODLR.svg?branch=master)](https://travis-ci.org/sivaramambikasaran/HODLR)
 [![Documentation Status](https://readthedocs.org/projects/hodlr/badge/?version=latest)](https://hodlr.readthedocs.io/en/latest/?badge=latest)

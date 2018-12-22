@@ -15,7 +15,7 @@ private:
     double tolerance;
     std::vector<int> nodes_in_level;
     HODLR_Matrix* A;
-    bool is_spd, is_sym;
+    bool is_sym, is_pd;
     
     // Vector of levels(which contain nodes) thereby giving the tree:
     std::vector<std::vector<HODLR_Node*>> tree;
@@ -45,8 +45,8 @@ private:
     MatrixXd solveNonLeafSymmetricFactorTranspose(int level_number, int node_number, MatrixXd b);
     MatrixXd solveSymmetricFactorTranspose(MatrixXd b);
     MatrixXd solveSPD(MatrixXd b);
-    void SymmetricFactorTransposeNonLeafProduct(MatrixXd x, MatrixXd& b);
-    void SymmetricFactorNonLeafProduct(MatrixXd x, MatrixXd& b);
+    MatrixXd SymmetricFactorNonLeafProduct(int j, int k, MatrixXd b);
+    MatrixXd SymmetricFactorTransposeNonLeafProduct(int j, int k, MatrixXd b);
 
     double logDeterminantSPD();
 
@@ -55,18 +55,18 @@ public:
     ~HODLR_Tree();
 
     //  Methods for HODLR solver
-    void assembleTree(bool is_spd = false, bool is_sym = false);
+    void assembleTree(bool is_sym = false, bool is_pd = false);
     // Gives the box details of the prescribed box and level number:
     void printNodeDetails(int level_number, int box_number);
     // Lists details of all boxes in the tree
     void printTreeDetails();
     void plotTree();
-    void matmatProduct(MatrixXd x, MatrixXd& b);
+    MatrixXd matmatProduct(MatrixXd x);
     void factorize();
     MatrixXd solve(MatrixXd b);
+    MatrixXd symmetricFactorProduct(MatrixXd x);
+    MatrixXd symmetricFactorTransposeProduct(MatrixXd x);
     double logDeterminant();
-    void symmetricFactorProduct(MatrixXd x, MatrixXd& b);
-    void symmetricFactorTransposeProduct(MatrixXd x, MatrixXd& b);
 };
 
 #endif /*__HODLR_Tree__*/

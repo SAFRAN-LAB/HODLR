@@ -30,6 +30,7 @@ HODLR_Tree::~HODLR_Tree()
     }
 }
 
+// Creates the node at the root level:
 void HODLR_Tree::createRoot() 
 {
     HODLR_Node* root = new HODLR_Node(0, 0, 0, 0, N, tolerance);
@@ -38,6 +39,7 @@ void HODLR_Tree::createRoot()
     tree.push_back(level);
 }
 
+// Function that adds on children for the given level and node number:
 void HODLR_Tree::createChildren(int level_number, int node_number) 
 {
     //  Adding left child:
@@ -57,6 +59,9 @@ void HODLR_Tree::createChildren(int level_number, int node_number)
     tree[level_number + 1].push_back(right);
 }
 
+// Creates the tree structure:
+// Depending upon the parameters set by the user, this function
+// creates a tree having required number of nodes in the tree
 void HODLR_Tree::createTree() 
 {
     this->createRoot();
@@ -73,17 +78,21 @@ void HODLR_Tree::createTree()
     }
 }
 
-void HODLR_Tree::assembleTree(bool is_spd, bool is_sym) 
+// This function assembles the elements of the tree:
+// That is:
+// For leaf nodes, it directly evaluates the matrix entries:
+// For nonleaf nodes, it gets the low rank representation of the underlying matrix:
+void HODLR_Tree::assembleTree(bool is_sym, bool is_pd) 
 {
-    this->is_spd = is_spd;
     this->is_sym = is_sym;
+    this->is_pd  = is_pd;
     // Assembly of nonleaf nodes:
     for(int j = 0; j < n_levels; j++) 
     {
         #pragma omp parallel for
         for(int k = 0; k < nodes_in_level[j]; k++) 
         {
-            tree[j][k]->assembleNonLeafNode(A, is_spd, is_sym);
+            tree[j][k]->assembleNonLeafNode(A, is_sym);
         }
     }
 
@@ -95,11 +104,15 @@ void HODLR_Tree::assembleTree(bool is_spd, bool is_sym)
     }
 }
 
+// Used mainly to debug:
+// Prints the details of the considered nodes:
 void HODLR_Tree::printNodeDetails(int level_number, int node_number)
 {
     tree[level_number][node_number]->printNodeDetails();
 }
 
+// Used mainly to debug:
+// Prints details of all the nodes in the tree:
 void HODLR_Tree::printTreeDetails()
 {
     for(int j = 0; j <= n_levels; j++)
@@ -113,10 +126,11 @@ void HODLR_Tree::printTreeDetails()
     }
 }
 
-void HODLR_Tree::matmatProduct(MatrixXd x, MatrixXd& b) 
+// Performs a MatMat product with the given matrix X.
+MatrixXd HODLR_Tree::matmatProduct(MatrixXd x) 
 {
     // Initializing matrix b:
-    b = MatrixXd::Zero(N, x.cols());
+    MatrixXd b = MatrixXd::Zero(N, x.cols());
 
     // At non-leaf levels:
     for (int j = 0; j < n_levels; j++) 
@@ -124,7 +138,7 @@ void HODLR_Tree::matmatProduct(MatrixXd x, MatrixXd& b)
         #pragma omp parallel for
         for (int k = 0; k < nodes_in_level[j]; k++) 
         {
-            tree[j][k]->matmatProductNonLeaf(x, b, is_spd);
+            tree[j][k]->matmatProductNonLeaf(x, b);
         }
     }
 
@@ -134,32 +148,42 @@ void HODLR_Tree::matmatProduct(MatrixXd x, MatrixXd& b)
     {
         tree[n_levels][k]->matmatProductLeaf(x, b);
     }
+
+    return b;
 } 
 
+// Factorizes the matrix to get LU for each block in case of the nonSPD
+// and L for each block in case the matrix is SPD
 void HODLR_Tree::factorize()
 {
-    if(is_spd == true)
+    if(is_sym == true && is_pd == true)
         this->factorizeSPD();
     else
         this->factorizeNonSPD();
 }
 
+// Returns x, by solving Ax = b, where A is the matrix represented by the HODLR structure
 MatrixXd HODLR_Tree::solve(MatrixXd b)
 {
-    if(is_spd == true)
+    if(is_sym == true && is_pd == true)
         return this->solveSPD(b);
     else
         return this->solveNonSPD(b);
 }
 
+// Returns the log determinant of the matrix represented by the HODLR structure
 double HODLR_Tree::logDeterminant()
 {
-    if(is_spd == true)
+    if(is_sym == true && is_pd == true)
         return this->logDeterminantSPD();
     else
         return this->logDeterminantNonSPD();
 }
 
+// Creates a plot of the HODLR matrix represented.
+// Basically, this function shows the extent of "lowrankness" through
+// different intensity of colors in the plots.
+// Additionally, it also shows the ranks of the blocks. Again useful to debug:
 void HODLR_Tree::plotTree()
 {
     std::string HODLR_PATH = std::getenv("HODLR_PATH");

@@ -144,6 +144,8 @@ int main(int argc, char* argv[])
     // Computing the relative error in the solution obtained:
     cout << "Error in the solution is:" << (b_fast-b_exact).norm() / (b_exact.norm()) << endl << endl;
 
+    assert((b_fast-b_exact).norm() / (b_exact.norm()) < tolerance);
+
     start = omp_get_wtime();
     T->factorize();
     end   = omp_get_wtime();
@@ -156,6 +158,8 @@ int main(int argc, char* argv[])
     cout << "Time to solve:" << (end-start) << endl;
     // Computing the relative error:
     cout << "Error in the solution:" << (x_fast - x).norm() / (x.norm()) << endl << endl;
+
+    assert((x_fast - x).norm() / (x.norm()) < tolerance);
 
     // Checking symmetric factor product:
     if(is_sym == true && is_pd == true)
@@ -172,6 +176,8 @@ int main(int argc, char* argv[])
         
         cout << "Error in the solution is:" << (b_fast - b_exact).norm() / (b_exact.norm()) << endl << endl;
     }
+
+    assert((b_fast - b_exact).norm() / (b_exact.norm()) < tolerance);
 
     double log_det;
     // Computing log-determinant using Cholesky:
@@ -215,6 +221,12 @@ int main(int argc, char* argv[])
     cout << "Relative Error in computation:" << fabs(1 - fabs(log_det_hodlr/log_det)) << endl;
 
     assert(fabs(1 - fabs(log_det_hodlr/log_det)) < tolerance);
+
+    // Getting the symmetric factor:
+    MatrixXd W  = T->getSymmetricFactor();
+    MatrixXd Wt = W.transpose();
+
+    assert((Wt.colPivHouseholderQr().solve(W.colPivHouseholderQr().solve(b_exact)) - x).cwiseAbs().maxCoeff() < tolerance);
 
     delete K;
     delete T;

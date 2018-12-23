@@ -45,8 +45,8 @@ private:
     MatrixXd solveNonLeafSymmetricFactorTranspose(int level_number, int node_number, MatrixXd b);
     MatrixXd solveSymmetricFactorTranspose(MatrixXd b);
     MatrixXd solveSPD(MatrixXd b);
-    MatrixXd SymmetricFactorNonLeafProduct(int j, int k, MatrixXd b);
-    MatrixXd SymmetricFactorTransposeNonLeafProduct(int j, int k, MatrixXd b);
+    MatrixXd SymmetricFactorNonLeafProduct(int level_number, int node_number, MatrixXd b);
+    MatrixXd SymmetricFactorTransposeNonLeafProduct(int level_number, int node_number, MatrixXd b);
 
     double logDeterminantSPD();
 
@@ -57,7 +57,7 @@ public:
     //  Methods for HODLR solver
     void assembleTree(bool is_sym = false, bool is_pd = false);
     // Gives the box details of the prescribed box and level number:
-    void printNodeDetails(int level_number, int box_number);
+    void printNodeDetails(int level_number, int node_number);
     // Lists details of all boxes in the tree
     void printTreeDetails();
     void plotTree();
@@ -66,6 +66,7 @@ public:
     MatrixXd solve(MatrixXd b);
     MatrixXd symmetricFactorProduct(MatrixXd x);
     MatrixXd symmetricFactorTransposeProduct(MatrixXd x);
+    MatrixXd getSymmetricFactor();
     double logDeterminant();
 };
 

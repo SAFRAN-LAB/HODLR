@@ -25,13 +25,14 @@ private:
     // This stores the matrix directly(i.e at the leaf level)
     MatrixXd K;
 
-    //  Variables and methods needed for HODLR solver
+    // Variables and methods needed for HODLR solver
     MatrixXd U[2], V[2];
     MatrixXd U_factor[2], V_factor[2];
     Eigen::PartialPivLU<MatrixXd> K_factor_LU;
     int rank[2];
-    //  Variables needed for symmetric factorization
-    Eigen::MatrixXd Q_factor[2];
+    // Variables needed for symmetric factorization
+    // Unitary matrices:
+    Eigen::MatrixXd Q[2];
     Eigen::LLT<MatrixXd> K_factor_LLT;
 
     // Methods for Leaf Nodes:

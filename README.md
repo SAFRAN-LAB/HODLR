@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://github.com/shyams2/HODLR/blob/master/docs/source/images/HODLR.svg?raw=true" alt="Logo of HODLRlib"/>
+  <img src="https://github.com/shyams2/HODLR/blob/master/docs/source/images/HODLR.svg" alt="Logo of HODLRlib"/>
 </p>
 
 # HODLRlib

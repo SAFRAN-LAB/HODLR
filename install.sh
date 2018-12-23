@@ -21,3 +21,5 @@ wget http://bitbucket.org/eigen/eigen/get/3.3.7.tar.bz2
 tar xjf 3.3.7.tar.bz2
 mv eigen-eigen-323c052e1731 eigen
 export EIGEN_PATH=$PWD/eigen/
+# Returning the the home folder:
+cd ..

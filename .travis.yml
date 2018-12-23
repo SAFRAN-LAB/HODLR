@@ -10,7 +10,7 @@ compiler:
   - gcc
   
 install:
-  - sh install.sh
+  - source install.sh
 
 # Build steps
 script:

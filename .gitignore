@@ -81,6 +81,7 @@ __pycache__/
 ###################################################
 !HODLR*.png
 !HODLR*.svg
+!docs/source/images/*
 
 # Nontexed file which used by Readme2Tex #
 ##########################################

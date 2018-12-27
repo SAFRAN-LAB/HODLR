@@ -45,8 +45,8 @@ Mat HODLR_Matrix::getMatrix(const int n_row_start, const int n_col_start,
 }
 
 void HODLR_Matrix::maxAbsVector(const Vec& v, 
-                                const std::set<int>& allowed_indices, 
-                                double& max, int& index
+                                const std::set<int>& allowed_indices,
+                                dtype& max, int& index
                                ) 
 {
     std::set<int>::iterator it;
@@ -90,10 +90,10 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
         remaining_col_ind.insert(k);
     }
 
-    double max, gamma, unused_max;
+    dtype max, gamma, unused_max;
 
     // Initialize the matrix norm and the the first row index
-    double matrix_norm = 0;
+    dtype_base matrix_norm = 0;
     row_ind.push_back(0);
     remaining_row_ind.erase(0);
 
@@ -104,7 +104,7 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
     computed_rank = 0;
     Vec row, col;
     // These quantities in finding the stopping criteria:
-    double row_squared_norm, row_norm, col_squared_norm, col_norm;
+    dtype_base row_squared_norm, row_norm, col_squared_norm, col_norm;
 
     // So these would be particularly useful for poorly conditioned matrices:
     int max_tries = 5;
@@ -214,7 +214,7 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
         remaining_col_ind.erase(pivot);
 
         // Normalizing constant
-        gamma = 1.0 / max;
+        gamma = dtype_base(1.0) / max;
 
         // Generation of the column
         // Column of the residuum and the pivot row
@@ -318,11 +318,12 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
         col_norm         = sqrt(col_squared_norm);
 
         // Updating the matrix norm:
-        matrix_norm = matrix_norm + gamma * gamma * row_squared_norm * col_squared_norm;
+        matrix_norm += std::abs(gamma * gamma * row_squared_norm * col_squared_norm);
 
         for(int j = 0; j < computed_rank; j++) 
         {
-            matrix_norm = matrix_norm + 2.0 * (u[j].dot(u.back())) * (v[j].dot(v.back()));
+            matrix_norm += 2.0 * std::abs(u[j].dot(u.back())) 
+                               * std::abs(v[j].dot(v.back()));
         }
         
         computed_rank++;

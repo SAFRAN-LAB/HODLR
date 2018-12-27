@@ -28,7 +28,7 @@ private:
     Mat solveLeafNonSPD(int node_number, Mat b);
     Mat solveNonLeafNonSPD(int level_number, int node_number, Mat b);
     Mat solveNonSPD(Mat b);
-    double logDeterminantNonSPD();
+    dtype logDeterminantNonSPD();
 
     // Methods needed for the SPD HODLR solver:
     void factorizeLeafSPD(int node_number);
@@ -45,8 +45,7 @@ private:
     Mat solveSPD(Mat b);
     Mat SymmetricFactorNonLeafProduct(int level_number, int node_number, Mat b);
     Mat SymmetricFactorTransposeNonLeafProduct(int level_number, int node_number, Mat b);
-
-    double logDeterminantSPD();
+    dtype logDeterminantSPD();
 
 public:
     HODLR_Tree(int n_levels, double tolerance, HODLR_Matrix* A);
@@ -65,7 +64,7 @@ public:
     Mat symmetricFactorProduct(Mat x);
     Mat symmetricFactorTransposeProduct(Mat x);
     Mat getSymmetricFactor();
-    double logDeterminant();
+    dtype logDeterminant();
 };
 
 #endif /*__HODLR_Tree__*/

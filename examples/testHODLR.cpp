@@ -17,7 +17,7 @@ public:
     // Constructor:
     Kernel(int N, int dim) : HODLR_Matrix(N) 
     {
-        x = Mat::Random(N, dim);
+        x = (Mat::Random(N, dim)).real();
         // This is being sorted to ensure that we get
         // optimal low rank structure:
         getKDTreeSorted(x, 0);
@@ -25,12 +25,12 @@ public:
     
     // In this example, we are illustrating usage using
     // the gaussian kernel:
-    double getMatrixEntry(int i, int j) 
+    dtype getMatrixEntry(int i, int j) 
     {
         size_t dim = x.cols();
 
         // Value on the diagonal:
-        if(i == j) 
+        if(i == j)
         {
             return 10;
         }
@@ -38,7 +38,7 @@ public:
         // Otherwise:
         else
         {   
-            double R, R2;
+            dtype R, R2;
             // Initializing:
             R = R2 = 0;
 
@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
     // If we know that the matrix is also PD:
     // By toggling this flag to true, the factorizations are performed using Cholesky
     // Useful when you want the factorization as WW^T 
-    bool is_pd = true;
+    bool is_pd = false;
     T->assembleTree(is_sym, is_pd);
     end = omp_get_wtime();
     cout << "Time for assembly in HODLR form:" << (end - start) << endl;
@@ -116,7 +116,7 @@ int main(int argc, char* argv[])
     // T->printTreeDetails();
 
     // Random Matrix to multiply with
-    Mat x = Mat::Random(N, 1);
+    Mat x = (Mat::Random(N, 1)).real();
     // Stores the result after multiplication:
     Mat y_fast, b_fast;
     
@@ -125,7 +125,6 @@ int main(int argc, char* argv[])
     end    = omp_get_wtime();
     
     cout << "Time for matrix-vector product:" << (end - start) << endl << endl;
-
     cout << "Exact method..." << endl;
 
     // What we are doing here is explicitly generating 
@@ -155,6 +154,7 @@ int main(int argc, char* argv[])
     start  = omp_get_wtime();
     x_fast = T->solve(b_exact);
     end    = omp_get_wtime();
+
     cout << "Time to solve:" << (end-start) << endl;
     // Computing the relative error:
     cout << "Error in the solution:" << (x_fast - x).norm() / (x.norm()) << endl << endl;
@@ -179,7 +179,7 @@ int main(int argc, char* argv[])
 
     assert((b_fast - b_exact).norm() / (b_exact.norm()) < tolerance);
 
-    double log_det;
+    dtype log_det;
     // Computing log-determinant using Cholesky:
     if(is_sym == true && is_pd == true)
     {
@@ -189,7 +189,7 @@ int main(int argc, char* argv[])
         log_det = 0.0;
         for(int i = 0; i < llt.matrixL().rows(); i++)
         {
-            log_det += log(abs(llt.matrixL()(i,i)));
+            log_det += log(llt.matrixL()(i,i));
         }
         log_det *= 2;
         end = omp_get_wtime();
@@ -206,7 +206,7 @@ int main(int argc, char* argv[])
         log_det = 0.0;
         for(int i = 0; i < lu.matrixLU().rows(); i++)
         {
-            log_det += log(abs(lu.matrixLU()(i,i)));
+            log_det += log(lu.matrixLU()(i,i));
         }
         end = omp_get_wtime();
         cout << "Time to calculate log determinant using LU:" << (end - start) << endl;
@@ -214,7 +214,7 @@ int main(int argc, char* argv[])
     }
 
     start = omp_get_wtime();
-    double log_det_hodlr = T->logDeterminant();
+    dtype log_det_hodlr = T->logDeterminant();
     end = omp_get_wtime();
     cout << "Time to calculate log determinant using HODLR:" << (end-start) << endl;
     cout << "Calculated Log Determinant:" << log_det_hodlr << endl;
@@ -223,10 +223,13 @@ int main(int argc, char* argv[])
     assert(fabs(1 - fabs(log_det_hodlr/log_det)) < tolerance);
 
     // Getting the symmetric factor:
-    Mat W  = T->getSymmetricFactor();
-    Mat Wt = W.transpose();
+    if(is_sym == true && is_pd == true)
+    {
+        Mat W  = T->getSymmetricFactor();
+        Mat Wt = W.transpose();
 
-    assert((Wt.colPivHouseholderQr().solve(W.colPivHouseholderQr().solve(b_exact)) - x).cwiseAbs().maxCoeff() < tolerance);
+        assert((Wt.colPivHouseholderQr().solve(W.colPivHouseholderQr().solve(b_exact)) - x).cwiseAbs().maxCoeff() < tolerance);
+    }
 
     delete K;
     delete T;

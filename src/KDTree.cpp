@@ -10,7 +10,7 @@ void mergeSortedLists(Mat& list1, Mat& list2, unsigned index, Mat& final_list)
 
     while (j1 < N1 && j2 < N2) 
     {
-        if (list1(j1,index) < list2(j2,index)) 
+        if (fabs(list1(j1,index)) < fabs(list2(j2,index))) 
         {
             final_list.row(j) = list1.row(j1);
             ++j1;

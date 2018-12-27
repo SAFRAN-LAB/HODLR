@@ -172,7 +172,7 @@ Mat HODLR_Tree::solve(Mat b)
 }
 
 // Returns the log determinant of the matrix represented by the HODLR structure
-double HODLR_Tree::logDeterminant()
+dtype HODLR_Tree::logDeterminant()
 {
     if(is_sym == true && is_pd == true)
         return this->logDeterminantSPD();

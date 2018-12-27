@@ -431,9 +431,9 @@ Mat HODLR_Tree::getSymmetricFactor()
     return Rc;
 }
 
-double HODLR_Tree::logDeterminantSPD()
+dtype HODLR_Tree::logDeterminantSPD()
 {
-    double log_det = 0.0;
+    dtype log_det = 0.0;
 
     for(int j = n_levels; j >= 0; j--) 
     {

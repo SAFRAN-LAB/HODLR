@@ -18,21 +18,29 @@ using std::cout;
 using std::endl;
 
 #ifdef USE_FLOAT
+    using dtype=float;
+    using dtype_base=float;
     using Mat=Eigen::MatrixXf;
     using Vec=Eigen::VectorXf;
 #endif
 
 #ifdef USE_DOUBLE
+    using dtype=double;
+    using dtype_base=double;
     using Mat=Eigen::MatrixXd;
     using Vec=Eigen::VectorXd;
 #endif
 
 #ifdef USE_COMPLEX32
-    using Mat=Eigen::MatrixXcd;
-    using Vec=Eigen::VectorXcd;
+    using dtype=std::complex<float>;
+    using dtype_base=float;
+    using Mat=Eigen::MatrixXcf;
+    using Vec=Eigen::VectorXcf;
 #endif
 
 #ifdef USE_COMPLEX64
+    using dtype=std::complex<double>;
+    using dtype_base=double;
     using Mat=Eigen::MatrixXcd;
     using Vec=Eigen::VectorXcd;
 #endif
@@ -56,7 +64,7 @@ public:
     }
 
     // Returns individual matrix 
-    virtual double getMatrixEntry(int j, int k) 
+    virtual dtype getMatrixEntry(int j, int k) 
     {
         // FROM EXPERIENCE: Incase the user makes a mistake in 
         // setting the derived class, this warns the user:
@@ -70,7 +78,7 @@ public:
 
     void maxAbsVector(const Vec& v, 
                       const std::set<int>& allowed_indices, 
-                      double& max, int& index
+                      dtype& max, int& index
                      );
   
     void rookPiv(int n_row_start, int n_col_start, int n_rows, int n_cols, double tolerance, 

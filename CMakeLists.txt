@@ -3,8 +3,7 @@ cmake_minimum_required (VERSION 3.0)
 set (CMAKE_CXX_STANDARD 11)
 # Provide the input file that you want to solve for:
 set (INPUT_FILE "examples/testHODLR.cpp")
-# Set this to: "float", "double"
-# TODO: Adding "complex32" and "complex64" requires some changes to ACA.
+# Set this to: "float", "double", "complex32" and "complex64"
 set (DTYPE "double")
 # Change this accordingly to point to the Eigen root folder
 # By default, it will pick up the environment variable EIGEN_PATH
@@ -31,10 +30,8 @@ if(DTYPE STREQUAL "float")
 elseif(DTYPE STREQUAL "double")
     set(DTYPE_FLAG "-DUSE_DOUBLE")
 elseif(DTYPE STREQUAL "complex32")
-    message(FATAL_ERROR "Not supported currently. Exiting...")
     set(DTYPE_FLAG "-DUSE_COMPLEX32")
 elseif(DTYPE STREQUAL "complex64")
-    message(FATAL_ERROR "Not supported currently. Exiting...")
     set(DTYPE_FLAG "-DUSE_COMPLEX64")
 else()
     message(FATAL_ERROR "Invalid Choice for Datatype. Exiting...")

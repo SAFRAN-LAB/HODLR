@@ -188,9 +188,9 @@ Mat HODLR_Tree::solveNonSPD(Mat b)
     return x;
 }
 
-double HODLR_Tree::logDeterminantNonSPD()
+dtype HODLR_Tree::logDeterminantNonSPD()
 {
-    double log_det = 0.0;
+    dtype log_det = 0.0;
     for(int j = n_levels; j >= 0; j--) 
     {
         for(int k = 0; k < nodes_in_level[j]; k++) 

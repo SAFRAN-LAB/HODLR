@@ -14,7 +14,9 @@ For more details on the usage of the library, visit the [documentation](https://
 ### Features:
 
 Fast matrix vector products: Obtains <img src="https://rawgit.com/in	git@github.com:shyams2/HODLR/master/docs/source/images//605193f107171aff38e18841c2fc20a1.svg?invert_in_darkmode" align=middle width=37.24875329999999pt height=22.465723500000017pt/> at a cost of <img src="https://rawgit.com/in	git@github.com:shyams2/HODLR/master/docs/source/images//2d74209c531ea025d06c0a66dbbd0bb1.svg?invert_in_darkmode" align=middle width=85.780695pt height=24.65753399999998pt/>
+
 Fast solution of linear systems: Solves linear systems <img src="https://rawgit.com/in	git@github.com:shyams2/HODLR/master/docs/source/images//70681e99f542745bf6a0c56bd4600b39.svg?invert_in_darkmode" align=middle width=50.69621369999999pt height=22.831056599999986pt/> in <img src="https://rawgit.com/in	git@github.com:shyams2/HODLR/master/docs/source/images//dad06decfe9b6527d7a6d23885d23d04.svg?invert_in_darkmode" align=middle width=95.43830174999998pt height=29.534320200000014pt/>
+
 Fast determinant computation: Compute the determinant at an additional cost of <img src="https://rawgit.com/in	git@github.com:shyams2/HODLR/master/docs/source/images//2d74209c531ea025d06c0a66dbbd0bb1.svg?invert_in_darkmode" align=middle width=85.780695pt height=24.65753399999998pt/>
 
 #### Version 3.1415

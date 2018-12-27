@@ -2,8 +2,6 @@
 #define __HODLR_Tree__
 
 #include <Eigen/Dense>
-#include <vector>
-
 #include "HODLR_Matrix.hpp"
 #include "HODLR_Node.hpp"
 
@@ -27,9 +25,9 @@ private:
     void factorizeLeafNonSPD(int node_number);
     void factorizeNonLeafNonSPD(int level_number, int node_number);
     void factorizeNonSPD();
-    MatrixXd solveLeafNonSPD(int node_number, MatrixXd b);
-    MatrixXd solveNonLeafNonSPD(int level_number, int node_number, MatrixXd b);
-    MatrixXd solveNonSPD(MatrixXd b);
+    Mat solveLeafNonSPD(int node_number, Mat b);
+    Mat solveNonLeafNonSPD(int level_number, int node_number, Mat b);
+    Mat solveNonSPD(Mat b);
     double logDeterminantNonSPD();
 
     // Methods needed for the SPD HODLR solver:
@@ -38,15 +36,15 @@ private:
     void factorizeSPD();
     void qr(int level_number, int node_number);
     void qrForLevel(int level_number);
-    MatrixXd solveLeafSymmetricFactor(int node_number, MatrixXd b);
-    MatrixXd solveNonLeafSymmetricFactor(int level_number, int node_number, MatrixXd b);
-    MatrixXd solveSymmetricFactor(MatrixXd b);
-    MatrixXd solveLeafSymmetricFactorTranspose(int node_number, MatrixXd b);
-    MatrixXd solveNonLeafSymmetricFactorTranspose(int level_number, int node_number, MatrixXd b);
-    MatrixXd solveSymmetricFactorTranspose(MatrixXd b);
-    MatrixXd solveSPD(MatrixXd b);
-    MatrixXd SymmetricFactorNonLeafProduct(int level_number, int node_number, MatrixXd b);
-    MatrixXd SymmetricFactorTransposeNonLeafProduct(int level_number, int node_number, MatrixXd b);
+    Mat solveLeafSymmetricFactor(int node_number, Mat b);
+    Mat solveNonLeafSymmetricFactor(int level_number, int node_number, Mat b);
+    Mat solveSymmetricFactor(Mat b);
+    Mat solveLeafSymmetricFactorTranspose(int node_number, Mat b);
+    Mat solveNonLeafSymmetricFactorTranspose(int level_number, int node_number, Mat b);
+    Mat solveSymmetricFactorTranspose(Mat b);
+    Mat solveSPD(Mat b);
+    Mat SymmetricFactorNonLeafProduct(int level_number, int node_number, Mat b);
+    Mat SymmetricFactorTransposeNonLeafProduct(int level_number, int node_number, Mat b);
 
     double logDeterminantSPD();
 
@@ -61,12 +59,12 @@ public:
     // Lists details of all boxes in the tree
     void printTreeDetails();
     void plotTree();
-    MatrixXd matmatProduct(MatrixXd x);
+    Mat matmatProduct(Mat x);
     void factorize();
-    MatrixXd solve(MatrixXd b);
-    MatrixXd symmetricFactorProduct(MatrixXd x);
-    MatrixXd symmetricFactorTransposeProduct(MatrixXd x);
-    MatrixXd getSymmetricFactor();
+    Mat solve(Mat b);
+    Mat symmetricFactorProduct(Mat x);
+    Mat symmetricFactorTransposeProduct(Mat x);
+    Mat getSymmetricFactor();
     double logDeterminant();
 };
 

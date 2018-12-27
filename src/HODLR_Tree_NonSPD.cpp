@@ -90,7 +90,7 @@ void HODLR_Tree::factorizeNonSPD()
             tree[j][k]->U_factor[1] = tree[j][k]->U[1];
             tree[j][k]->V_factor[0] = tree[j][k]->V[0];
             tree[j][k]->V_factor[1] = tree[j][k]->V[1];
-            tree[j][k]->K           = MatrixXd::Identity(r0 + r1, r0 + r1);
+            tree[j][k]->K           = Mat::Identity(r0 + r1, r0 + r1);
         }
     }
 
@@ -113,13 +113,13 @@ void HODLR_Tree::factorizeNonSPD()
 }
 
 // Solve at the leaf is just directly performed by solving Kx = b:
-MatrixXd HODLR_Tree::solveLeafNonSPD(int k, MatrixXd b) 
+Mat HODLR_Tree::solveLeafNonSPD(int k, Mat b) 
 {
-    MatrixXd x = tree[n_levels][k]->K_factor_LU.solve(b);
+    Mat x = tree[n_levels][k]->K_factor_LU.solve(b);
     return x;
 }
 
-MatrixXd HODLR_Tree::solveNonLeafNonSPD(int j, int k, MatrixXd b) 
+Mat HODLR_Tree::solveNonLeafNonSPD(int j, int k, Mat b) 
 {
     int r0 = tree[j][k]->rank[0];
     int r1 = tree[j][k]->rank[1];
@@ -137,12 +137,12 @@ MatrixXd HODLR_Tree::solveNonLeafNonSPD(int j, int k, MatrixXd b)
     //        |           |
     //        -------------
 
-    MatrixXd temp(r0 + r1, r);
+    Mat temp(r0 + r1, r);
     temp << tree[j][k]->V_factor[1].transpose() * b.block(n0, 0, n1, r),
             tree[j][k]->V_factor[0].transpose() * b.block(0,  0, n0, r);
     temp = tree[j][k]->K_factor_LU.solve(temp);
     
-    MatrixXd y(n0 + n1, r);
+    Mat y(n0 + n1, r);
     
     // y = U * (1 + VT * U)^{-1} * VT * b
     y << tree[j][k]->U_factor[0] * temp.block(0,  0, r0, r), 
@@ -153,10 +153,10 @@ MatrixXd HODLR_Tree::solveNonLeafNonSPD(int j, int k, MatrixXd b)
     return(b - y);
 }
 
-MatrixXd HODLR_Tree::solveNonSPD(MatrixXd b) 
+Mat HODLR_Tree::solveNonSPD(Mat b) 
 {   
     int start, size;
-    MatrixXd x = MatrixXd::Zero(b.rows(),b.cols());
+    Mat x = Mat::Zero(b.rows(),b.cols());
     
     int r = b.cols();
 

@@ -1,8 +1,8 @@
 #include "HODLR_Matrix.hpp"
 
-Eigen::VectorXd HODLR_Matrix::getRow(const int j, const int n_col_start, const int n_cols) 
+Vec HODLR_Matrix::getRow(const int j, const int n_col_start, const int n_cols) 
 {
-    Eigen::VectorXd row(n_cols);
+    Vec row(n_cols);
     #pragma omp parallel for
     for(int k = 0; k < n_cols; k++) 
     {   
@@ -12,9 +12,9 @@ Eigen::VectorXd HODLR_Matrix::getRow(const int j, const int n_col_start, const i
     return row;
 }
 
-Eigen::VectorXd HODLR_Matrix::getCol(const int k, const int n_row_start, const int n_rows) 
+Vec HODLR_Matrix::getCol(const int k, const int n_row_start, const int n_rows) 
 {
-    Eigen::VectorXd col(n_rows);
+    Vec col(n_rows);
     
     #pragma omp parallel for
     for (int j=0; j<n_rows; ++j) 
@@ -26,10 +26,10 @@ Eigen::VectorXd HODLR_Matrix::getCol(const int k, const int n_row_start, const i
 }
 
 
-Eigen::MatrixXd HODLR_Matrix::getMatrix(const int n_row_start, const int n_col_start, 
-                                        const int n_rows, const int n_cols) 
+Mat HODLR_Matrix::getMatrix(const int n_row_start, const int n_col_start, 
+                            const int n_rows, const int n_cols) 
 {
-    Eigen::MatrixXd mat(n_rows, n_cols);
+    Mat mat(n_rows, n_cols);
     
     #pragma omp parallel for
     for (int j=0; j < n_rows; ++j) 
@@ -44,7 +44,7 @@ Eigen::MatrixXd HODLR_Matrix::getMatrix(const int n_row_start, const int n_col_s
     return mat;
 }
 
-void HODLR_Matrix::maxAbsVector(const Eigen::VectorXd& v, 
+void HODLR_Matrix::maxAbsVector(const Vec& v, 
                                 const std::set<int>& allowed_indices, 
                                 double& max, int& index
                                ) 
@@ -65,7 +65,7 @@ void HODLR_Matrix::maxAbsVector(const Eigen::VectorXd& v,
 
 void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start, 
                            int n_rows, int n_cols, double tolerance, 
-                           Eigen::MatrixXd& L, Eigen::MatrixXd& R, int& computed_rank
+                           Mat& L, Mat& R, int& computed_rank
                           )
 {
     // Indices which have been used:
@@ -77,8 +77,8 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
     std::set<int> remaining_col_ind;
     
     // Bases:
-    std::vector<Eigen::VectorXd> u; 
-    std::vector<Eigen::VectorXd> v;
+    std::vector<Vec> u; 
+    std::vector<Vec> v;
 
     for(int k = 0; k < n_rows; k++) 
     {
@@ -102,7 +102,7 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
 
     // This would get updated:
     computed_rank = 0;
-    Eigen::VectorXd row, col;
+    Vec row, col;
     // These quantities in finding the stopping criteria:
     double row_squared_norm, row_norm, col_squared_norm, col_norm;
 
@@ -338,7 +338,7 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
     {
         if (n_rows < n_cols) 
         {
-            L = Eigen::MatrixXd::Identity(n_rows, n_rows);
+            L = Mat::Identity(n_rows, n_rows);
             R = getMatrix(n_row_start, n_col_start, n_rows, n_cols).transpose();
             computed_rank = n_rows;
         }
@@ -346,7 +346,7 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
         else 
         {
             L = getMatrix(n_row_start, n_col_start, n_rows, n_cols);
-            R = Eigen::MatrixXd::Identity(n_cols, n_cols);
+            R = Mat::Identity(n_cols, n_cols);
             computed_rank = n_cols;
         }
     }
@@ -354,8 +354,8 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
     // This is when ACA has succeeded:
     else 
     {
-        L = Eigen::MatrixXd(n_rows, computed_rank);
-        R = Eigen::MatrixXd(n_cols, computed_rank);
+        L = Mat(n_rows, computed_rank);
+        R = Mat(n_cols, computed_rank);
         
         for (int j = 0; j < computed_rank; j++) 
         {

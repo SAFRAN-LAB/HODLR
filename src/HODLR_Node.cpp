@@ -25,7 +25,7 @@ void HODLR_Node::assembleLeafNode(HODLR_Matrix* A)
     K = A->getMatrix(n_start, n_start, n_size, n_size);
 }
 
-void HODLR_Node::matmatProductLeaf(Eigen::MatrixXd x, Eigen::MatrixXd& b) 
+void HODLR_Node::matmatProductLeaf(Mat x, Mat& b) 
 {
     b.block(n_start, 0, n_size, x.cols()) += K * x.block(n_start, 0, n_size, x.cols());
 }
@@ -47,7 +47,7 @@ void HODLR_Node::assembleNonLeafNode(HODLR_Matrix* A, bool is_sym)
     }
 }
 
-void HODLR_Node::matmatProductNonLeaf(Eigen::MatrixXd x, Eigen::MatrixXd& b) 
+void HODLR_Node::matmatProductNonLeaf(Mat x, Mat& b) 
 {
     b.block(c_start[0], 0, c_size[0], x.cols()) += 
     (U[0] * (V[1].transpose() * x.block(c_start[1], 0, c_size[1], x.cols())));

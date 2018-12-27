@@ -77,11 +77,19 @@ int main(int argc, char *argv[])
     kernel K(dim, RbyL);
 
     int n_levels  = log(dim / nLeaf) / log(2);
+
     HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, &K);
 
     // Assemble symmetric matrix 
-    T->assembleTree(true);
-    T->plotTree();
+    // If we are assembling a symmetric matrix:
+    bool is_sym = true;
+    // If we know that the matrix is also PD:
+    // By toggling this flag to true, the factorizations are performed using Cholesky
+    // Useful when you want the factorization as WW^T 
+    bool is_pd = true;
+
+    T->assembleTree(is_sym, is_pd);
+    // T->plotTree();
     // Compute factorization 
     T->factorize();
     // Compute determinant 

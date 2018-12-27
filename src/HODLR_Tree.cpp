@@ -127,10 +127,10 @@ void HODLR_Tree::printTreeDetails()
 }
 
 // Performs a MatMat product with the given matrix X.
-MatrixXd HODLR_Tree::matmatProduct(MatrixXd x) 
+Mat HODLR_Tree::matmatProduct(Mat x) 
 {
     // Initializing matrix b:
-    MatrixXd b = MatrixXd::Zero(N, x.cols());
+    Mat b = Mat::Zero(N, x.cols());
 
     // At non-leaf levels:
     for (int j = 0; j < n_levels; j++) 
@@ -163,7 +163,7 @@ void HODLR_Tree::factorize()
 }
 
 // Returns x, by solving Ax = b, where A is the matrix represented by the HODLR structure
-MatrixXd HODLR_Tree::solve(MatrixXd b)
+Mat HODLR_Tree::solve(Mat b)
 {
     if(is_sym == true && is_pd == true)
         return this->solveSPD(b);

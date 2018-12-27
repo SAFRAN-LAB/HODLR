@@ -10,14 +10,14 @@ class Kernel : public HODLR_Matrix
 {
 
 private:
-    MatrixXd x;
+    Mat x;
 
 public:
 
     // Constructor:
     Kernel(int N, int dim) : HODLR_Matrix(N) 
     {
-        x = MatrixXd::Random(N, dim);
+        x = Mat::Random(N, dim);
         // This is being sorted to ensure that we get
         // optimal low rank structure:
         getKDTreeSorted(x, 0);
@@ -52,7 +52,7 @@ public:
             // Exponential: exp(-R)
             // return exp(-R);
             // Gaussian Kernel: e(-R^2)
-            return exp(-R2);
+            return std::exp(-R2);
             // Sinc Kernel: sin(R) / R
             // return (sin(R) / R);
             // // Quadric Kernel: (1 + R^2)
@@ -116,9 +116,9 @@ int main(int argc, char* argv[])
     // T->printTreeDetails();
 
     // Random Matrix to multiply with
-    MatrixXd x = MatrixXd::Random(N, 1);
+    Mat x = Mat::Random(N, 1);
     // Stores the result after multiplication:
-    MatrixXd y_fast, b_fast;
+    Mat y_fast, b_fast;
     
     start  = omp_get_wtime();
     b_fast = T->matmatProduct(x);
@@ -131,13 +131,13 @@ int main(int argc, char* argv[])
     // What we are doing here is explicitly generating 
     // the matrix from its entries
     start = omp_get_wtime();
-    MatrixXd B = K->getMatrix(0, 0, N, N);
+    Mat B = K->getMatrix(0, 0, N, N);
     end   = omp_get_wtime();
     
     cout << "Time for matrix generation:" << (end-start) << endl;
 
     start = omp_get_wtime();
-    MatrixXd b_exact = B * x;
+    Mat b_exact = B * x;
     end   = omp_get_wtime();
     
     cout << "Time for matrix-vector product:" << (end-start) << endl;
@@ -151,7 +151,7 @@ int main(int argc, char* argv[])
     end   = omp_get_wtime();
     cout << "Time to factorize:" << (end-start) << endl;
 
-    MatrixXd x_fast;
+    Mat x_fast;
     start  = omp_get_wtime();
     x_fast = T->solve(b_exact);
     end    = omp_get_wtime();
@@ -183,7 +183,7 @@ int main(int argc, char* argv[])
     // Computing log-determinant using Cholesky:
     if(is_sym == true && is_pd == true)
     {
-        Eigen::LLT<MatrixXd> llt;
+        Eigen::LLT<Mat> llt;
         start = omp_get_wtime();
         llt.compute(B);
         log_det = 0.0;
@@ -200,7 +200,7 @@ int main(int argc, char* argv[])
     // Computing log-determinant using LU:
     else
     {
-        Eigen::PartialPivLU<MatrixXd> lu;
+        Eigen::PartialPivLU<Mat> lu;
         start = omp_get_wtime();
         lu.compute(B);
         log_det = 0.0;
@@ -223,8 +223,8 @@ int main(int argc, char* argv[])
     assert(fabs(1 - fabs(log_det_hodlr/log_det)) < tolerance);
 
     // Getting the symmetric factor:
-    MatrixXd W  = T->getSymmetricFactor();
-    MatrixXd Wt = W.transpose();
+    Mat W  = T->getSymmetricFactor();
+    Mat Wt = W.transpose();
 
     assert((Wt.colPivHouseholderQr().solve(W.colPivHouseholderQr().solve(b_exact)) - x).cwiseAbs().maxCoeff() < tolerance);
 

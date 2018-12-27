@@ -12,19 +12,33 @@
 #include <vector>
 // Used to dump data:
 #include <fstream>
-
-using Eigen::MatrixXd;
-using Eigen::VectorXd;
+#include <complex>
 
 using std::cout;
 using std::endl;
 
-// Default argument for certain functions:
-static VectorXd EMPTY_VECTOR = VectorXd();
+#ifdef USE_FLOAT
+    using Mat=Eigen::MatrixXf;
+    using Vec=Eigen::VectorXf;
+#endif
+
+#ifdef USE_DOUBLE
+    using Mat=Eigen::MatrixXd;
+    using Vec=Eigen::VectorXd;
+#endif
+
+#ifdef USE_COMPLEX32
+    using Mat=Eigen::MatrixXcd;
+    using Vec=Eigen::VectorXcd;
+#endif
+
+#ifdef USE_COMPLEX64
+    using Mat=Eigen::MatrixXcd;
+    using Vec=Eigen::VectorXcd;
+#endif
 
 class HODLR_Matrix 
 {
-
 // By declaring HODLR_Tree as a friend, the object
 // can access private members of this particular class
 friend class HODLR_Tree;
@@ -44,21 +58,23 @@ public:
     // Returns individual matrix 
     virtual double getMatrixEntry(int j, int k) 
     {
+        // FROM EXPERIENCE: Incase the user makes a mistake in 
+        // setting the derived class, this warns the user:
         cout << "Returning zero! Ensure that derived class is properly set!" << endl;
         return 0.0;
     }
 
-    Eigen::VectorXd getRow(int j, int n_col_start, int n_cols);
-    Eigen::VectorXd getCol(int k, int n_row_start, int n_rows);
-    Eigen::MatrixXd getMatrix(int j, int k, int n_rows, int n_cols);
+    Vec getRow(int j, int n_col_start, int n_cols);
+    Vec getCol(int k, int n_row_start, int n_rows);
+    Mat getMatrix(int j, int k, int n_rows, int n_cols);
 
-    void maxAbsVector(const Eigen::VectorXd& v, 
+    void maxAbsVector(const Vec& v, 
                       const std::set<int>& allowed_indices, 
                       double& max, int& index
                      );
   
     void rookPiv(int n_row_start, int n_col_start, int n_rows, int n_cols, double tolerance, 
-                 Eigen::MatrixXd& L, Eigen::MatrixXd& R, int& computed_rank
+                 Mat& L,  Mat& R, int& computed_rank
                 );
   
     // Destructor:

@@ -1,8 +1,10 @@
-project (HODLR)
+project (HODLRlib)
 cmake_minimum_required (VERSION 3.0)
 set (CMAKE_CXX_STANDARD 11)
 # Provide the input file that you want to solve for:
-set (INPUT_FILE "examples/testHODLR.cpp")
+set (INPUT_FILE "examples/tutorial.cpp")
+# Here set the name for the output executable:
+set (OUTPUT_EXECUTABLE "tutorial")
 # Set this to: "float", "double", "complex32" and "complex64"
 set (DTYPE "double")
 # Change this accordingly to point to the Eigen root folder
@@ -53,7 +55,7 @@ include_directories("${EIGEN_PATH}"
                    )
 
 ################ MENTIONING C++ FILES TO LINK WITH HEADERS + FILE TO BUILD ####################
-add_executable(example 
+add_executable(${OUTPUT_EXECUTABLE} 
                ${INPUT_FILE}
                src/HODLR_Matrix.cpp
                src/HODLR_Node.cpp

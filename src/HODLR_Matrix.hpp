@@ -36,6 +36,7 @@ using std::endl;
     using dtype_base=float;
     using Mat=Eigen::MatrixXcf;
     using Vec=Eigen::VectorXcf;
+    const std::complex<float> I(0.0, 1.0);
 #endif
 
 #ifdef USE_COMPLEX64
@@ -43,6 +44,7 @@ using std::endl;
     using dtype_base=double;
     using Mat=Eigen::MatrixXcd;
     using Vec=Eigen::VectorXcd;
+    const std::complex<double> I(0.0, 1.0);
 #endif
 
 class HODLR_Matrix 

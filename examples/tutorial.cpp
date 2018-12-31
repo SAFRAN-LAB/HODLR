@@ -1,4 +1,5 @@
 // This file serves as a gentle introduction to the usage of this library:
+// It is also used in CI testing:
 
 #include "HODLR_Tree.hpp"
 #include "HODLR_Matrix.hpp"
@@ -52,7 +53,7 @@ public:
             // Exponential: exp(-R)
             // return exp(-R);
             // Gaussian Kernel: e(-R^2)
-            return std::exp(-R2);
+            return exp(-R2);
             // Sinc Kernel: sin(R) / R
             // return (sin(R) / R);
             // // Quadric Kernel: (1 + R^2)
@@ -90,7 +91,6 @@ int main(int argc, char* argv[])
     double tolerance  = pow(10, -atoi(argv[4]));
     // Declaration of HODLR_Matrix object that abstracts data in Matrix:
     Kernel* K         = new Kernel(N, dim);
-    // Here it is assumed that size of leaf level is 200
     int n_levels      = log(N / M) / log(2);
 
     // Variables used in timing:

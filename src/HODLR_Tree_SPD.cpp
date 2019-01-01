@@ -34,12 +34,12 @@ void HODLR_Tree::qr(int j, int k)
     // We are finding the minimum size along the dimension since we want to
     // get the thinQ of the QR factorization for U1 and V2:
     
-    // min0 = min(N, r0)
+    // min0 = min(N, r)
     int min0 = std::min(tree[j][k]->Q[0].rows(), 
                         tree[j][k]->Q[0].cols()
                        );
     
-    // min0 = min(N, r1)
+    // min0 = min(N, r)
     int min1 = std::min(tree[j][k]->Q[1].rows(),
                         tree[j][k]->Q[1].cols()
                        );
@@ -49,7 +49,7 @@ void HODLR_Tree::qr(int j, int k)
 
     // Getting thin Q:
     // householderQ has shape (N, N)
-    // multiplying we can make that (N, r0)
+    // multiplying we can make that (N, r)
     tree[j][k]->Q[0] = qr.householderQ() * 
                        Mat::Identity(tree[j][k]->Q[0].rows(), min0);
 
@@ -284,15 +284,15 @@ Mat HODLR_Tree::SymmetricFactorNonLeafProduct(int j, int k, Mat b)
 {
     int n0                        = tree[j][k]->U[0].rows();
     int n1                        = tree[j][k]->V[1].rows();
-    Mat tmp                  = tree[j][k]->Q[1].transpose() * b.block(n0, 0, n1, b.cols());
+    Mat tmp                       = tree[j][k]->Q[1].transpose() * b.block(n0, 0, n1, b.cols());
     b.block(n0, 0, n1, b.cols()) += tree[j][k]->Q[1]*(  (  tree[j][k]->K.transpose() 
-                                                                * tree[j][k]->Q[0].transpose() 
-                                                                * b.block(0, 0, n0, b.cols())
-                                                               ) 
-                                                             + (  (Mat)tree[j][k]->K_factor_LLT.matrixL() 
-                                                                - Mat::Identity(tree[j][k]->rank[0], tree[j][k]->rank[1])
-                                                               ) * tmp
-                                                            );
+                                                         * tree[j][k]->Q[0].transpose() 
+                                                         * b.block(0, 0, n0, b.cols())
+                                                        ) 
+                                                      + (  (Mat)tree[j][k]->K_factor_LLT.matrixL() 
+                                                         - Mat::Identity(tree[j][k]->rank[0], tree[j][k]->rank[1])
+                                                        ) * tmp
+                                                     );
 
     return(b);
 }
@@ -301,12 +301,12 @@ Mat HODLR_Tree::SymmetricFactorTransposeNonLeafProduct(int j, int k, Mat b)
 {
     int n0                        = tree[j][k]->U[0].rows();
     int n1                        = tree[j][k]->V[1].rows();
-    Mat tmp                  = tree[j][k]->Q[1].transpose() * b.block(n0, 0, n1, b.cols());
+    Mat tmp                       = tree[j][k]->Q[1].transpose() * b.block(n0, 0, n1, b.cols());
     b.block(0,  0, n0, b.cols()) += tree[j][k]->Q[0] * tree[j][k]->K * tmp;
     b.block(n0, 0, n1, b.cols()) += tree[j][k]->Q[1] * ((  (Mat)tree[j][k]->K_factor_LLT.matrixL().transpose() 
-                                                                - Mat::Identity(tree[j][k]->rank[0], tree[j][k]->rank[1])
-                                                               ) * tmp
-                                                              );
+                                                          - Mat::Identity(tree[j][k]->rank[0], tree[j][k]->rank[1])
+                                                        ) * tmp
+                                                       );
 
     return(b);
 }

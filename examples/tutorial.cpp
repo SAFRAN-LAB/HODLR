@@ -33,7 +33,7 @@ public:
         // Value on the diagonal:
         if(i == j)
         {
-            return 10;
+            return 100;
         }
         
         // Otherwise:
@@ -53,7 +53,7 @@ public:
             // Exponential: exp(-R)
             // return exp(-R);
             // Gaussian Kernel: e(-R^2)
-            // return exp(-R2);
+            return exp(-R2);
             // Sinc Kernel: sin(R) / R
             // return (sin(R) / R);
             // // Quadric Kernel: (1 + R^2)
@@ -67,7 +67,7 @@ public:
             // // Log(R) Kernel:
             // return log(R);
             // // R^2 log(R) Kernel:
-            return (R2 * log(R));
+            // return (R2 * log(R));
             // // 1 / R Kernel:
             // return (1 / R);
             // // log(1 + R) Kernel:
@@ -230,6 +230,29 @@ int main(int argc, char* argv[])
 
     //     assert((Wt.colPivHouseholderQr().solve(W.colPivHouseholderQr().solve(b_exact)) - x).cwiseAbs().maxCoeff() < tolerance);
     // }
+
+    // Direct method:
+    start = omp_get_wtime();
+    Mat B = K->getMatrix(0, 0, N, N);
+    end   = omp_get_wtime();
+
+    if(is_sym == true && is_pd == true)
+    {
+        start = omp_get_wtime();
+        Eigen::LLT<Mat> llt;
+        llt.compute(B);
+        end = omp_get_wtime();
+        cout << "Time to calculate LLT Factorization:" << (end-start) << endl;
+    }
+
+    else
+    {
+        start = omp_get_wtime();
+        Eigen::PartialPivLU<Mat> lu;
+        lu.compute(B);
+        end = omp_get_wtime();
+        cout << "Time to calculate LU Factorization:" << (end-start) << endl;        
+    }
 
     delete K;
     delete T;

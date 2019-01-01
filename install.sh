@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 ##############################################################
 # This is the install script for HODLRlib                    #
                                                              #

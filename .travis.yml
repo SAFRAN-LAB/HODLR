@@ -17,4 +17,4 @@ script:
   - mkdir build
   - cd build
   - ../deps/cmake/bin/cmake .. && make
-  - ./example 1000 100 1 12
+  - ./tutorial 1000 100 1 12

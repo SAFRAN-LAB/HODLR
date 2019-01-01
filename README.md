@@ -29,6 +29,6 @@ Copyleft 2018: Sivaram Ambikasaran
 
 Developed by Sivaram Ambikasaran, Karan Raj Singh, Shyam Sundar Sankaran
 
-#### License:
+#### License
 
 This program is free software; you can redistribute it and/or modify it under the terms of MPL2 license. The Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at <http://mozilla.org/MPL/2.0/.>

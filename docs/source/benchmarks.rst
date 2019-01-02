@@ -12,7 +12,7 @@ Gaussian Kernel
 The Gaussian Kernel is given by :math:`K(i, j) = \sigma^2 \delta_{ij}^2 + \exp(-||x_i - x_j||^2)`. For these benchmarks, we take :math:`\sigma = 10` with :math:`x` being set as a sorted random vector. Using the ``plotTree`` function of this library, we can look at the rank structure for this matrix. The following diagram is obtained with :math:`N = 10000`, :math:`M = 500` and tolerance :math:`10^{-12}`
 
 .. image:: images/gaussian_rank_structure.svg
-   :width: 600
+   :width: 400
 
 The green blocks are low-rank blocks. Their intensity of color shows their degree of "low-rankedness". Additionally, the rank has been displayed in each of these blocks. The red blocks are full-rank blocks and would have the rank of :math:`M = 500`
 
@@ -129,7 +129,7 @@ Matérn Kernel
 Kernel considered is given by :math:`K(r) = \sigma^2 \left(1 + \frac{r \sqrt{5}}{\rho} + \frac{5 r^2}{3 \rho^2}\right)\exp{\left(-\frac{r \sqrt{5}}{\rho}\right)}`. For these benchmarks, we take :math:`\sigma = 10`, where :math:`r = ||x_i - x_j||` with :math:`x` being set as a sorted random vector. Using ``plotTree`` for :math:`N = 10000`, :math:`M = 500` and tolerance :math:`10^{-12}`, we get this rank structure
 
 .. image:: images/matern_rank_structure.svg
-   :width: 600
+   :width: 400
 
 Time Taken vs Tolerance
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -237,3 +237,9 @@ Fast Symmetric Factorization
 
 .. image:: images/gaussian_kernel_benchmarks.png
    :width: 600
+
+RPY Tensor
+----------
+
+.. image:: images/RPY_rank_structure_dim1.svg
+   :width: 400

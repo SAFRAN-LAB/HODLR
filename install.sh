@@ -11,7 +11,8 @@
 export HODLR_PATH=$PWD
 # Initializing a dependencies folder:
 export DEPS_DIR=$HODLR_PATH/deps
-mkdir ${DEPS_DIR} && cd ${DEPS_DIR} 
+mkdir ${DEPS_DIR} 
+cd ${DEPS_DIR} 
 
 # Getting CMake:
 CMAKE_URL="http://www.cmake.org/files/v3.3/cmake-3.3.2-Linux-x86_64.tar.gz"

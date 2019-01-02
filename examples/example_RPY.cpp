@@ -12,44 +12,71 @@ class Kernel : public HODLR_Matrix
 
 private:
     Mat x;
+    int dim;
     double k, T, eta, a;
 
 public:
 
     // Constructor:
-    Kernel(int N, int dim, double k, double T, double eta, double a) : HODLR_Matrix(dim * N) 
+    Kernel(int N, int dim, double k, double T, double eta) : HODLR_Matrix(dim * N) 
     {
         x         = (Mat::Random(N, dim)).real();
+        this->dim = dim;
         this->k   = k;
         this->T   = T;
         this->eta = eta;
-        this->a   = a;
 
         // This is being sorted to ensure that we get
         // optimal low rank structure:
         getKDTreeSorted(x, 0);
+
+        // Finding the minimum separation distance:
+        double min_r = 1000000;
+        for(int i = 0; i < N; i++)
+        {
+            for(int j = 0; j < N; j++)
+            {
+                double R2 = 0;
+                for(int k = 0; k < dim; k++) 
+                {
+                    R2 += (x(i,k) - x(j,k)) * (x(i,k) - x(j,k));
+                }
+                
+                if(i != j && sqrt(R2) < min_r)
+                    min_r = sqrt(R2);
+            }
+        }
+
+        // We will set a as the minimum of the distances between particles / 2:
+        this->a = min_r / 2;
     };
     
     dtype getMatrixEntry(int i, int j) 
     {
-        dtype normR, normR2;
-        // Initializing:
-        normR = normR2 = 0;
-
-        for(int k = 0; k < dim; k++) 
+        if(i / dim == j / dim)
         {
-            normR2 += (x(i,k) - x(j,k)) * (x(i,k) - x(j,k));
+            if(i % dim == j % dim)
+                return ((k * T) / (6 * PI * eta * a));
+            else
+                return 0;
         }
 
-        normR = sqrt(normR2);
-
-        if(normR > 2 * a)
+        else 
         {
-            if(i % dim == 0)
+            dtype R2 = 0;
+            Vec r(dim);
+            for(int k = 0; k < dim; k++) 
             {
-                if(j % dim == 0)
-                    return 
+                r(k) = x(i / dim, k) - x(j / dim, k);
+                R2  += r(k) * r(k);
             }
+            dtype R = sqrt(R2);
+            Mat tensor = ((this->k * T) / (8 * PI * eta * R)) * (  Mat::Identity(dim, dim) + r * r.transpose() / R2 
+                                                                 + (2 * a * a / (3 * R2)) * (  Mat::Identity(dim, dim) 
+                                                                                             - 3 * r * r.transpose() / R2
+                                                                                            )
+                                                                );
+            return tensor(i % dim, j % dim);
         }
     }
 
@@ -68,8 +95,8 @@ int main(int argc, char* argv[])
     double tolerance  = pow(10, -atoi(argv[4]));
     // Declaration of HODLR_Matrix object that abstracts data in Matrix:
     // Taking σ = 10, ρ = 5:
-    Kernel* K         = new Kernel(N, dim, 10, 5);
-    int n_levels      = log(N / M) / log(2);
+    Kernel* K         = new Kernel(N, dim, 1, 1, 1);
+    int n_levels      = log(dim * N / M) / log(2);
 
     // Variables used in timing:
     double start, end;
@@ -84,6 +111,7 @@ int main(int argc, char* argv[])
     T->assembleTree(is_sym, is_pd);
     end = omp_get_wtime();
     cout << "Time for assembly in HODLR form:" << (end - start) << endl;
+    T->plotTree();
 
     // Random Matrix to multiply with
     Mat x = (Mat::Random(N, 1)).real();

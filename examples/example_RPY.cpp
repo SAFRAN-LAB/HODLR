@@ -3,10 +3,10 @@
 #include "KDTree.hpp"
 
 #define PI 3.141592653589793238462643383
+
 // RPY Tensor:
 // K(r) = ((kT) / (6πηa))     * ((1 - 9 * ||r|| / (32a))I + 3 / (32a) (r ⊗ r) / ||r|| if ||r|| <  2a
 // K(r) = ((kT) / (8πη||r||)) * (I + (r ⊗ r) / ||r|| + (2a**2 / 3||r||**2) * (I - 3 (r ⊗ r) / ||r||))  if ||r|| >= 2a
-
 class Kernel : public HODLR_Matrix 
 {
 
@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
     int dim           = atoi(argv[3]);
     double tolerance  = pow(10, -atoi(argv[4]));
     // Declaration of HODLR_Matrix object that abstracts data in Matrix:
-    // Taking σ = 10, ρ = 5:
+    // Setting k = T = η = 1
     Kernel* K         = new Kernel(N, dim, 1, 1, 1);
     int n_levels      = log(dim * N / M) / log(2);
 
@@ -102,7 +102,6 @@ int main(int argc, char* argv[])
     double start, end;
 
     cout << "Fast method..." << endl;
-    
     start = omp_get_wtime();
     // Creating a pointer to the HODLR Tree structure:
     HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, K);
@@ -111,10 +110,9 @@ int main(int argc, char* argv[])
     T->assembleTree(is_sym, is_pd);
     end = omp_get_wtime();
     cout << "Time for assembly in HODLR form:" << (end - start) << endl;
-    T->plotTree();
 
     // Random Matrix to multiply with
-    Mat x = (Mat::Random(N, 1)).real();
+    Mat x = (Mat::Random(N * dim, 1)).real();
     // Stores the result after multiplication:
     Mat y_fast, b_fast;
     
@@ -156,7 +154,7 @@ int main(int argc, char* argv[])
 
     // Direct method:
     start = omp_get_wtime();
-    Mat B = K->getMatrix(0, 0, N, N);
+    Mat B = K->getMatrix(0, 0, dim * N, dim * N);
     end   = omp_get_wtime();
 
     if(is_sym == true && is_pd == true)

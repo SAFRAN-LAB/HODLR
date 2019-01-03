@@ -55,7 +55,7 @@ int main(int argc, char* argv[])
     // Creating a pointer to the HODLR Tree structure:
     HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, K);
     bool is_sym = true;
-    bool is_pd  = false;
+    bool is_pd  = true;
     T->assembleTree(is_sym, is_pd);
     end = omp_get_wtime();
     cout << "Time for assembly in HODLR form:" << (end - start) << endl;

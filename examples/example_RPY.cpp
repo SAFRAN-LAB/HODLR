@@ -34,7 +34,7 @@ public:
         double min_r = 1000000;
         for(int i = 0; i < N; i++)
         {
-            for(int j = 0; j < N; j++)
+            for(int j = i; j < N; j++)
             {
                 double R2 = 0;
                 for(int k = 0; k < dim; k++) 

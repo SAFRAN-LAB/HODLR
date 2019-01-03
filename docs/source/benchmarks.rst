@@ -157,7 +157,7 @@ Fast Factorization
 |:math:`10^{-14}`| 2.19898    |13.821   |2.74798     |0.466761|0.0431418     | 
 +----------------+------------+---------+------------+--------+--------------+ 
 
-.. image:: images/gaussian1.png
+.. image:: images/matern1.png
    :width: 600
 
 Fast Symmetric Factorization
@@ -181,7 +181,7 @@ Fast Symmetric Factorization
 |:math:`10^{-14}`| 2.18632    |13.6219  |1.95092     |0.551657|0.0439069     |0.342182        | 
 +----------------+------------+---------+------------+--------+--------------+----------------+ 
 
-.. image:: images/gaussian2.png
+.. image:: images/matern2.png
    :width: 600
 
 
@@ -211,7 +211,7 @@ Fast Factorization
 |:math:`10^{6}`         | 2.25833    |9.01339  |2.33021     |0.450053|0.041976      |                |
 +-----------------------+------------+---------+------------+--------+--------------+----------------+
 
-.. image:: images/gaussian3.png
+.. image:: images/matern3.png
    :width: 600
 
 Fast Symmetric Factorization
@@ -235,7 +235,7 @@ Fast Symmetric Factorization
 |:math:`10^{6}`         | 2.19711    |8.79683    |1.47177     |0.545244  |0.0434139     |0.310443        |N/A               |
 +-----------------------+------------+-----------+------------+----------+--------------+----------------+------------------+
 
-.. image:: images/gaussian4.png
+.. image:: images/matern4.png
    :width: 600
 
 RPY Tensor

@@ -19,7 +19,7 @@ The green blocks are low-rank blocks. Their intensity of colour shows their degr
 Time Taken vs Tolerance
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-For these benchmarks the size of the matrix :math:`N = 1000000`, with the size of the leaf node set to :math:`M = 100`.
+These benchmarks were performed for size of the matrix :math:`N = 1000000`, with the size of the leaf node set to :math:`M = 100`.
 
 Fast Factorization
 ^^^^^^^^^^^^^^^^^^
@@ -126,7 +126,7 @@ Fast Symmetric Factorization
 Matérn Kernel
 #############
 
-Kernel considered is given by :math:`K(r) = \sigma^2 \left(1 + \frac{r \sqrt{5}}{\rho} + \frac{5 r^2}{3 \rho^2}\right)\exp{\left(-\frac{r \sqrt{5}}{\rho}\right)}`. For these benchmarks, we take :math:`\sigma = 10`, :math:`\rho = 5`, where :math:`r = ||x_i - x_j||` with :math:`x` being set as a sorted random vector :math:`\in (-1, 1)`. Using ``plotTree`` for :math:`N = 10000`, :math:`M = 500` and tolerance :math:`10^{-12}`, we get this rank structure
+Kernel considered is given by :math:`K(r) = \sigma^2 \left(1 + \frac{r \sqrt{5}}{\rho} + \frac{5 r^2}{3 \rho^2}\right)\exp{\left(-\frac{r \sqrt{5}}{\rho}\right)}`. For these benchmarks, we take :math:`\sigma = 10`, :math:`\rho = 5`, where :math:`r = ||x_i - x_j||` with :math:`x` being set as a sorted random vector :math:`\in (-1, 1)`. Using ``plotTree`` for :math:`N = 10000`, :math:`M = 500` and tolerance :math:`10^{-12}`, we see this rank structure
 
 .. image:: images/matern_rank_structure.svg
    :width: 400
@@ -134,7 +134,7 @@ Kernel considered is given by :math:`K(r) = \sigma^2 \left(1 + \frac{r \sqrt{5}}
 Time Taken vs Tolerance
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-For these benchmarks the size of the matrix :math:`N = 1000000`, with the size of the leaf node set to :math:`M = 100`.
+These benchmarks were performed for size of the matrix :math:`N = 1000000`, with the size of the leaf node set to :math:`M = 100`.
 
 Fast Factorization
 ^^^^^^^^^^^^^^^^^^

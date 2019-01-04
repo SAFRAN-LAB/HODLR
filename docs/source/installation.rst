@@ -33,13 +33,13 @@ The above command should create a folder ``deps/`` in the current directory with
 Manually Installing
 ^^^^^^^^^^^^^^^^^^^
 
-First set the environment variable ``HODLR_PATH`` to the root level of this repository. This is needed by some of the routines in the plotting of the low-rank structure for the specific kernel. (**NOTE**: The plotting is carried out using python, and requires the [matplotlib](https://matplotlib.org/) package to be installed in your python environment)
+First set the environment variable ``HODLR_PATH`` to the root level of this repository. This is needed by some of the routines in the plotting of the low-rank structure for the specific kernel. (**NOTE**: The plotting is carried out using python, and requires the  `matplotlib <https://matplotlib.org/>`_ package to be installed in your python environment)
 
 Then, set the environment variable ``EIGEN_PATH`` to the location of your Eigen installation. This is needed by the CMake script.::
 
     user@computer HODLR$ export EIGEN_PATH=path/to/eigen/
 
-Optionally: set the environment variable `MKLROOT` to take advantage of speedups from MKL.::
+Optionally: set the environment variable ``MKLROOT`` to take advantage of speedups from MKL.::
 
     user@computer HODLR$ export MKLROOT=path/to/mkl/
 

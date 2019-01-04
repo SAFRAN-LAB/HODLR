@@ -13,21 +13,28 @@ There are some variables that need to be set by the user at the top of the ``CMa
 
 - ``INPUT_FILE``: This is the input ``.cpp`` file that needs to be compiled. For this tutorial, it's going to be set to ``examples/tutorial.cpp``.
 - ``OUTPUT_EXECUTABLE``: This is the name that the final build executable is given. Here we are just going to set is as ``tutorial``.
-- ``DTYPE``: Datatype that is used in all the computations. Can be set to ``float``, ``double``, ``complex32`` and ``complex64``. We are just going to be using ``double`` for this tutorial.
+- ``DTYPE``: Datatype that is used in all the computations. Can be set to ``float``, ``double``, ``complex32`` and ``complex64``. We are going to be using ``double`` for this tutorial.
 
 Creating a Derived Class of ``HODLR_Matrix``:
 ---------------------------------------------
 
-The matrix that needs to be solved for is abstracted through this derived class of ``HODLR_Matrix``. For the sake of the tutorial, we are calling this derived class ``Kernel``. The main method that needs to be set for this class is ``getMatrixEntry`` which returns the entry at the :math:`i^{\mathrm{th}}` row and :math:`j^{\mathrm{th}}` column of the matrix. For instance, for the Hilbert matrix, this would be set as::
+The matrix that needs to be solved for is abstracted through this derived class of ``HODLR_Matrix``. For the sake of the tutorial, we are calling this derived class ``Kernel``. The main method that needs to be set for this class is ``getMatrixEntry`` which returns the entry at the :math:`i^{\mathrm{th}}` row and :math:`j^{\mathrm{th}}` column of the matrix. For instance, for the Hilbert matrix of size :math:`N \times N`, this would be set as::
 
-    dtype getMatrixEntry(int i, int j) 
+    class Kernel : public HODLR_Matrix 
     {
-        return (1 / (i + j + 1));
+        public:
+
+            Kernel(int N) : HODLR_Matrix(N){}
+
+            dtype getMatrixEntry(int i, int j) 
+            {
+                return (1 / (i + j + 1));
+            }
     }
 
 Note that here ``dtype`` is set during compilation depending on ``DTYPE`` that was set in ``CMakeLists.txt``.
 
-In this tutorial, we have initialized a random set of points in :math:`(-1, 1)` which are then sorted to obtain a coordinate vector :math:`x`. Using this we compute the distance between the :math:`i^{\mathrm{th}}` point and :math:`j^{\mathrm{th}}` in :math:`x` to obtain :math:`R` which can then be used in different kernel functions. 
+In this tutorial, we have initialized a random set of points in :math:`(-1, 1)` which are then sorted to obtain a coordinate vector :math:`x`. Using this, we compute the distance between the :math:`i^{\mathrm{th}}` point and :math:`j^{\mathrm{th}}` in :math:`x` to obtain :math:`R` which can then be used in different kernel functions. 
 
 Creating the Instance of ``HODLR_Tree``:
 ----------------------------------------
@@ -62,7 +69,7 @@ Depends upon whether we intend to perform fast factorization or fast symmetric f
 
 - **Fast Factorization** - This function performs the factorizations such that the matrix is obtained as :math:`K = K_{\kappa} K_{\kappa-1} ... K_{1} K_{0}` where :math:`K_i` are block diagonal matrices with :math:`\kappa` being the number of levels considered. 
 
-**Fast Symmetric Factorization** - This function performs the factorizations such that the matrix is obtained as :math:`K = K_{\kappa} K_{\kappa-1} ... K_{1} K_{0} K_{0}^T K_{1}^T ... K_{\kappa-1}^T K_{\kappa}^T` where :math:`K_i` are block diagonal matrices with :math:`\kappa` being the number of levels considered. 
+- **Fast Symmetric Factorization** - This function performs the factorizations such that the matrix is obtained as :math:`K = \underbrace{K_{\kappa} K_{\kappa-1} ... K_{1} K_{0}}_{W}  \underbrace{K_{0}^T K_{1}^T ... K_{\kappa-1}^T K_{\kappa}^T}_{W^T}` where :math:`K_i` are block diagonal matrices with :math:`\kappa` being the number of levels considered. 
 
 For more details on this factorization refer to the articles `[1] <https://link.springer.com/article/10.1007/s10915-013-9714-z>`_ `[2] <https://arxiv.org/abs/1405.0223>`_
 

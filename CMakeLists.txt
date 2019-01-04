@@ -2,7 +2,7 @@ project (HODLRlib)
 cmake_minimum_required (VERSION 3.0)
 set (CMAKE_CXX_STANDARD 11)
 # Provide the input file that you want to solve for:
-set (INPUT_FILE "examples/example_RPY.cpp")
+set (INPUT_FILE "examples/tutorial.cpp")
 # Here set the name for the output executable:
 set (OUTPUT_EXECUTABLE "tutorial")
 # Set this to: "float", "double", "complex32" and "complex64"

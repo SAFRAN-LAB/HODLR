@@ -14,7 +14,7 @@ The Gaussian Kernel is given by :math:`K(i, j) = \sigma^2 \delta_{ij}^2 + \exp(-
 .. image:: images/gaussian_rank_structure.svg
    :width: 400
 
-The green blocks are low-rank blocks. Their intensity of color shows their degree of "low-rankedness". Additionally, the rank has been displayed in each of these blocks. The red blocks are full-rank blocks and would have the rank of :math:`M = 500`
+The green blocks are low-rank blocks. Their intensity of colour shows their degree of "low-rankness". Additionally, the rank has been displayed in each of these blocks. The red blocks are full-rank blocks and would have the rank of :math:`M = 500`
 
 Time Taken vs Tolerance
 ~~~~~~~~~~~~~~~~~~~~~~~

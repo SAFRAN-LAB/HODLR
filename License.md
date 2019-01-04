@@ -1,6 +1,6 @@
 ### License and Copyleft
 
-HODLR is a free software package; you can redistribute and/or modify the codes and scripts under the terms of the MPL2 license. Go here http://www.mozilla.org/MPL/2.0/FAQ.html for more details on the license.
+HODLR is a free software package; you can redistribute and/or modify the codes and scripts under the terms of the MPL2 license. Go here <http://www.mozilla.org/MPL/2.0/FAQ.html> for more details on the license.
 
 The HODLR software package was developed by Sivaram Ambikasaran.
 
@@ -16,4 +16,4 @@ If a copy of the MPL was not distributed with this file, You can obtain one at <
 
 Please acknowledge HODLR and its authors in any program or publication in the codes by citing this package.
 
-The HODLR software package is also available under terms different from those of the MPL2 license. Users interested in such a license should contact Sivaram Ambikasaran (siva.1985 [at] gmail.com) for more information.
+The HODLR software package is also available under terms different from those of the MPL2 license. Users interested in such a license should contact Sivaram Ambikasaran (siva.1985@gmail.com) for more information.

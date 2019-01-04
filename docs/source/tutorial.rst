@@ -2,7 +2,7 @@
 Tutorial
 ********
 
-For the sake of this tutorial, we are going to be using the ``tutorial.cpp`` file that is listed under ``examples/`` since it demonstrates all the features of this library. For the most part, comments in the file demonstrate intended functionality. However, we go over the main functions that may be of interest to a user in this page. 
+For the sake of this tutorial, we are going to be using the ``tutorial.cpp`` file that is listed under ``examples/`` since it demonstrates all the features of this library. For the most part, comments in the file demonstrate intended functionality. However, we go over the main functions that may be of interest to a user on this page. 
 
 **NOTE**: It is assumed that you have already completed the installation process of getting the dependencies.
 
@@ -11,14 +11,14 @@ Setting Parameters in CMakeLists.txt
 
 There are some variables that need to be set by the user at the top of the ``CMakeLists.txt`` file:
 
-- ``INPUT_FILE``: This is the input ``.cpp`` file that needs to be compiled. For this tutorial, its going to be set to ``examples/tutorial.cpp``.
+- ``INPUT_FILE``: This is the input ``.cpp`` file that needs to be compiled. For this tutorial, it's going to be set to ``examples/tutorial.cpp``.
 - ``OUTPUT_EXECUTABLE``: This is the name that the final build executable is given. Here we are just going to set is as ``tutorial``.
 - ``DTYPE``: Datatype that is used in all the computations. Can be set to ``float``, ``double``, ``complex32`` and ``complex64``. We are just going to be using ``double`` for this tutorial.
 
 Creating a Derived Class of ``HODLR_Matrix``:
 ---------------------------------------------
 
-The matrix that needs to be solved for is abstracted through this derived class of ``HODLR_Matrix``. For the sake of the tutorial, we are calling this derived class ``Kernel``. The main method that needs to be set for this class is ``getMatrixEntry`` which returns the entry at the :math:`i^{\mathrm{th}}` row and :math:`j^{\mathrm{th}}` column of the matrix. For instance for the Hilbert matrix, this would be set as::
+The matrix that needs to be solved for is abstracted through this derived class of ``HODLR_Matrix``. For the sake of the tutorial, we are calling this derived class ``Kernel``. The main method that needs to be set for this class is ``getMatrixEntry`` which returns the entry at the :math:`i^{\mathrm{th}}` row and :math:`j^{\mathrm{th}}` column of the matrix. For instance, for the Hilbert matrix, this would be set as::
 
     dtype getMatrixEntry(int i, int j) 
     {
@@ -42,7 +42,7 @@ We will now proceed to demonstrate the individual methods available under this c
 ``assembleTree``
 ^^^^^^^^^^^^^^^^
 
-We proceed to call the ``assembleTree`` method. This obtains the complete matrix for the leaf levels and the low-rank approximation for the off-diagonal blocks. Here we have used mentioned the fact that the matrix that we are constructing is both symmetric and positive-definite. Note than when we mention that the matrix is symmetric and positive-definite, the fast symmetric factorization method would be used. In all other cases the fast factorization method gets used::
+We proceed to call the ``assembleTree`` method. This obtains the complete matrix for the leaf levels and the low-rank approximation for the off-diagonal blocks. Here we have used mentioned the fact that the matrix that we are constructing is both symmetric and positive-definite. Note that when we mention that the matrix is symmetric and positive-definite, the fast symmetric factorization method would be used. In all other cases the fast factorization method gets used::
 
     bool is_sym = true;
     bool is_pd = true;
@@ -58,7 +58,7 @@ This function is used to obtain the matrix-matrix / matrix-vector product of the
 ``factorize``
 ^^^^^^^^^^^^^
 
-Depends upon whether we intend to perform fast factorization, or fast symmetric factorization:
+Depends upon whether we intend to perform fast factorization or fast symmetric factorization:
 
 - **Fast Factorization** - This function performs the factorizations such that the matrix is obtained as :math:`K = K_{\kappa} K_{\kappa-1} ... K_{1} K_{0}` where :math:`K_i` are block diagonal matrices with :math:`\kappa` being the number of levels considered. 
 

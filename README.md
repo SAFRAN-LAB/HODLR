@@ -11,7 +11,7 @@ HODLRlib is a flexible library for performing matrix operations like matrix-vect
 
 For more details on the usage of the library, visit the [documentation](https://hodlr.readthedocs.io/en/latest/) page.
 
-### Features:
+### Features
 
 Fast matrix vector products: Obtains <img src="https://cdn.jsdelivr.net/gh/shyams2/HODLR@master/docs/source/images//605193f107171aff38e18841c2fc20a1.svg?invert_in_darkmode" align=middle width=37.24875329999999pt height=22.465723500000017pt/> at a cost of <img src="https://cdn.jsdelivr.net/gh/shyams2/HODLR@master/docs/source/images//2d74209c531ea025d06c0a66dbbd0bb1.svg?invert_in_darkmode" align=middle width=85.780695pt height=24.65753399999998pt/>
 

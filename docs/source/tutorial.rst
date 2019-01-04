@@ -42,7 +42,7 @@ We will now proceed to demonstrate the individual methods available under this c
 ``assembleTree``
 ^^^^^^^^^^^^^^^^
 
-We proceed to call the ``assembleTree`` method which obtains the complete matrix for the leaf levels and the low-rank approximation for the off-diagonal blocks. Here we have used mentioned the fact that the matrix that we are constructing is both symmetric and positive-definite. Note than when we mention that the matrix is symmetric and positive-definite, the factorizations carried out for the individual blocks would be carried out using Cholesky factorization instead of LU::
+We proceed to call the ``assembleTree`` method. This obtains the complete matrix for the leaf levels and the low-rank approximation for the off-diagonal blocks. Here we have used mentioned the fact that the matrix that we are constructing is both symmetric and positive-definite. Note than when we mention that the matrix is symmetric and positive-definite, the fast symmetric factorization method would be used. In all other cases the fast factorization method gets used::
 
     bool is_sym = true;
     bool is_pd = true;
@@ -58,7 +58,13 @@ This function is used to obtain the matrix-matrix / matrix-vector product of the
 ``factorize``
 ^^^^^^^^^^^^^
 
-This function performs the factorizations such that the matrix is obtained as :math:`K = K_{\kappa} K_{\kappa-1} ... K_{1} K_{0}` where :math:`K_i` are block diagonal matrices with :math:`\kappa` being the number of levels considered. For more details on this factorization refer to the articles `[1] <https://link.springer.com/article/10.1007/s10915-013-9714-z>`_ `[2] <https://arxiv.org/abs/1405.0223>`_
+Depends upon whether we intend to perform fast factorization, or fast symmetric factorization:
+
+- **Fast Factorization** - This function performs the factorizations such that the matrix is obtained as :math:`K = K_{\kappa} K_{\kappa-1} ... K_{1} K_{0}` where :math:`K_i` are block diagonal matrices with :math:`\kappa` being the number of levels considered. 
+
+**Fast Symmetric Factorization** - This function performs the factorizations such that the matrix is obtained as :math:`K = K_{\kappa} K_{\kappa-1} ... K_{1} K_{0} K_{0}^T K_{1}^T ... K_{\kappa-1}^T K_{\kappa}^T` where :math:`K_i` are block diagonal matrices with :math:`\kappa` being the number of levels considered. 
+
+For more details on this factorization refer to the articles `[1] <https://link.springer.com/article/10.1007/s10915-013-9714-z>`_ `[2] <https://arxiv.org/abs/1405.0223>`_
 
 ``solve``
 ^^^^^^^^^
@@ -77,6 +83,6 @@ Returns the log of the determinant of the matrix that has been described through
 ``symmetricFactorProduct``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-If the matrix described through the ``Kernel`` object is a covariance matrix :math:`Q` it can be expressed as :math:`Q=W W^T` when the matrix is symmetric and positive-definite. If we create a random normal vector :math:`x` i.e :math:`\mathcal{N}(\mu = 0, \sigma = 1)`, then the random vector :math:`y` with covariance matrix :math:`Q` is given by :math:`y = W x`::
+If the matrix described through the ``Kernel`` object is a covariance matrix :math:`Q` it can be expressed as :math:`Q=W W^T`. If we create a random normal vector :math:`x` i.e :math:`\mathcal{N}(\mu = 0, \sigma = 1)`, then the random vector :math:`y` with covariance matrix :math:`Q` is given by :math:`y = W x`::
 
     y = T->symmetricFactorProduct(x);

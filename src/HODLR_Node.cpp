@@ -62,7 +62,6 @@ void HODLR_Node::printNodeDetails()
     cout << "Node Number        :" << node_number << endl;
     cout << "Start of Node      :" << n_start <<  endl;
     cout << "Size of Node       :" << n_size <<  endl;
-    cout << "Size of Node       :" << n_size <<  endl;
     cout << "Tolerance          :" << tolerance << endl;
 
     for(int i = 0; i < 2; i++)

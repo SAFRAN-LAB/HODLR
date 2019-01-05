@@ -10,10 +10,16 @@ tags:
 authors:
   - name: Sivaram Ambikasaran
     affiliation: 1
+  - name: Karan Raj Singh
+    affiliation: 2
+  - name: Shyam Sundar Sankaran
+    affiliation: 1
 affiliations:
   - name: Department of Mathematics, Indian Institute of Technology Madras
     index: 1
-date: 4th January 2019
+  - name: Department of Computational & Data Sciences, Indian Institute of Science
+    index: 2
+date: 5th January 2019
 bibliography: paper.bib
 ---
 
@@ -29,7 +35,7 @@ Our code makes use of shared-memory parallelism through OpenMP. The solver has a
 
 The current release has the following capabilities:
 
-- Fast MatVecs: Obtains $A * x$ at a cost of $\mathcal{O}\left(N\log{N}\right)$
+- Fast MatVecs: Obtains $A x$ at a cost of $\mathcal{O}\left(N\log{N}\right)$
 - Fast Symmetric Factorization: Obtains $A = W W^T$ at a cost of $\mathcal{O}\left(N\log^2\left(N\right)\right)$
 - Fast Solve: Solves linear systems $A x = b$ in $\mathcal{O}\left(N\log^2\left(N\right)\right)$
 - Fast Determinant Computation: Additional Cost of $\mathcal{O}\left(N\log{N} \right)$

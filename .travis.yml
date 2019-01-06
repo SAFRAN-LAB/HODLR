@@ -17,4 +17,4 @@ script:
   - mkdir build
   - cd build
   - ../deps/cmake/bin/cmake .. && make
-  - ./test 1000 100 1 12
+  - ./test_HODLR 1000 100 1 12

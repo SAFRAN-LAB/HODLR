@@ -28,7 +28,7 @@ Fast determinant computation: Compute the determinant at an additional cost of <
 
 #### Version 3.1415
 
-Date: January 5th, 2019
+Date: January 6th, 2019
 
 Copyleft 2019: Sivaram Ambikasaran
 

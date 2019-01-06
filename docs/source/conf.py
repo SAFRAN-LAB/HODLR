@@ -49,7 +49,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'HODLRlib'
-copyright = '2018, Sivaram Ambikasaran'
+copyright = '2019, Sivaram Ambikasaran'
 author = 'Sivaram Ambikasaran, Shyam Sundar Sankaran'
 
 # The version info for the project you're documenting, acts as replacement for

@@ -104,15 +104,18 @@ int main(int argc, char* argv[])
     // If we are assembling a symmetric matrix:
     bool is_sym = true;
     // If we know that the matrix is also PD:
-    // By toggling this flag to true, the factorizations are performed using Cholesky
-    // Useful when you want the factorization as WW^T 
+    // By setting the matrix to be symmetric-positive definite, 
+    // we trigger the fast symmetric factorization method to be used
+    // In all other cases the fast factorization method is used
     bool is_pd = false;
     T->assembleTree(is_sym, is_pd);
     end = omp_get_wtime();
     cout << "Time for assembly in HODLR form:" << (end - start) << endl;
 
-    // These are used in debugging mainly:
+    // These are mainly used in development and debugging:
+    // Used to visualize the rank structure of the considered kernel:
     // T->plotTree();
+    // Prints the details of all the nodes in the tree:
     // T->printTreeDetails();
 
     // Random Matrix to multiply with
@@ -143,8 +146,6 @@ int main(int argc, char* argv[])
     // Computing the relative error in the solution obtained:
     cout << "Error in the solution is:" << (b_fast-b_exact).norm() / (b_exact.norm()) << endl << endl;
 
-    assert((b_fast-b_exact).norm() / (b_exact.norm()) < tolerance);
-
     start = omp_get_wtime();
     T->factorize();
     end   = omp_get_wtime();
@@ -159,16 +160,16 @@ int main(int argc, char* argv[])
     // Computing the relative error:
     cout << "Error in the solution:" << (x_fast - x).norm() / (x.norm()) << endl << endl;
 
-    assert((x_fast - x).norm() / (x.norm()) < tolerance);
-
     // Checking symmetric factor product:
     if(is_sym == true && is_pd == true)
     {
+        // We set y = W^T x
         start  = omp_get_wtime();
         y_fast = T->symmetricFactorTransposeProduct(x);
         end    = omp_get_wtime();
         cout << "Time to calculate product of factor transpose with given vector:" << (end - start) << endl;
         
+        // b = W y = W W^T x = B * x
         start  = omp_get_wtime();
         b_fast = T->symmetricFactorProduct(y_fast);
         end    = omp_get_wtime();
@@ -176,8 +177,6 @@ int main(int argc, char* argv[])
         
         cout << "Error in the solution is:" << (b_fast - b_exact).norm() / (b_exact.norm()) << endl << endl;
     }
-
-    assert((b_fast - b_exact).norm() / (b_exact.norm()) < tolerance);
 
     dtype log_det;
     // Computing log-determinant using Cholesky:
@@ -213,6 +212,7 @@ int main(int argc, char* argv[])
         cout << "Calculated Log Determinant:" << log_det << endl;
     }
 
+    // Gets the log(determinant) of the matrix abstracted through Kernel:
     start = omp_get_wtime();
     dtype log_det_hodlr = T->logDeterminant();
     end = omp_get_wtime();
@@ -220,15 +220,10 @@ int main(int argc, char* argv[])
     cout << "Calculated Log Determinant:" << log_det_hodlr << endl;
     cout << "Relative Error in computation:" << fabs(1 - fabs(log_det_hodlr/log_det)) << endl;
 
-    assert(fabs(1 - fabs(log_det_hodlr/log_det)) < tolerance);
-
-    // Getting the symmetric factor:
+    // If we want to explicitly build the symmetric factor matrix, then we can call this command
     if(is_sym == true && is_pd == true)
     {
-        Mat W  = T->getSymmetricFactor();
-        Mat Wt = W.transpose();
-
-        assert((Wt.colPivHouseholderQr().solve(W.colPivHouseholderQr().solve(b_exact)) - x).cwiseAbs().maxCoeff() < tolerance);
+        Mat W = T->getSymmetricFactor();
     }
 
     delete K;

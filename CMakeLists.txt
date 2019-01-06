@@ -2,9 +2,9 @@ project (HODLRlib)
 cmake_minimum_required (VERSION 3.0)
 set (CMAKE_CXX_STANDARD 11)
 # Provide the input file that you want to solve for:
-set (INPUT_FILE "examples/tutorial.cpp")
+set (INPUT_FILE "examples/test.cpp")
 # Here set the name for the output executable:
-set (OUTPUT_EXECUTABLE "tutorial")
+set (OUTPUT_EXECUTABLE "test")
 # Set this to: "float", "double", "complex32" and "complex64"
 set (DTYPE "double")
 # Change this accordingly to point to the Eigen root folder

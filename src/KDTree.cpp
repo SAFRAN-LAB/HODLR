@@ -1,21 +1,6 @@
-/*!
- \brief This function is for the construction of KDTree.
- 
- \note
- 
- \author $Sivaram Ambikasaran$
- 
- \version
- 
- \date $Date: November 14th, 2013$
- */
-
 #include "KDTree.hpp"
-#include "Eigen/Dense"
 
-using namespace Eigen;
-
-void mergeSortedLists(MatrixXd& list1, MatrixXd& list2, unsigned index, MatrixXd& final_list) 
+void mergeSortedLists(Mat& list1, Mat& list2, unsigned index, Mat& final_list) 
 {
     unsigned N1 = list1.rows();
     unsigned N2 = list2.rows();
@@ -25,7 +10,7 @@ void mergeSortedLists(MatrixXd& list1, MatrixXd& list2, unsigned index, MatrixXd
 
     while (j1 < N1 && j2 < N2) 
     {
-        if (list1(j1,index) < list2(j2,index)) 
+        if (fabs(list1(j1,index)) < fabs(list2(j2,index))) 
         {
             final_list.row(j) = list1.row(j1);
             ++j1;
@@ -55,7 +40,7 @@ void mergeSortedLists(MatrixXd& list1, MatrixXd& list2, unsigned index, MatrixXd
     }
 }
 
-void mergeSort(MatrixXd& locations, unsigned index) 
+void mergeSort(Mat& locations, unsigned index) 
 {
     unsigned N = locations.rows();
     
@@ -76,10 +61,10 @@ void mergeSort(MatrixXd& locations, unsigned index)
         unsigned dims = locations.cols();
         
         // Left locations.
-        MatrixXd left_locations = locations.block(0,0,N_left,dims);
+        Mat left_locations = locations.block(0,0,N_left,dims);
         
         // Right locations.
-        MatrixXd right_locations = locations.block(N_left,0,N_right,dims);
+        Mat right_locations = locations.block(N_left,0,N_right,dims);
         
         // Mergesort for the left.
         mergeSort(left_locations, index);
@@ -92,7 +77,7 @@ void mergeSort(MatrixXd& locations, unsigned index)
     }
 }
 
-void getKDTreeSorted(MatrixXd& locations, unsigned index) 
+void getKDTreeSorted(Mat& locations, unsigned index) 
 {
     // Get the total number of points
     unsigned N = locations.rows();
@@ -117,8 +102,8 @@ void getKDTreeSorted(MatrixXd& locations, unsigned index)
         mergeSort(locations, index % dims);
 
         /// Obtain the left and right locations.
-        MatrixXd left_locations  = locations.block(0, 0, N_left, dims);
-        MatrixXd right_locations = locations.block(N_left, 0, N_right, dims);
+        Mat left_locations  = locations.block(0, 0, N_left, dims);
+        Mat right_locations = locations.block(N_left, 0, N_right, dims);
 
         /// Sort the left and right locations based on a KDTree.
         getKDTreeSorted(left_locations, index + 1);

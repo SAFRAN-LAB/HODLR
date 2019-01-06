@@ -1,5 +1,6 @@
 #include "HODLR_Tree.hpp"
 
+// Contructor for the HODLR Tree class:
 HODLR_Tree::HODLR_Tree(int n_levels, double tolerance, HODLR_Matrix* A) 
 {
     this->n_levels  = n_levels;
@@ -29,6 +30,7 @@ HODLR_Tree::~HODLR_Tree()
     }
 }
 
+// Creates the node at the root level:
 void HODLR_Tree::createRoot() 
 {
     HODLR_Node* root = new HODLR_Node(0, 0, 0, 0, N, tolerance);
@@ -37,6 +39,7 @@ void HODLR_Tree::createRoot()
     tree.push_back(level);
 }
 
+// Function that adds on children for the given level and node number:
 void HODLR_Tree::createChildren(int level_number, int node_number) 
 {
     //  Adding left child:
@@ -56,6 +59,9 @@ void HODLR_Tree::createChildren(int level_number, int node_number)
     tree[level_number + 1].push_back(right);
 }
 
+// Creates the tree structure:
+// Depending upon the parameters set by the user, this function
+// creates a tree having required number of nodes in the tree
 void HODLR_Tree::createTree() 
 {
     this->createRoot();
@@ -72,12 +78,18 @@ void HODLR_Tree::createTree()
     }
 }
 
-void HODLR_Tree::assembleTree(bool is_sym) 
+// This function assembles the elements of the tree:
+// That is:
+// For leaf nodes, it directly evaluates the matrix entries:
+// For nonleaf nodes, it gets the low rank representation of the underlying matrix:
+void HODLR_Tree::assembleTree(bool is_sym, bool is_pd) 
 {
+    this->is_sym = is_sym;
+    this->is_pd  = is_pd;
     // Assembly of nonleaf nodes:
     for(int j = 0; j < n_levels; j++) 
     {
-        // #pragma omp parallel for
+        #pragma omp parallel for
         for(int k = 0; k < nodes_in_level[j]; k++) 
         {
             tree[j][k]->assembleNonLeafNode(A, is_sym);
@@ -92,11 +104,15 @@ void HODLR_Tree::assembleTree(bool is_sym)
     }
 }
 
+// Used mainly to debug:
+// Prints the details of the considered nodes:
 void HODLR_Tree::printNodeDetails(int level_number, int node_number)
 {
     tree[level_number][node_number]->printNodeDetails();
 }
 
+// Used mainly to debug:
+// Prints details of all the nodes in the tree:
 void HODLR_Tree::printTreeDetails()
 {
     for(int j = 0; j <= n_levels; j++)
@@ -110,10 +126,11 @@ void HODLR_Tree::printTreeDetails()
     }
 }
 
-void HODLR_Tree::matmatProduct(MatrixXd x, MatrixXd& b) 
+// Performs a MatMat product with the given matrix X.
+Mat HODLR_Tree::matmatProduct(Mat x) 
 {
     // Initializing matrix b:
-    b = MatrixXd::Zero(N, x.cols());
+    Mat b = Mat::Zero(N, x.cols());
 
     // At non-leaf levels:
     for (int j = 0; j < n_levels; j++) 
@@ -131,181 +148,60 @@ void HODLR_Tree::matmatProduct(MatrixXd x, MatrixXd& b)
     {
         tree[n_levels][k]->matmatProductLeaf(x, b);
     }
-}
 
-void HODLR_Tree::factorizeLeaf(int k) 
-{
-    tree[n_levels][k]->K_factor.compute(tree[n_levels][k]->K);
-
-    int child;
-    int parent = k;
-    int size   = tree[n_levels][k]->n_size;
-    
-    int t_start, r;
-    
-    #pragma omp parallel for
-    for(int l = n_levels - 1; l >= 0; l--) 
-    {
-        child   = parent % 2;
-        parent  = parent / 2;
-        t_start = tree[n_levels][k]->n_start - tree[l][parent]->c_start[child];
-        r       = tree[l][parent]->rank[child];
-
-        tree[l][parent]->U_factor[child].block(t_start, 0, size, r) =   
-        this->solveLeaf(k, tree[l][parent]->U_factor[child].block(t_start, 0, size, r));
-    }
-}
-
-void HODLR_Tree::factorizeNonLeaf(int j, int k) 
-{
-    int r0        = tree[j][k]->rank[0];
-    int r1        = tree[j][k]->rank[1];
-    tree[j][k]->K = MatrixXd::Identity(r0 + r1, r0 + r1);
-
-    if(r0 > 0 || r1 > 0)
-    {
-        tree[j][k]->K.block(0, r0, r0, r1)  =   
-        tree[j][k]->V_factor[1].transpose() * tree[j][k]->U_factor[1];
-
-        tree[j][k]->K.block(r0, 0, r1, r0)  =   
-        tree[j][k]->V_factor[0].transpose() * tree[j][k]->U_factor[0];
-
-        tree[j][k]->K_factor.compute(tree[j][k]->K);
-
-        int parent = k;
-        int child  = k;
-        int size   = tree[j][k]->n_size;
-        int t_start, r;
-
-        for(int l = j - 1; l >= 0; l--) 
-        {
-            child   = parent % 2;
-            parent  = parent / 2;
-            t_start = tree[j][k]->n_start - tree[l][parent]->c_start[child];
-            r       = tree[l][parent]->rank[child];
-
-            if(tree[l][parent]->U_factor[child].cols() > 0)
-            {
-                tree[l][parent]->U_factor[child].block(t_start, 0, size, r) =   
-                this->solveNonLeaf(j, k, tree[l][parent]->U_factor[child].block(t_start, 0, size, r));
-            }
-        }
-    }
-}
-
-void HODLR_Tree::factorize() 
-{
-    // Initializing for the non-leaf levels:
-    for(int j = 0; j <= n_levels; j++) 
-    {
-        #pragma omp parallel for
-        for(int k = 0; k < nodes_in_level[j]; k++) 
-        {
-            // Initializing the factorized matrices for the leaf and right child:
-            for (int l = 0; l < 2; l++) 
-            {
-                tree[j][k]->U_factor[l] = tree[j][k]->U[l];
-                tree[j][k]->V_factor[l] = tree[j][k]->V[l];
-            }
-        }
-    }
-
-    // Factorizing the leaf levels:
-    #pragma omp parallel for
-    for(int k = 0; k < nodes_in_level[n_levels]; k++) 
-    {
-        this->factorizeLeaf(k);
-    }
-
-    // Factorizing the nonleaf levels:
-    for(int j = n_levels - 1; j >= 0; j--) 
-    {
-        #pragma omp parallel for
-        for (int k = 0; k < nodes_in_level[j]; k++) 
-        {
-            this->factorizeNonLeaf(j, k);
-        }
-    }
-}
-
-// Solve at the leaf is just directly performed:
-MatrixXd HODLR_Tree::solveLeaf(int k, MatrixXd b) 
-{
-    MatrixXd x = tree[n_levels][k]->K_factor.solve(b);
-    return x;
-}
-
-MatrixXd HODLR_Tree::solveNonLeaf(int j, int k, MatrixXd b) 
-{
-    int r0 = tree[j][k]->rank[0];
-    int r1 = tree[j][k]->rank[1];
-    int n0 = tree[j][k]->c_size[0];
-    int n1 = tree[j][k]->c_size[1];
-    int r  = b.cols();
-
-    // Initializing the temp matrix that is then factorized:
-    MatrixXd temp(r0 + r1, r);
-    temp << tree[j][k]->V_factor[1].transpose() * b.block(n0, 0, n1, r),
-            tree[j][k]->V_factor[0].transpose() * b.block(0,  0, n0, r);
-    temp = tree[j][k]->K_factor.solve(temp);
-    
-    MatrixXd y(n0 + n1, r);
-    y << tree[j][k]->U_factor[0] * temp.block(0,  0, r0, r), 
-         tree[j][k]->U_factor[1] * temp.block(r0, 0, r1, r);
-    
-    return(b - y);
-}
-
-MatrixXd HODLR_Tree::solve(MatrixXd b) 
-{
-    int start, size;
-    MatrixXd x = MatrixXd::Zero(b.rows(),b.cols());
-    
-    int r = b.cols();
-
-    for(int k = 0; k < nodes_in_level[n_levels]; k++) 
-    {
-        start = tree[n_levels][k]->n_start;
-        size  = tree[n_levels][k]->n_size;
-
-        x.block(start, 0, size, r) = this->solveLeaf(k, b.block(start, 0, size, r));
-    }
-
-    b = x;
-    
-    for(int j = n_levels - 1; j >= 0; j--) 
-    {
-        for (int k = 0; k < nodes_in_level[j]; k++) 
-        {
-            start = tree[j][k]->n_start;
-            size  = tree[j][k]->n_size;
-            
-            x.block(start, 0, size, r) = this->solveNonLeaf(j, k, b.block(start, 0, size, r));
-        }
-
-        b = x;
-    }
-
-    return x;
+    return b;
 } 
 
-double HODLR_Tree::logDeterminant()
+// Factorizes the matrix to get LU for each block in case of the nonSPD
+// and L for each block in case the matrix is SPD
+void HODLR_Tree::factorize()
 {
-    double log_det = 0.0;
+    if(is_sym == true && is_pd == true)
+        this->factorizeSPD();
+    else
+        this->factorizeNonSPD();
+}
 
-    for(int j = n_levels; j >= 0; j--) 
+// Returns x, by solving Ax = b, where A is the matrix represented by the HODLR structure
+Mat HODLR_Tree::solve(Mat b)
+{
+    if(is_sym == true && is_pd == true)
+        return this->solveSPD(b);
+    else
+        return this->solveNonSPD(b);
+}
+
+// Returns the log determinant of the matrix represented by the HODLR structure
+dtype HODLR_Tree::logDeterminant()
+{
+    if(is_sym == true && is_pd == true)
+        return this->logDeterminantSPD();
+    else
+        return this->logDeterminantNonSPD();
+}
+
+// Creates a plot of the HODLR matrix represented.
+// Basically, this function shows the extent of "lowrankness" through
+// different intensity of colors in the plots.
+// Additionally, it also shows the ranks of the blocks. Again useful to debug:
+void HODLR_Tree::plotTree()
+{
+    std::string HODLR_PATH = std::getenv("HODLR_PATH");
+    std::string FILE       = HODLR_PATH + "/src/plot_tree.py";
+    std::string COMMAND    = "python " + FILE;
+    std::ofstream myfile;
+    myfile.open ("rank.txt");
+    // First entry is the number of levels:
+    myfile << n_levels << endl;
+    for(int j = 0; j < n_levels; j++)
     {
-        for(int k = 0; k < nodes_in_level[j]; k++) 
+        for(int k = 0; k < nodes_in_level[j]; k++)
         {
-            if(tree[j][k]->K.size() > 0)
-            {
-                for(int l = 0; l < tree[j][k]->K_factor.matrixLU().rows(); l++) 
-                {   
-                    log_det += log(fabs(tree[j][k]->K_factor.matrixLU()(l,l)));
-                }
-            }
+            myfile << tree[j][k]->rank[0] << endl;
         }
     }
-
-    return(log_det);
+    // Closing the file:
+    myfile.close();
+    cout << "Plotting Tree..." << endl;
+    system(COMMAND.c_str());
 }

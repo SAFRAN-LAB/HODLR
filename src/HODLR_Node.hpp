@@ -23,21 +23,25 @@ private:
     double tolerance;
 
     // This stores the matrix directly(i.e at the leaf level)
-    MatrixXd K;
+    Mat K;
 
-    //  Variables and methods needed for HODLR solver
-    MatrixXd U[2], V[2];
-    MatrixXd U_factor[2], V_factor[2];
-    Eigen::PartialPivLU<MatrixXd> K_factor;
+    // Variables and methods needed for HODLR solver
+    Mat U[2], V[2];
+    Mat U_factor[2], V_factor[2];
+    Eigen::PartialPivLU<Mat> K_factor_LU;
     int rank[2];
+    // Variables needed for symmetric factorization
+    // Unitary matrices:
+    Mat Q[2];
+    Eigen::LLT<Mat> K_factor_LLT;
 
     // Methods for Leaf Nodes:
     void assembleLeafNode(HODLR_Matrix* A);
-    void matmatProductLeaf(MatrixXd x, MatrixXd& b);
+    void matmatProductLeaf(Mat x, Mat& b);
 
     // Methods for Non-leaf Nodes:
     void assembleNonLeafNode(HODLR_Matrix* A, bool is_sym);
-    void matmatProductNonLeaf(MatrixXd x, MatrixXd& b);
+    void matmatProductNonLeaf(Mat x, Mat& b);
 
     // Method to print the parameters of the node(mainly used to debug)
     void printNodeDetails();

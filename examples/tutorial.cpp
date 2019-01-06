@@ -1,4 +1,5 @@
 // This file serves as a gentle introduction to the usage of this library:
+// It is also used in CI testing:
 
 #include "HODLR_Tree.hpp"
 #include "HODLR_Matrix.hpp"
@@ -10,41 +11,27 @@ class Kernel : public HODLR_Matrix
 {
 
 private:
-    // When data is 1D:
-    VectorXd x;
-    // When data is > 1D:
-    MatrixXd xm;
+    Mat x;
 
 public:
 
     // Constructor:
     Kernel(int N, int dim) : HODLR_Matrix(N) 
     {
-        if(dim == 1)
-        {
-            x = VectorXd::Random(N);
-            // This is being sorted to ensure that we get
-            // optimal low rank structure:
-            std::sort(x.data(),x.data()+x.size());
-        }
-
-        else
-        {
-            xm = MatrixXd::Random(N, dim);
-            // This is being sorted to ensure that we get
-            // optimal low rank structure:
-            getKDTreeSorted(xm, 0);
-        }
+        x = (Mat::Random(N, dim)).real();
+        // This is being sorted to ensure that we get
+        // optimal low rank structure:
+        getKDTreeSorted(x, 0);
     };
     
     // In this example, we are illustrating usage using
     // the gaussian kernel:
-    double getMatrixEntry(int i, int j) 
+    dtype getMatrixEntry(int i, int j) 
     {
-        size_t dim = xm.cols();
+        size_t dim = x.cols();
 
         // Value on the diagonal:
-        if(i == j) 
+        if(i == j)
         {
             return 10;
         }
@@ -52,25 +39,16 @@ public:
         // Otherwise:
         else
         {   
-            double R, R2;
+            dtype R, R2;
             // Initializing:
             R = R2 = 0;
 
-            if(dim == 1)
+            for(int k = 0; k < dim; k++) 
             {
-                R  = fabs(x(i) - x(j));
-                R2 = R * R;
+                R2 += (x(i,k) - x(j,k)) * (x(i,k) - x(j,k));
             }
 
-            else
-            {
-                for(int k = 0; k < dim; k++) 
-                {
-                    R2 += (xm(i,k) - xm(j,k)) * (xm(i,k) - xm(j,k));
-                }
-
-                R = sqrt(R2);
-            }
+            R = sqrt(R2);
 
             // Exponential: exp(-R)
             // return exp(-R);
@@ -113,7 +91,6 @@ int main(int argc, char* argv[])
     double tolerance  = pow(10, -atoi(argv[4]));
     // Declaration of HODLR_Matrix object that abstracts data in Matrix:
     Kernel* K         = new Kernel(N, dim);
-    // Here it is assumed that size of leaf level is 200
     int n_levels      = log(N / M) / log(2);
 
     // Variables used in timing:
@@ -124,38 +101,45 @@ int main(int argc, char* argv[])
     start = omp_get_wtime();
     // Creating a pointer to the HODLR Tree structure:
     HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, K);
-    // We are assembling a symmetric matrix. Hence we pass the flag as true:
-    T->assembleTree(true);
-    end   = omp_get_wtime();
-    
+    // If we are assembling a symmetric matrix:
+    bool is_sym = true;
+    // If we know that the matrix is also PD:
+    // By setting the matrix to be symmetric-positive definite, 
+    // we trigger the fast symmetric factorization method to be used
+    // In all other cases the fast factorization method is used
+    bool is_pd = false;
+    T->assembleTree(is_sym, is_pd);
+    end = omp_get_wtime();
     cout << "Time for assembly in HODLR form:" << (end - start) << endl;
 
-    // This is used in debugging mainly:
+    // These are mainly used in development and debugging:
+    // Used to visualize the rank structure of the considered kernel:
+    // T->plotTree();
+    // Prints the details of all the nodes in the tree:
     // T->printTreeDetails();
 
     // Random Matrix to multiply with
-    MatrixXd x = MatrixXd::Random(N, 1);
+    Mat x = (Mat::Random(N, 1)).real();
     // Stores the result after multiplication:
-    MatrixXd b_fast;
+    Mat y_fast, b_fast;
     
-    start = omp_get_wtime();
-    T->matmatProduct(x, b_fast);
-    end   = omp_get_wtime();
+    start  = omp_get_wtime();
+    b_fast = T->matmatProduct(x);
+    end    = omp_get_wtime();
     
     cout << "Time for matrix-vector product:" << (end - start) << endl << endl;
-
     cout << "Exact method..." << endl;
 
     // What we are doing here is explicitly generating 
     // the matrix from its entries
     start = omp_get_wtime();
-    MatrixXd B = K->getMatrix(0, 0, N, N);
+    Mat B = K->getMatrix(0, 0, N, N);
     end   = omp_get_wtime();
     
     cout << "Time for matrix generation:" << (end-start) << endl;
 
     start = omp_get_wtime();
-    MatrixXd b_exact = B * x;
+    Mat b_exact = B * x;
     end   = omp_get_wtime();
     
     cout << "Time for matrix-vector product:" << (end-start) << endl;
@@ -167,34 +151,80 @@ int main(int argc, char* argv[])
     end   = omp_get_wtime();
     cout << "Time to factorize:" << (end-start) << endl;
 
-    MatrixXd x_fast;
+    Mat x_fast;
     start  = omp_get_wtime();
-    x_fast = T->solve(b_fast);
+    x_fast = T->solve(b_exact);
     end    = omp_get_wtime();
+
     cout << "Time to solve:" << (end-start) << endl;
     // Computing the relative error:
     cout << "Error in the solution:" << (x_fast - x).norm() / (x.norm()) << endl << endl;
 
-    // Computing log-determinant using Cholesky:
-    Eigen::LLT<MatrixXd> P;
-    start = omp_get_wtime();
-    P.compute(B);
-    double log_det = 0.0;
-    for(int i=0; i<P.matrixL().rows(); ++i)
+    // Checking symmetric factor product:
+    if(is_sym == true && is_pd == true)
     {
-        log_det += log(P.matrixL()(i,i));
+        // We set y = W^T x
+        start  = omp_get_wtime();
+        y_fast = T->symmetricFactorTransposeProduct(x);
+        end    = omp_get_wtime();
+        cout << "Time to calculate product of factor transpose with given vector:" << (end - start) << endl;
+        
+        // b = W y = W W^T x = B * x
+        start  = omp_get_wtime();
+        b_fast = T->symmetricFactorProduct(y_fast);
+        end    = omp_get_wtime();
+        cout << "Time to calculate product of factor with given vector:" << (end - start) << endl;
+        
+        cout << "Error in the solution is:" << (b_fast - b_exact).norm() / (b_exact.norm()) << endl << endl;
     }
-    end = omp_get_wtime();
-    log_det = 2 * log_det;
-    cout << "Time to calculate log determinant using Cholesky:" << (end-start) << endl;
 
+    dtype log_det;
+    // Computing log-determinant using Cholesky:
+    if(is_sym == true && is_pd == true)
+    {
+        Eigen::LLT<Mat> llt;
+        start = omp_get_wtime();
+        llt.compute(B);
+        log_det = 0.0;
+        for(int i = 0; i < llt.matrixL().rows(); i++)
+        {
+            log_det += log(llt.matrixL()(i,i));
+        }
+        log_det *= 2;
+        end = omp_get_wtime();
+        cout << "Time to calculate log determinant using Cholesky:" << (end - start) << endl;
+        cout << "Calculated Log Determinant:" << log_det << endl;
+    }
+
+    // Computing log-determinant using LU:
+    else
+    {
+        Eigen::PartialPivLU<Mat> lu;
+        start = omp_get_wtime();
+        lu.compute(B);
+        log_det = 0.0;
+        for(int i = 0; i < lu.matrixLU().rows(); i++)
+        {
+            log_det += log(lu.matrixLU()(i,i));
+        }
+        end = omp_get_wtime();
+        cout << "Time to calculate log determinant using LU:" << (end - start) << endl;
+        cout << "Calculated Log Determinant:" << log_det << endl;
+    }
+
+    // Gets the log(determinant) of the matrix abstracted through Kernel:
     start = omp_get_wtime();
-    double log_det_hodlr = T->logDeterminant();
+    dtype log_det_hodlr = T->logDeterminant();
     end = omp_get_wtime();
     cout << "Time to calculate log determinant using HODLR:" << (end-start) << endl;
-    cout << "Error in computation:" << fabs(log_det_hodlr - log_det) << endl;
+    cout << "Calculated Log Determinant:" << log_det_hodlr << endl;
+    cout << "Relative Error in computation:" << fabs(1 - fabs(log_det_hodlr/log_det)) << endl;
 
-    assert(1 - fabs(log_det_hodlr/log_det) < tolerance);
+    // If we want to explicitly build the symmetric factor matrix, then we can call this command
+    if(is_sym == true && is_pd == true)
+    {
+        Mat W = T->getSymmetricFactor();
+    }
 
     delete K;
     delete T;

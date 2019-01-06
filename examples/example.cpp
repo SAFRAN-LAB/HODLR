@@ -33,7 +33,7 @@ public:
     Test_Kernel (unsigned N) : HODLR_Matrix(N) 
     {};
 
-    double getMatrixEntry(int i, int j)
+    dtype getMatrixEntry(int i, int j)
     {
         const int m = i - LMAX, n = j - LMAX;
 
@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
     double logdet_hodlr = 0;
 
     // Assemble symmetric matrix 
-    T->assembleTree(true);
+    T->assembleTree(true, false);
     // Compute factorization 
     T->factorize();
     // Compute log det(Id+M)

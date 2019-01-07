@@ -5,20 +5,16 @@
 # HODLRlib
 [![Build Status](https://travis-ci.org/sivaramambikasaran/HODLR.svg?branch=master)](https://travis-ci.org/sivaramambikasaran/HODLR)
 [![Documentation Status](https://readthedocs.org/projects/hodlr/badge/?version=latest)](https://hodlr.readthedocs.io/en/latest/?badge=latest)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/51120e9cf53f4b2aa48d98284f08d366)](https://www.codacy.com/app/shyamss.1995/HODLR?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=shyams2/HODLR&amp;utm_campaign=Badge_Grade)
-
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/cd427ae7fd414c0cb2a0e1c7d201b2cb)](https://www.codacy.com/app/sivaramambikasaran/HODLR?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sivaramambikasaran/HODLR&amp;utm_campaign=Badge_Grade)
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
 [![Version 3.1415](https://img.shields.io/badge/version-3.1415-brightgreen.svg)](https://github.com/sivaramambikasaran/HODLR)
 [![arXiv](https://img.shields.io/badge/math.NA-arXiv%3A1405.0223-%23B31B1B.svg)](https://arxiv.org/abs/1405.0223)
-
 [![star this repo](http://githubbadges.com/star.svg?user=sivaramambikasaran&repo=HODLR&style=flat)](https://github.com/sivaramambikasaran/HODLR)
 [![fork this repo](http://githubbadges.com/fork.svg?user=sivaramambikasaran&repo=HODLR&style=flat)](https://github.com/sivaramambikasaran/HODLR/fork)
-[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.png?v=103)](https://github.com/sivaramambikasaran/HODLR)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com) 
+[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/sivaramambikasaran/HODLR/)
+[![PR Welcome](https://img.shields.io/badge/PR-welcome-brightgreen.svg)](http://makeapullrequest.com) 
+[![Built by SAFRAN](https://cdn.jsdelivr.net/gh/sivaramambikasaran/HODLR@master/docs/source/images/built_by_SAFRAN.svg)](http://sivaramambikasaran.com/research/)
 
-<a href="http://sivaramambikasaran.com/research/">
-    <img src="https://cdn.jsdelivr.net/gh/sivaramambikasaran/HODLR@master/docs/source/images/built_by_SAFRAN.png" align="left" height="20" width="120">
-</a><br>
 
 HODLRlib is a flexible library for performing matrix operations like matrix-vector products, solving and determinant computation in near-linear complexity(for matrices that resemble a HODLR structure). The solver has also been extended to matrices not necessarily arising out of kernels and also to higher dimensions. Further, the solver has been optimized and the running time of the solver is now massively (a few orders of magnitude) faster than the running times reported in the original articles[[1](https://link.springer.com/article/10.1007/s10915-013-9714-z)][[2](https://arxiv.org/abs/1405.0223)]. Low-rank approximation of the appropriate blocks are obtained using the rook pivoting algorithm. The domain is sub-divided based on a KDTree. The solver is fairly general, works with minimal restrictions and has been parallelized using OpenMP.
 

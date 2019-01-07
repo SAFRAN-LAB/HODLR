@@ -114,7 +114,7 @@ def plot_graph(cx, cy, rx, ry, rank):
     ax.set_aspect('equal')
     
     # Asserting that they are all of the same length:
-    if(!(len(cx) == len(cy) == len(rx) == len(ry))):
+    if(not (len(cx) == len(cy) == len(rx) == len(ry))):
         raise AssertionError('Elements in array are not the same!!')
 
     for i, node in enumerate(cx):

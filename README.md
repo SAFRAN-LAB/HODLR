@@ -5,7 +5,7 @@
 # HODLRlib
 [![Build Status](https://travis-ci.org/sivaramambikasaran/HODLR.svg?branch=master)](https://travis-ci.org/sivaramambikasaran/HODLR)
 [![Documentation Status](https://readthedocs.org/projects/hodlr/badge/?version=latest)](https://hodlr.readthedocs.io/en/latest/?badge=latest)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/51120e9cf53f4b2aa48d98284f08d366)](https://www.codacy.com/app/shyamss.1995/HODLR?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=shyams2/HODLR&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/51120e9cf53f4b2aa48d98284f08d366)](https://www.codacy.com/app/sivaramambikasaran/HODLR?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=shyams2/HODLR&amp;utm_campaign=Badge_Grade)
 
 [![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
 [![Version 3.1415](https://img.shields.io/badge/version-3.1415-brightgreen.svg)](https://github.com/sivaramambikasaran/HODLR)

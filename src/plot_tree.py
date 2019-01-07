@@ -92,7 +92,7 @@ def extract_centers_radii(tree):
     return cx, cy, rx, ry
 
 def plot_graph(cx, cy, rx, ry, rank):
-    
+
     fig = pl.figure()
 
     x_min = (cx - rx).min()

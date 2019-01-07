@@ -33,9 +33,7 @@ pl.rcParams['ytick.labelsize']  = 'medium'
 pl.rcParams['ytick.direction']  = 'in'
 
 class Node(object):
-    
     def __init__(self, cx, cy, rx, ry):
-        
         self.cx = cx
         self.cy = cy
         self.rx = rx
@@ -44,21 +42,17 @@ class Node(object):
 def return_HODLR_tree(N_levels):
     # Adding root:
     tree = [[Node(0.5, 0.5, 0.5, 0.5)]]
-    
+
     for i in range(1, N_levels + 1):
-        
         level = []
-        
         for j in range(2**(i-1)):
-            
             parent_box = tree[-1][j]
-            
             child_rx = parent_box.rx / 2
             child_ry = parent_box.ry / 2
-            
+
             child_cx1 = parent_box.cx - child_rx
             child_cy1 = parent_box.cy + child_ry
-            
+
             child_cx2 = parent_box.cx + child_rx
             child_cy2 = parent_box.cy - child_ry
 
@@ -70,13 +64,12 @@ def return_HODLR_tree(N_levels):
     return tree
 
 def extract_centers_radii(tree):
-    
     cx = []
     cy = []
 
     rx = []
     ry = []
-    
+
     for i, level in enumerate(tree):
         for j in range(2**i):
             cx.append(level[j].cx)

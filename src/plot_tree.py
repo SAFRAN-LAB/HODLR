@@ -79,10 +79,10 @@ def extract_centers_radii(tree):
     
     for i, level in enumerate(tree):
         for j in range(2**i):
-            cx.append(tree[i][j].cx)
-            cy.append(tree[i][j].cy)
-            rx.append(tree[i][j].rx)
-            ry.append(tree[i][j].ry)
+            cx.append(level[j].cx)
+            cy.append(level[j].cy)
+            rx.append(level[j].rx)
+            ry.append(level[j].ry)
 
     cx = np.array(cx)
     cy = np.array(cy)
@@ -117,17 +117,17 @@ def plot_graph(cx, cy, rx, ry, rank):
     if(not (len(cx) == len(cy) == len(rx) == len(ry))):
         raise AssertionError('Elements in array are not the same!!')
 
-    for i, node in enumerate(cx):
+    for i, cx_node in enumerate(cx):
         
         if(rx[i] == np.min(rx) and cx[i] == 1 - cy[i]):
-            ax.add_patch(patches.Rectangle((cx[i] - rx[i], cy[i] - ry[i]),
+            ax.add_patch(patches.Rectangle((cx_node - rx[i], cy[i] - ry[i]),
                                            2 * rx[i], 2 * ry[i], linewidth = 0.1, facecolor = 'red',
                                            edgecolor = 'black'))
 
         else:
-            ax.text(cx[i] + rx[i] / 2, cy[i] + ry[i] / 2, '%02d'%(rank[i]),
+            ax.text(cx_node + rx[i] / 2, cy[i] + ry[i] / 2, '%02d'%(rank[i]),
                     fontsize = 30 / (1 + int(np.sqrt(i))))
-            ax.text(cx[i] - rx[i] / 2, cy[i] - ry[i] / 2, '%02d'%(rank[i]),
+            ax.text(cx_node - rx[i] / 2, cy[i] - ry[i] / 2, '%02d'%(rank[i]),
                     fontsize = 30 / (1 + int(np.sqrt(i))))
 
             if(rank[i] > 0):
@@ -135,19 +135,19 @@ def plot_graph(cx, cy, rx, ry, rank):
                 if(np.min(rank) == np.max(rank)):
                     intensity = 1
 
-                ax.add_patch(patches.Rectangle((cx[i], cy[i]),
+                ax.add_patch(patches.Rectangle((cx_node, cy[i]),
                                                rx[i], ry[i], facecolor = 'green',
                                                edgecolor = 'black', linewidth = 0.1,
                                                alpha = intensity))
-                ax.add_patch(patches.Rectangle((cx[i], cy[i]),
+                ax.add_patch(patches.Rectangle((cx_node, cy[i]),
                                                -rx[i], -ry[i], facecolor = 'green',
                                                edgecolor = 'black', linewidth = 0.1,
                                                alpha = intensity))
             else:
-                ax.add_patch(patches.Rectangle((cx[i], cy[i]), 
+                ax.add_patch(patches.Rectangle((cx_node, cy[i]), 
                                                rx[i], ry[i], facecolor = 'white',
                                                edgecolor = 'black', linewidth = 0.1))
-                ax.add_patch(patches.Rectangle((cx[i], cy[i]),
+                ax.add_patch(patches.Rectangle((cx_node, cy[i]),
                                                -rx[i], -ry[i], facecolor = 'white',
                                                edgecolor = 'black', linewidth = 0.1))
 

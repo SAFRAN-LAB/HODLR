@@ -143,7 +143,7 @@ def plot_graph(cx, cy, rx, ry, rank):
                                                edgecolor = 'black', linewidth = 0.1,
                                                alpha = intensity))
             else:
-                ax.add_patch(patches.Rectangle((cx_node, cy[i]), 
+                ax.add_patch(patches.Rectangle((cx_node, cy[i]),
                                                rx[i], ry[i], facecolor = 'white',
                                                edgecolor = 'black', linewidth = 0.1))
                 ax.add_patch(patches.Rectangle((cx_node, cy[i]),

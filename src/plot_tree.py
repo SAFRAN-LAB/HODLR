@@ -118,7 +118,6 @@ def plot_graph(cx, cy, rx, ry, rank):
         raise AssertionError('Elements in array are not the same!!')
 
     for i, cx_node in enumerate(cx):
-        
         if(rx[i] == np.min(rx) and cx[i] == 1 - cy[i]):
             ax.add_patch(patches.Rectangle((cx_node - rx[i], cy[i] - ry[i]),
                                            2 * rx[i], 2 * ry[i], linewidth = 0.1, facecolor = 'red',

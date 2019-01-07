@@ -11,12 +11,11 @@
 [![Version 3.1415](https://img.shields.io/badge/version-3.1415-brightgreen.svg)](https://github.com/sivaramambikasaran/HODLR)
 [![arXiv](https://img.shields.io/badge/math.NA-arXiv%3A1405.0223-%23B31B1B.svg)](https://arxiv.org/abs/1405.0223)
 
-
 HODLRlib is a flexible library for performing matrix operations like matrix-vector products, solving and determinant computation in near-linear complexity(for matrices that resemble a HODLR structure). The solver has also been extended to matrices not necessarily arising out of kernels and also to higher dimensions. Further, the solver has been optimized and the running time of the solver is now massively (a few orders of magnitude) faster than the running times reported in the original articles[[1](https://link.springer.com/article/10.1007/s10915-013-9714-z)][[2](https://arxiv.org/abs/1405.0223)]. Low-rank approximation of the appropriate blocks are obtained using the rook pivoting algorithm. The domain is sub-divided based on a KDTree. The solver is fairly general, works with minimal restrictions and has been parallelized using OpenMP.
 
 For more details on the usage of the library, visit the [documentation](https://hodlr.readthedocs.io/en/latest/) page.
 
-### Features
+## Features
 
 Fast matrix vector products: Obtains <img src="https://cdn.jsdelivr.net/gh/shyams2/HODLR@master/docs/source/images//af44b92b9a0ae94e08b5e1e8abce573e.svg?invert_in_darkmode" align=middle width=21.723786149999988pt height=22.465723500000017pt/> at a cost of <img src="https://cdn.jsdelivr.net/gh/shyams2/HODLR@master/docs/source/images//2d74209c531ea025d06c0a66dbbd0bb1.svg?invert_in_darkmode" align=middle width=85.780695pt height=24.65753399999998pt/>
 
@@ -26,7 +25,7 @@ Fast symmetric factorization: Compute <img src="https://cdn.jsdelivr.net/gh/shya
 
 Fast determinant computation: Compute the determinant at an additional cost of <img src="https://cdn.jsdelivr.net/gh/shyams2/HODLR@master/docs/source/images//2d74209c531ea025d06c0a66dbbd0bb1.svg?invert_in_darkmode" align=middle width=85.780695pt height=24.65753399999998pt/>
 
-#### Version 3.1415
+### Version 3.1415
 
 Date: January 6th, 2019
 
@@ -34,6 +33,6 @@ Copyleft 2019: Sivaram Ambikasaran
 
 Developed by Sivaram Ambikasaran, Karan Raj Singh, Shyam Sundar Sankaran
 
-#### License:
+### License
 
 This program is free software; you can redistribute it and/or modify it under the terms of MPL2 license. The Source Code Form is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this file, You can obtain one at <http://mozilla.org/MPL/2.0/.>

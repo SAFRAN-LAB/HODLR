@@ -77,7 +77,7 @@ def extract_centers_radii(tree):
     rx = []
     ry = []
     
-    for i in range(len(tree)):        
+    for i, level in enumerate(tree):
         for j in range(2**i):
             cx.append(tree[i][j].cx)
             cy.append(tree[i][j].cy)
@@ -114,22 +114,20 @@ def plot_graph(cx, cy, rx, ry, rank):
     ax.set_aspect('equal')
     
     # Asserting that they are all of the same length:
-    try:
-        assert(len(cx) == len(cy) == len(rx) == len(ry))
-    except:
+    if(!(len(cx) == len(cy) == len(rx) == len(ry))):
         raise AssertionError('Elements in array are not the same!!')
 
-    for i in range(len(cx)):
+    for i, node in enumerate(cx):
         
         if(rx[i] == np.min(rx) and cx[i] == 1 - cy[i]):
-            ax.add_patch(patches.Rectangle((cx[i] - rx[i], cy[i] - ry[i]), 
-                                           2 * rx[i], 2 * ry[i], linewidth = 0.1, facecolor = 'red', 
+            ax.add_patch(patches.Rectangle((cx[i] - rx[i], cy[i] - ry[i]),
+                                           2 * rx[i], 2 * ry[i], linewidth = 0.1, facecolor = 'red',
                                            edgecolor = 'black'))
-        
+
         else:
-            ax.text(cx[i] + rx[i] / 2, cy[i] + ry[i] / 2, '%02d'%(rank[i]), 
+            ax.text(cx[i] + rx[i] / 2, cy[i] + ry[i] / 2, '%02d'%(rank[i]),
                     fontsize = 30 / (1 + int(np.sqrt(i))))
-            ax.text(cx[i] - rx[i] / 2, cy[i] - ry[i] / 2, '%02d'%(rank[i]), 
+            ax.text(cx[i] - rx[i] / 2, cy[i] - ry[i] / 2, '%02d'%(rank[i]),
                     fontsize = 30 / (1 + int(np.sqrt(i))))
 
             if(rank[i] > 0):
@@ -137,20 +135,20 @@ def plot_graph(cx, cy, rx, ry, rank):
                 if(np.min(rank) == np.max(rank)):
                     intensity = 1
 
-                ax.add_patch(patches.Rectangle((cx[i], cy[i]), 
-                                               rx[i], ry[i], facecolor = 'green', 
-                                               edgecolor = 'black', linewidth = 0.1, 
+                ax.add_patch(patches.Rectangle((cx[i], cy[i]),
+                                               rx[i], ry[i], facecolor = 'green',
+                                               edgecolor = 'black', linewidth = 0.1,
                                                alpha = intensity))
-                ax.add_patch(patches.Rectangle((cx[i], cy[i]), 
-                                               -rx[i], -ry[i], facecolor = 'green', 
-                                               edgecolor = 'black', linewidth = 0.1, 
+                ax.add_patch(patches.Rectangle((cx[i], cy[i]),
+                                               -rx[i], -ry[i], facecolor = 'green',
+                                               edgecolor = 'black', linewidth = 0.1,
                                                alpha = intensity))
             else:
                 ax.add_patch(patches.Rectangle((cx[i], cy[i]), 
-                                               rx[i], ry[i], facecolor = 'white', 
+                                               rx[i], ry[i], facecolor = 'white',
                                                edgecolor = 'black', linewidth = 0.1))
-                ax.add_patch(patches.Rectangle((cx[i], cy[i]), 
-                                               -rx[i], -ry[i], facecolor = 'white', 
+                ax.add_patch(patches.Rectangle((cx[i], cy[i]),
+                                               -rx[i], -ry[i], facecolor = 'white',
                                                edgecolor = 'black', linewidth = 0.1))
 
 rank   = np.loadtxt("rank.txt")

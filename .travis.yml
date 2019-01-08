@@ -22,4 +22,4 @@ script:
   - ./test_HODLR 1000 100 1 12
 
 after_success:
-  - coveralls
+  - coveralls -i src

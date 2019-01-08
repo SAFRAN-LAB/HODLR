@@ -126,7 +126,7 @@ int main(int argc, char* argv[])
     start  = omp_get_wtime();
     b_fast = T->matmatProduct(x);
     end    = omp_get_wtime();
-    
+
     cout << "Time for matrix-vector product:" << (end - start) << endl << endl;
     cout << "Exact method..." << endl;
 
@@ -146,6 +146,7 @@ int main(int argc, char* argv[])
     // Computing the relative error in the solution obtained:
     cout << "Error in the solution is:" << (b_fast-b_exact).norm() / (b_exact.norm()) << endl << endl;
 
+    cout << "Fast method..." << endl;
     start = omp_get_wtime();
     T->factorize();
     end   = omp_get_wtime();
@@ -218,7 +219,7 @@ int main(int argc, char* argv[])
     end = omp_get_wtime();
     cout << "Time to calculate log determinant using HODLR:" << (end-start) << endl;
     cout << "Calculated Log Determinant:" << log_det_hodlr << endl;
-    cout << "Relative Error in computation:" << fabs(1 - fabs(log_det_hodlr/log_det)) << endl;
+    cout << "Relative Error in computation:" << fabs(1 - fabs(log_det_hodlr/log_det)) << endl << endl;
 
     // If we want to explicitly build the symmetric factor matrix, then we can call this command
     if(is_sym == true && is_pd == true)

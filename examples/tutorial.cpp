@@ -102,7 +102,7 @@ int main(int argc, char* argv[])
     // Creating a pointer to the HODLR Tree structure:
     HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, K);
     // If we are assembling a symmetric matrix:
-    bool is_sym = true;
+    bool is_sym = false;
     // If we know that the matrix is also PD:
     // By setting the matrix to be symmetric-positive definite, 
     // we trigger the fast symmetric factorization method to be used
@@ -189,7 +189,7 @@ int main(int argc, char* argv[])
         log_det = 0.0;
         for(int i = 0; i < llt.matrixL().rows(); i++)
         {
-            log_det += log(llt.matrixL()(i,i));
+            log_det += log(fabs(llt.matrixL()(i,i)));
         }
         log_det *= 2;
         end = omp_get_wtime();
@@ -206,7 +206,7 @@ int main(int argc, char* argv[])
         log_det = 0.0;
         for(int i = 0; i < lu.matrixLU().rows(); i++)
         {
-            log_det += log(lu.matrixLU()(i,i));
+            log_det += log(fabs(lu.matrixLU()(i,i)));
         }
         end = omp_get_wtime();
         cout << "Time to calculate log determinant using LU:" << (end - start) << endl;

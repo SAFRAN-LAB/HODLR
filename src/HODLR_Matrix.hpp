@@ -82,7 +82,23 @@ public:
                       const std::set<int>& allowed_indices, 
                       dtype& max, int& index
                      );
-  
+
+    void avoidFalsePositivesRow(std::vector<int> &row_ind, 
+                                std::vector<Vec> &u, std::vector<Vec> &v, int computed_rank,
+                                std::set<int> &remaining_row_ind, std::set<int> &remaining_col_ind,
+                                int n_row_start, int n_col_start, int n_cols,
+                                double &max, int &pivot, double tolerance, int max_tries,
+                                bool useRandomization = false
+                               );
+
+    void avoidFalsePositivesCol(std::vector<int> &col_ind, 
+                                std::vector<Vec> &u, std::vector<Vec> &v, int computed_rank,
+                                std::set<int> &remaining_row_ind, std::set<int> &remaining_col_ind,
+                                int n_row_start, int n_col_start, int n_rows,
+                                double &max, int &pivot, double tolerance, int max_tries,
+                                bool useRandomization = false
+                               );
+
     void rookPiv(int n_row_start, int n_col_start, int n_rows, int n_cols, double tolerance, 
                  Mat& L,  Mat& R, int& computed_rank
                 );

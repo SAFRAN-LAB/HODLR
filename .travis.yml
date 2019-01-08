@@ -15,7 +15,11 @@ install:
 
 # Build steps
 script:
-  - cd test
-  - ../deps/cmake/bin/cmake . && make
+  - mkdir build
+  - cd build
+  - ../deps/cmake/bin/cmake .. -DCMAKE_BUILD_TYPE=COVERAGE -DINPUT_FILE=../test/test_HODLR.cpp -DOUTPUT_EXECUTABLE=test_HODLR
+  - make
   - ./test_HODLR 1000 100 1 12
+
+after_success:
   - coveralls

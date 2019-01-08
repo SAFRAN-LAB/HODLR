@@ -2,9 +2,15 @@ project (HODLRlib)
 cmake_minimum_required (VERSION 3.0)
 set (CMAKE_CXX_STANDARD 11)
 # Provide the input file that you want to solve for:
-set (INPUT_FILE "examples/tutorial.cpp")
+# This can be passed as a command line argument:
+if(NOT INPUT_FILE)
+    set (INPUT_FILE "examples/tutorial.cpp")
+endif()
 # Here set the name for the output executable:
-set (OUTPUT_EXECUTABLE "tutorial")
+# This can be passed as a command line argument:
+if(NOT OUTPUT_EXECUTABLE)
+    set (OUTPUT_EXECUTABLE "tutorial")
+endif()
 # Set this to: "float", "double", "complex32" and "complex64"
 set (DTYPE "double")
 # Change this accordingly to point to the Eigen root folder
@@ -47,6 +53,11 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
 else()
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${DTYPE_FLAG} ${MKL_FLAGS} -O3 -funroll-loops -ffast-math -ffinite-math-only -g -fopenmp -lpthread -ldl")
 endif ()
+
+# Flags for testing coverage information
+set(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS} --coverage")
+set(CMAKE_EXE_LINKER_FLAGS_COVERAGE "${CMAKE_EXE_LINKER_FLAGS} --coverage")
+set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "${CMAKE_SHARED_LINKER_FLAGS} --coverage")
 
 ################ ADDING OF THE NECESSARY HEADER FOLDERS ####################
 # Adding folders which contain necessary header files:

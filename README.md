@@ -6,7 +6,7 @@
 [![Build Status](https://travis-ci.org/sivaramambikasaran/HODLR.svg?branch=master)](https://travis-ci.org/sivaramambikasaran/HODLR)
 [![Documentation Status](https://readthedocs.org/projects/hodlr/badge/?version=latest)](https://hodlr.readthedocs.io/en/latest/?badge=latest)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/cd427ae7fd414c0cb2a0e1c7d201b2cb)](https://www.codacy.com/app/sivaramambikasaran/HODLR?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sivaramambikasaran/HODLR&amp;utm_campaign=Badge_Grade)
-[![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
+[![Coverage Status](https://coveralls.io/repos/github/sivaramambikasaran/HODLR/badge.svg?branch=master)](https://coveralls.io/github/sivaramambikasaran/HODLR?branch=master)[![License: MPL 2.0](https://img.shields.io/badge/License-MPL%202.0-brightgreen.svg)](https://opensource.org/licenses/MPL-2.0)
 [![Version 3.1415](https://img.shields.io/badge/version-3.1415-brightgreen.svg)](https://github.com/sivaramambikasaran/HODLR)
 [![arXiv](https://img.shields.io/badge/math.NA-arXiv%3A1405.0223-%23B31B1B.svg)](https://arxiv.org/abs/1405.0223)
 [![star this repo](http://githubbadges.com/star.svg?user=sivaramambikasaran&repo=HODLR&style=flat)](https://github.com/sivaramambikasaran/HODLR)

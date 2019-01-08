@@ -32,7 +32,7 @@ public:
         // Value on the diagonal:
         if(i == j)
         {
-            return 10;
+            return 100;
         }
         
         // Otherwise:
@@ -67,30 +67,22 @@ int main(int argc, char* argv[])
     Kernel* K         = new Kernel(N, dim);
     int n_levels      = log(N / M) / log(2);
 
-    // Variables used in timing:
-    double start, end;
-
-    // Creating a pointer to the HODLR Tree structure:
-    HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, K);
-    // If we are assembling a symmetric matrix:
-    bool is_sym = true;
-    // If we know that the matrix is also PD:
-    // By toggling this flag to true, the factorizations are performed using Cholesky
-    // Useful when you want the factorization as WW^T 
-    bool is_pd = false;
-    T->assembleTree(is_sym, is_pd);
-
     // Random Matrix to multiply with
     Mat x = (Mat::Random(N, 1)).real();
     // Stores the result after multiplication:
     Mat y_fast, b_fast;
+
+    // Testing fast factorization:
+    HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, K);
+    bool is_sym = false;
+    bool is_pd = false;
+    T->assembleTree(is_sym, is_pd);
+    T->printTreeDetails();
+    T->plotTree();
     
     b_fast      = T->matmatProduct(x);
-    // What we are doing here is explicitly generating 
-    // the matrix from its entries
     Mat B       = K->getMatrix(0, 0, N, N);
     Mat b_exact = B * x;
-    // Computing the relative error in the solution obtained:
     assert((b_fast-b_exact).norm() / (b_exact.norm()) < tolerance);
 
     T->factorize();
@@ -98,56 +90,61 @@ int main(int argc, char* argv[])
     x_fast = T->solve(b_exact);
     assert((x_fast - x).norm() / (x.norm()) < tolerance);
 
-    // Checking symmetric factor product:
-    if(is_sym == true && is_pd == true)
-    {
-        y_fast = T->symmetricFactorTransposeProduct(x);
-        b_fast = T->symmetricFactorProduct(y_fast);
-    
-        assert((b_fast - b_exact).norm() / (b_exact.norm()) < tolerance);
-    }
-
 
     dtype log_det;
-    // Computing log-determinant using Cholesky:
-    if(is_sym == true && is_pd == true)
+    Eigen::PartialPivLU<Mat> lu;
+    lu.compute(B);
+    log_det = 0.0;
+    for(int i = 0; i < lu.matrixLU().rows(); i++)
     {
-        Eigen::LLT<Mat> llt;
-        llt.compute(B);
-        log_det = 0.0;
-        for(int i = 0; i < llt.matrixL().rows(); i++)
-        {
-            log_det += log(llt.matrixL()(i,i));
-        }
-        log_det *= 2;
-    }
-
-    // Computing log-determinant using LU:
-    else
-    {
-        Eigen::PartialPivLU<Mat> lu;
-        lu.compute(B);
-        log_det = 0.0;
-        for(int i = 0; i < lu.matrixLU().rows(); i++)
-        {
-            log_det += log(lu.matrixLU()(i,i));
-        }
+        log_det += log(lu.matrixLU()(i,i));
     }
 
     dtype log_det_hodlr = T->logDeterminant();
     assert(fabs(1 - fabs(log_det_hodlr/log_det)) < tolerance);
+    delete T;
+
+    // Testing fast symmetric factorization:
+    T = new HODLR_Tree(n_levels, tolerance, K);
+    is_sym = true;
+    is_pd = true;
+    T->assembleTree(is_sym, is_pd);
+    T->printTreeDetails();
+    T->plotTree();
+
+    b_fast      = T->matmatProduct(x);
+    // Computing the relative error in the solution obtained:
+    assert((b_fast-b_exact).norm() / (b_exact.norm()) < tolerance);
+
+    T->factorize();
+    x_fast = T->solve(b_exact);
+    assert((x_fast - x).norm() / (x.norm()) < tolerance);
+
+    y_fast = T->symmetricFactorTransposeProduct(x);
+    b_fast = T->symmetricFactorProduct(y_fast);
+
+    assert((b_fast - b_exact).norm() / (b_exact.norm()) < tolerance);
+
+    Eigen::LLT<Mat> llt;
+    llt.compute(B);
+    log_det = 0.0;
+    for(int i = 0; i < llt.matrixL().rows(); i++)
+    {
+        log_det += log(llt.matrixL()(i,i));
+    }
+    log_det *= 2;
+
+    log_det_hodlr = T->logDeterminant();
+    assert(fabs(1 - fabs(log_det_hodlr/log_det)) < tolerance);
 
     // Getting the symmetric factor:
-    if(is_sym == true && is_pd == true)
-    {
-        Mat W  = T->getSymmetricFactor();
-        Mat Wt = W.transpose();
+    Mat W  = T->getSymmetricFactor();
+    Mat Wt = W.transpose();
 
-        assert((Wt.colPivHouseholderQr().solve(W.colPivHouseholderQr().solve(b_exact)) - x).cwiseAbs().maxCoeff() < tolerance);
-    }
+    assert((Wt.colPivHouseholderQr().solve(W.colPivHouseholderQr().solve(b_exact)) - x).cwiseAbs().maxCoeff() < tolerance);
 
-    delete K;
     delete T;
+    delete K;
 
     return 0;
 }

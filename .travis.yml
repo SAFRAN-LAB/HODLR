@@ -1,6 +1,7 @@
 sudo: required
 before_install:
   - sudo apt-get install build-essential
+  - pip install --user pyyaml cpp-coveralls
   
 # Enable C++ support
 language: cpp
@@ -14,7 +15,7 @@ install:
 
 # Build steps
 script:
-  - mkdir build
-  - cd build
-  - ../deps/cmake/bin/cmake .. && make
+  - cd test
+  - ../deps/cmake/bin/cmake . && make
   - ./test_HODLR 1000 100 1 12
+  - coveralls

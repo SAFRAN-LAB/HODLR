@@ -96,21 +96,32 @@ int main(int argc, char* argv[])
     // Variables used in timing:
     double start, end;
 
-    cout << "Fast method..." << endl;
-    
+    // Storing Time Taken:
+    double hodlr_time, exact_time;
+    cout << "========================= Assembly Time =========================" << endl;
     start = omp_get_wtime();
     // Creating a pointer to the HODLR Tree structure:
     HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, K);
     // If we are assembling a symmetric matrix:
-    bool is_sym = false;
+    bool is_sym = true;
     // If we know that the matrix is also PD:
     // By setting the matrix to be symmetric-positive definite, 
     // we trigger the fast symmetric factorization method to be used
     // In all other cases the fast factorization method is used
-    bool is_pd = false;
+    bool is_pd = true;
     T->assembleTree(is_sym, is_pd);
     end = omp_get_wtime();
-    cout << "Time for assembly in HODLR form:" << (end - start) << endl;
+    hodlr_time = (end - start);
+    cout << "Time for assembly in HODLR form    :" << hodlr_time << endl;
+
+    // What we are doing here is explicitly generating 
+    // the matrix from its entries
+    start = omp_get_wtime();
+    Mat B = K->getMatrix(0, 0, N, N);
+    end   = omp_get_wtime();
+    exact_time = (end - start);
+    cout << "Time for direct matrix generation  :" << exact_time << endl;
+    cout << "Magnitude of Speed-Up              :" << (exact_time / hodlr_time) << endl << endl;
 
     // These are mainly used in development and debugging:
     // Used to visualize the rank structure of the considered kernel:
@@ -122,48 +133,127 @@ int main(int argc, char* argv[])
     Mat x = (Mat::Random(N, 1)).real();
     // Stores the result after multiplication:
     Mat y_fast, b_fast;
-    
+
+    cout << "========================= Matrix-Vector Multiplication =========================" << endl;
     start  = omp_get_wtime();
     b_fast = T->matmatProduct(x);
     end    = omp_get_wtime();
-
-    cout << "Time for matrix-vector product:" << (end - start) << endl << endl;
-    cout << "Exact method..." << endl;
-
-    // What we are doing here is explicitly generating 
-    // the matrix from its entries
-    start = omp_get_wtime();
-    Mat B = K->getMatrix(0, 0, N, N);
-    end   = omp_get_wtime();
-    
-    cout << "Time for matrix generation:" << (end-start) << endl;
+    hodlr_time = (end - start);
+    cout << "Time for MatVec in HODLR form      :" << hodlr_time << endl;
 
     start = omp_get_wtime();
     Mat b_exact = B * x;
     end   = omp_get_wtime();
-    
-    cout << "Time for matrix-vector product:" << (end-start) << endl;
+    exact_time = (end - start);
+    cout << "Time for direct MatVec             :" << exact_time << endl;
+    cout << "Magnitude of Speed-Up              :" << (exact_time / hodlr_time) << endl;
     // Computing the relative error in the solution obtained:
-    cout << "Error in the solution is:" << (b_fast-b_exact).norm() / (b_exact.norm()) << endl << endl;
+    cout << "Error in the solution is           :" << (b_fast-b_exact).norm() / (b_exact.norm()) << endl << endl;
 
-    cout << "Fast method..." << endl;
+    cout << "========================= Factorization =========================" << endl;
     start = omp_get_wtime();
     T->factorize();
     end   = omp_get_wtime();
-    cout << "Time to factorize:" << (end-start) << endl;
+    hodlr_time = (end - start);
+    cout << "Time to factorize HODLR form       :" << hodlr_time << endl;
 
+    Eigen::LLT<Mat> llt;
+    Eigen::PartialPivLU<Mat> lu;
+    
+    // Factorizing using Cholesky:
+    if(is_sym == true && is_pd == true)
+    {
+        start = omp_get_wtime();
+        llt.compute(B);
+        end = omp_get_wtime();
+        exact_time = (end - start);
+        cout << "Time for Cholesky Factorization    :" << exact_time << endl;
+    }
+
+    // Factorizing using LU:
+    else
+    {
+        start = omp_get_wtime();
+        lu.compute(B);
+        end = omp_get_wtime();
+        exact_time = (end - start);
+        cout << "Time for LU Factorization          :" << exact_time << endl;
+    }
+
+    cout << "Magnitude of Speed-Up              :" << (exact_time / hodlr_time) << endl << endl;
+
+    cout << "========================= Solving =========================" << endl;
     Mat x_fast;
     start  = omp_get_wtime();
     x_fast = T->solve(b_exact);
     end    = omp_get_wtime();
+    hodlr_time = (end - start);
+    cout << "Time to solve HODLR form           :" << hodlr_time << endl;
 
-    cout << "Time to solve:" << (end-start) << endl;
+    // This is intentionally declared to be different from x:
+    Mat x_exact;
+    if(is_sym == true && is_pd == true)
+    {
+        start   = omp_get_wtime();
+        x_exact = llt.solve(b_exact);
+        end     = omp_get_wtime();
+    }
+
+    else
+    {
+        start   = omp_get_wtime();
+        x_exact = lu.solve(b_exact);
+        end     = omp_get_wtime();
+    }
+
+    exact_time = (end - start);
+    cout << "Time taken to solve exactly        :" << exact_time << endl;
+    cout << "Magnitude of Speed-Up              :" << (exact_time / hodlr_time) << endl;
     // Computing the relative error:
-    cout << "Error in the solution:" << (x_fast - x).norm() / (x.norm()) << endl << endl;
+    cout << "Forward Error(HODLR)               :" << (x_fast - x).norm() / (x.norm()) << endl;
+    cout << "Forward Error(Exact)               :" << (x_exact - x).norm() / (x.norm()) << endl;
+    cout << "Backward Error(HODLR)              :" << (T->matmatProduct(x_fast) - b_exact).norm() / b_exact.norm() << endl;
+    cout << "Backward Error(Exact)              :" << (B * x_exact - b_exact).norm() / b_exact.norm() << endl << endl;
 
+    cout << "========================= Determinant Computation =========================" << endl;
+    // Gets the log(determinant) of the matrix abstracted through Kernel:
+    start = omp_get_wtime();
+    dtype log_det_hodlr = T->logDeterminant();
+    end = omp_get_wtime();
+    cout << "Time taken for HODLR form          :" << (end-start) << endl;
+    cout << "Calculated Log Determinant(HODLR)  :" << log_det_hodlr << endl;
+
+    dtype log_det;
+    // Computing log-determinant using Cholesky:
+    if(is_sym == true && is_pd == true)
+    {
+        log_det = 0.0;
+        for(int i = 0; i < llt.matrixL().rows(); i++)
+        {
+            log_det += log(fabs(llt.matrixL()(i,i)));
+        }
+        log_det *= 2;
+        cout << "Calculated Log Determinant(Exact)  :" << log_det << endl;
+    }
+
+    // Computing log-determinant using LU:
+    else
+    {
+        log_det = 0.0;
+        for(int i = 0; i < lu.matrixLU().rows(); i++)
+        {
+            log_det += log(fabs(lu.matrixLU()(i,i)));
+        }
+        cout << "Calculated Log Determinant(Exact)  :" << log_det << endl;
+    }
+
+    cout << "Relative Error in computation      :" << fabs(1 - fabs(log_det_hodlr/log_det)) << endl << endl;
+
+    // These routines are specific to the fast symmetric factorization routine:
     // Checking symmetric factor product:
     if(is_sym == true && is_pd == true)
     {
+        cout << "========================= Multiplication With Symmetric Factor =========================" << endl;
         // We set y = W^T x
         start  = omp_get_wtime();
         y_fast = T->symmetricFactorTransposeProduct(x);
@@ -174,52 +264,10 @@ int main(int argc, char* argv[])
         start  = omp_get_wtime();
         b_fast = T->symmetricFactorProduct(y_fast);
         end    = omp_get_wtime();
-        cout << "Time to calculate product of factor with given vector:" << (end - start) << endl;
-        
-        cout << "Error in the solution is:" << (b_fast - b_exact).norm() / (b_exact.norm()) << endl << endl;
-    }
+        cout << "Time to calculate product of factor with given vector          :" << (end - start) << endl;
 
-    dtype log_det;
-    // Computing log-determinant using Cholesky:
-    if(is_sym == true && is_pd == true)
-    {
-        Eigen::LLT<Mat> llt;
-        start = omp_get_wtime();
-        llt.compute(B);
-        log_det = 0.0;
-        for(int i = 0; i < llt.matrixL().rows(); i++)
-        {
-            log_det += log(fabs(llt.matrixL()(i,i)));
-        }
-        log_det *= 2;
-        end = omp_get_wtime();
-        cout << "Time to calculate log determinant using Cholesky:" << (end - start) << endl;
-        cout << "Calculated Log Determinant:" << log_det << endl;
+        cout << "Error in the solution is                                       :" << (b_fast - b_exact).norm() / (b_exact.norm()) << endl << endl;
     }
-
-    // Computing log-determinant using LU:
-    else
-    {
-        Eigen::PartialPivLU<Mat> lu;
-        start = omp_get_wtime();
-        lu.compute(B);
-        log_det = 0.0;
-        for(int i = 0; i < lu.matrixLU().rows(); i++)
-        {
-            log_det += log(fabs(lu.matrixLU()(i,i)));
-        }
-        end = omp_get_wtime();
-        cout << "Time to calculate log determinant using LU:" << (end - start) << endl;
-        cout << "Calculated Log Determinant:" << log_det << endl;
-    }
-
-    // Gets the log(determinant) of the matrix abstracted through Kernel:
-    start = omp_get_wtime();
-    dtype log_det_hodlr = T->logDeterminant();
-    end = omp_get_wtime();
-    cout << "Time to calculate log determinant using HODLR:" << (end-start) << endl;
-    cout << "Calculated Log Determinant:" << log_det_hodlr << endl;
-    cout << "Relative Error in computation:" << fabs(1 - fabs(log_det_hodlr/log_det)) << endl << endl;
 
     // If we want to explicitly build the symmetric factor matrix, then we can call this command
     if(is_sym == true && is_pd == true)

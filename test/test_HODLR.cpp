@@ -73,7 +73,8 @@ public:
     ~Random_Matrix() {};
 };
 
-int main(int argc, char* argv[]) 
+template<class kernel>
+void testHODLR(int N, int n_levels, double tolerance, kernel K)
 {
     // We are considering a matrix of size 1000 X 1000:
     int N             = 1000;

@@ -16,10 +16,10 @@ install:
 script:
   - mkdir build
   - cd build
-  - ../deps/cmake/bin/cmake ..
+  - ../deps/cmake/bin/cmake .. -DCMAKE_BUILD_TYPE=COVERAGE -DINPUT_FILE=../test/test_HODLR.cpp -DOUTPUT_EXECUTABLE=test_HODLR
   - make
-  - ./tutorial 1000 100 1 12
+  - ./test_HODLR
   - cd ${TRAVIS_BUILD_DIR}
 
-# after_success:
-#   - coveralls -i src
+after_success:
+  - coveralls -i src

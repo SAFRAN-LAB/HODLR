@@ -8,7 +8,7 @@ language: cpp
 
 # Compiler selection
 compiler:
-  - g++-8
+  - g++-7
   
 install:
   - source install.sh

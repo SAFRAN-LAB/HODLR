@@ -65,7 +65,7 @@ public:
         this->N = N;
     }
 
-    // Returns individual matrix 
+    // Returns individual entries of the matrix:
     virtual dtype getMatrixEntry(int j, int k) 
     {
         // FROM EXPERIENCE: Incase the user makes a mistake in 

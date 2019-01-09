@@ -103,12 +103,12 @@ int main(int argc, char* argv[])
     // Creating a pointer to the HODLR Tree structure:
     HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, K);
     // If we are assembling a symmetric matrix:
-    bool is_sym = true;
+    bool is_sym = false;
     // If we know that the matrix is also PD:
     // By setting the matrix to be symmetric-positive definite, 
     // we trigger the fast symmetric factorization method to be used
     // In all other cases the fast factorization method is used
-    bool is_pd = true;
+    bool is_pd = false;
     T->assembleTree(is_sym, is_pd);
     end = omp_get_wtime();
     hodlr_time = (end - start);
@@ -275,8 +275,8 @@ int main(int argc, char* argv[])
         Mat W = T->getSymmetricFactor();
     }
 
-    delete K;
     delete T;
+    delete K;
 
     return 0;
 }

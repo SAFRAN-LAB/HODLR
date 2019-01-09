@@ -1,21 +1,19 @@
 sudo: required
 before_install:
   - sudo apt-get install build-essential
-  - sudo apt-get install g++-7
   - pip install --user pyyaml cpp-coveralls
   
 # Enable C++ support
 language: cpp
 # Compiler selection
 compiler:
-  - g++-7
+  - g++
   
 install:
   - source install.sh
 
 # Build steps
 script:
-  - export CXX=g++-7
   - mkdir build
   - cd build
   - ../deps/cmake/bin/cmake .. -DCMAKE_BUILD_TYPE=COVERAGE -DINPUT_FILE=../test/test_HODLR.cpp -DOUTPUT_EXECUTABLE=test_HODLR

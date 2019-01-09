@@ -1,11 +1,11 @@
 sudo: required
 before_install:
   - sudo apt-get install build-essential
+  - sudo apt-get install g++-8
   - pip install --user pyyaml cpp-coveralls
   
 # Enable C++ support
 language: cpp
-
 # Compiler selection
 compiler:
   - g++-7

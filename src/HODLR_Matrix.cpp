@@ -63,178 +63,6 @@ void HODLR_Matrix::maxAbsVector(const Vec& v,
     }
 }
 
-void HODLR_Matrix::avoidFalsePositivesRow(std::vector<int> &row_ind, 
-                                          std::vector<Vec> &u, std::vector<Vec> &v, int computed_rank,
-                                          std::set<int> &remaining_row_ind, std::set<int> &remaining_col_ind,
-                                          int n_row_start, int n_col_start, int n_cols,
-                                          double &max, int &pivot, double tolerance, int max_tries,
-                                          bool useRandomization
-                                         )
-{
-    // Alternating upon each call:
-    bool eval_at_end = false;
-    int count = 0;
-
-    while (fabs(max) < tolerance && 
-           count < max_tries   && 
-           remaining_row_ind.size() > 0 &&
-           remaining_col_ind.size() > 0
-          ) 
-    {
-        row_ind.pop_back();
-        int new_row_ind;
-        Vec row;
-
-        // When rank < 3, we will just choose entries from the ends of the matrix:
-        if(row_ind.size() < 3)
-        {
-            if(eval_at_end)
-            {
-                new_row_ind = *remaining_row_ind.end();
-            }
-
-            else
-            {
-                new_row_ind = *remaining_row_ind.begin();
-            }
-
-            eval_at_end = !eval_at_end;
-        }
-
-        // However, when we have rank >=3, we will choose the entries such that
-        // the newly picked entry is at the mid-point of the already chosen ones:
-        else
-        {
-            if(useRandomization == true)
-            {
-                std::set<int>::const_iterator it(remaining_row_ind.begin());
-                std::advance(it, rand() % remaining_row_ind.size());
-                new_row_ind = *it;
-            }
-
-            else
-            {
-                std::vector<int> row_ind_sort(row_ind);
-                std::sort(row_ind_sort.begin(), row_ind_sort.end());
-                std::vector<int> row_ind_diff(row_ind_sort.size() - 1);
-
-                int max = 0;
-                int idx = 0;
-
-                for(int i = 0; i < row_ind_sort.size() - 1; i++)
-                {
-                    row_ind_diff[i] = row_ind_sort[i+1] - row_ind_sort[i];
-                    if(row_ind_diff[i] > max)
-                    {
-                        idx = i;
-                        max = row_ind_diff[i];
-                    }
-                }
-
-                new_row_ind = row_ind_sort[idx] + max / 2;
-            }    
-        }
-
-        row_ind.push_back(new_row_ind);
-        remaining_row_ind.erase(new_row_ind);
-        // Generation of the row
-        // Row of the residuum and the pivot column
-        row = this->getRow(n_row_start + new_row_ind, n_col_start, n_cols);
-        for(int i = 0; i < computed_rank; i++) 
-        {
-            row = row - u[i](row_ind.back()) * v[i];
-        }
-
-        this->maxAbsVector(row, remaining_col_ind, max, pivot);
-        count++;
-    }
-}
-
-void HODLR_Matrix::avoidFalsePositivesCol(std::vector<int> &col_ind, 
-                                          std::vector<Vec> &u, std::vector<Vec> &v, int computed_rank,
-                                          std::set<int> &remaining_row_ind, std::set<int> &remaining_col_ind,
-                                          int n_row_start, int n_col_start, int n_rows,
-                                          double &max, int &pivot, double tolerance, int max_tries,
-                                          bool useRandomization
-                                         )
-{
-    // Alternating upon each call:
-    bool eval_at_end = false;
-    int count = 0;
-
-    while (fabs(max)<tolerance && 
-           count < max_tries && 
-           remaining_col_ind.size() > 0 && 
-           remaining_row_ind.size() > 0
-          ) 
-    {
-        col_ind.pop_back();
-        int new_col_ind;
-        Vec col;
-
-        if(col_ind.size() < 3)
-        {
-            if(eval_at_end)
-            {
-                new_col_ind = *remaining_col_ind.end();
-            }
-
-            else
-            {
-                new_col_ind = *remaining_col_ind.begin();
-            }
-
-            eval_at_end = !eval_at_end;
-        }
-
-        else
-        {
-            if(useRandomization == true)
-            {
-                std::set<int>::const_iterator it(remaining_col_ind.begin());
-                std::advance(it, rand() % remaining_col_ind.size());
-                new_col_ind = *it;
-            }
-
-            else
-            {
-                std::vector<int> col_ind_sort(col_ind);
-                std::sort(col_ind_sort.begin(), col_ind_sort.end());
-                std::vector<int> col_ind_diff(col_ind_sort.size() - 1);
-
-                int max = 0;
-                int idx = 0;
-
-                for(int i = 0; i < col_ind_sort.size() - 1; i++)
-                {
-                    col_ind_diff[i] = col_ind_sort[i+1] - col_ind_sort[i];
-                    if(col_ind_diff[i] > max)
-                    {
-                        idx = i;
-                        max = col_ind_diff[i];
-                    }
-                }
-
-                new_col_ind = col_ind_sort[idx] + max / 2;
-            }
-        }
-
-        col_ind.push_back(new_col_ind);
-        remaining_col_ind.erase(new_col_ind);
-
-        // Generation of the column
-        // Column of the residuum and the pivot row:
-        col = this->getCol(n_col_start + new_col_ind, n_row_start, n_rows);
-        for(int i = 0; i < computed_rank; i++) 
-        {
-            col = col - v[i](col_ind.back()) * u[i];
-        }
-
-        this->maxAbsVector(col, remaining_row_ind, max, pivot);
-        count++;
-    }
-}
-
 void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start, 
                            int n_rows, int n_cols, double tolerance, 
                            Mat& L, Mat& R, int& computed_rank
@@ -279,8 +107,9 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
     dtype_base row_squared_norm, row_norm, col_squared_norm, col_norm;
 
     // So these would be particularly useful for poorly conditioned matrices:
-    int max_tries = 5;
-    bool toggleRandomization = false;
+    int max_tries = 10;
+    int count;
+
     // Repeat till the desired tolerance is obtained
     do 
     {
@@ -295,21 +124,104 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
         }
 
         this->maxAbsVector(row, remaining_col_ind, max, pivot);
-        // A certain scenario may arise in the middle of the algorithm where the 
-        // row happens to be exactly the linear combination of the previous rows
-        // upto some tolerance. This routine reduces the chances of such a scenario
-        // i.e. prevents from ACA throwing false positives
-        avoidFalsePositivesRow(row_ind, u, v, computed_rank,
-                               remaining_row_ind, remaining_col_ind,
-                               n_row_start, n_col_start, n_cols,
-                               max, pivot, tolerance, max_tries, toggleRandomization
-                              );
+        count = 0;
 
-        // If there are no more rows we can use:
-        if (remaining_row_ind.size() == 0)
+        // This randomization is needed if in the middle of the algorithm the 
+        // row happens to be exactly the linear combination of the previous rows 
+        // upto some tolerance. i.e. prevents from ACA throwing false positives
+        
+        // Alternating upon each call:
+        bool eval_at_end = false;
+        // Toggling randomness
+        bool use_randomization = false;
+        while (fabs(max) < tolerance && 
+               count < max_tries   && 
+               remaining_col_ind.size() > 0 && 
+               remaining_row_ind.size() > 0
+              ) 
+        {
+            row_ind.pop_back();
+            int new_row_ind;
+
+            // When rank < 3, we will just choose entries from the ends of the matrix:
+            if(row_ind.size() < 3)
+            {
+                if(eval_at_end)
+                {
+                    new_row_ind = *remaining_row_ind.end();
+                }
+
+                else
+                {
+                    new_row_ind = *remaining_row_ind.begin();
+                }
+    
+                eval_at_end = !eval_at_end;
+            }
+
+            // However, when we have rank >=3, we will choose the entries such that
+            // the newly picked entry is at the mid-point of the already chosen ones:
+            else
+            {
+                if(use_randomization == true)
+                {
+                    std::set<int>::const_iterator it(remaining_row_ind.begin());
+                    std::advance(it, rand() % remaining_row_ind.size());
+                    new_row_ind = *it;
+                }
+
+                else
+                {
+                    std::vector<int> row_ind_sort(row_ind);
+                    std::sort(row_ind_sort.begin(), row_ind_sort.end());
+                    std::vector<int> row_ind_diff(row_ind_sort.size() - 1);
+
+                    int max = 0;
+                    int idx = 0;
+
+                    for(int i = 0; i < row_ind_sort.size() - 1; i++)
+                    {
+                        row_ind_diff[i] = row_ind_sort[i+1] - row_ind_sort[i];
+                        if(row_ind_diff[i] > max)
+                        {
+                            idx = i;
+                            max = row_ind_diff[i];
+                        }
+                    }
+
+                    new_row_ind = row_ind_sort[idx] + max / 2;
+                }
+
+                use_randomization = !(use_randomization);
+            }
+
+            row_ind.push_back(new_row_ind);
+            remaining_row_ind.erase(new_row_ind);
+            // Generation of the row
+            // Row of the residuum and the pivot column
+            row = this->getRow(n_row_start + new_row_ind, n_col_start, n_cols);
+            for(int i = 0; i < computed_rank; i++) 
+            {
+                row = row - u[i](row_ind.back()) * v[i];
+            }
+
+            this->maxAbsVector(row, remaining_col_ind, max, pivot);
+            count++;
+        }
+
+        // In case it failed to resolve in the previous step, 
+        // we break out of the dowhile loop:
+        if (count == max_tries || 
+            remaining_col_ind.size() == 0 || 
+            remaining_row_ind.size() == 0
+           )
         {
             break;
         } 
+
+        // Now we will move onto doing this process for the column bases
+        // Resetting the count back to zero:
+        count = 0;
 
         col_ind.push_back(pivot);
         remaining_col_ind.erase(pivot);
@@ -328,20 +240,90 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
 
         this->maxAbsVector(col, remaining_row_ind, unused_max, pivot);
 
-        // Repeating the same strategy to guard against ACA false positives 
-        // we carried out for the rows, but now for the columns:
-        avoidFalsePositivesCol(col_ind, u, v, computed_rank,
-                               remaining_row_ind, remaining_col_ind,
-                               n_row_start, n_col_start, n_rows,
-                               unused_max, pivot, tolerance, max_tries, toggleRandomization
-                              );
+        // Repeating the same randomization we carried out for the rows, now for the columns:
+        while (fabs(max)<tolerance && 
+               count < max_tries && 
+               remaining_col_ind.size() >0 && 
+               remaining_row_ind.size() >0
+              ) 
+        {
+            col_ind.pop_back();
+
+            int new_col_ind;
+
+            if(col_ind.size() < 3)
+            {
+                if(eval_at_end)
+                {
+                    new_col_ind = *remaining_col_ind.end();
+                }
+
+                else
+                {
+                    new_col_ind = *remaining_col_ind.begin();
+                }
+    
+                eval_at_end = !eval_at_end;
+            }
+
+            else
+            {                
+                if(use_randomization == true)
+                {
+                    std::set<int>::const_iterator it(remaining_col_ind.begin());
+                    std::advance(it, rand() % remaining_col_ind.size());
+                    new_col_ind = *it;
+                }
+
+                else
+                {
+                    std::vector<int> col_ind_sort(col_ind);
+                    std::sort(col_ind_sort.begin(), col_ind_sort.end());
+                    std::vector<int> col_ind_diff(col_ind_sort.size() - 1);
+
+                    int max = 0;
+                    int idx = 0;
+
+                    for(int i = 0; i < col_ind_sort.size() - 1; i++)
+                    {
+                        col_ind_diff[i] = col_ind_sort[i+1] - col_ind_sort[i];
+                        if(col_ind_diff[i] > max)
+                        {
+                            idx = i;
+                            max = col_ind_diff[i];
+                        }
+                    }
+
+                    new_col_ind = col_ind_sort[idx] + max / 2;
+                }
+
+                use_randomization = !(use_randomization);
+            }
+
+            col_ind.push_back(new_col_ind);
+            remaining_col_ind.erase(new_col_ind);
+
+            // Generation of the column
+            // Column of the residuum and the pivot row:
+            col = this->getCol(n_col_start + new_col_ind, n_row_start, n_rows);
+            for(int i = 0; i < computed_rank; i++) 
+            {
+                col = col - v[i](col_ind.back()) * u[i];
+            }
+
+            this->maxAbsVector(col, remaining_row_ind, unused_max, pivot);
+            count++;
+        }
 
         // In case it failed to resolve in the previous step, 
         // we break out of the dowhile loop:
-        if (remaining_col_ind.size() == 0)
+        if (count == max_tries || 
+            remaining_col_ind.size() == 0 || 
+            remaining_row_ind.size() == 0
+           )
         {
             break;
-        }
+        } 
 
         row_ind.push_back(pivot);
         remaining_row_ind.erase(pivot);
@@ -367,7 +349,6 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
         }
         
         computed_rank++;
-        toggleRandomization = !(toggleRandomization);
     } 
     while(computed_rank * (n_rows + n_cols) * row_norm * col_norm > 
           fabs(max) * tolerance * matrix_norm && 

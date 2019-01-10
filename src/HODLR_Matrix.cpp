@@ -219,6 +219,9 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
             break;
         } 
 
+        // Resetting count back to zero for columns:
+        count = 0;
+        
         col_ind.push_back(pivot);
         remaining_col_ind.erase(pivot);
         // Normalizing constant

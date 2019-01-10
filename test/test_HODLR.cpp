@@ -177,6 +177,11 @@ int main(int argc, char* argv[])
     double tolerance   = pow(10, -12);
     // Number of levels in the tree:
     int n_levels       = log(N / M) / log(2);
+
+    // Dummy check to ensure that zeros are returned when HODLR_Matrix is directly used:
+    HODLR_Matrix* K_dummy = new HODLR_Matrix(N);
+    assert(K_dummy->getMatrixEntry(rand() % N, rand() % N) == 0);
+    delete K_dummy;
     
     Kernel_Gaussian* K = new Kernel_Gaussian(N, dim);
     testHODLR(N, n_levels, tolerance, K);

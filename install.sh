@@ -11,18 +11,34 @@
 export HODLR_PATH=$PWD
 # Initializing a dependencies folder:
 export DEPS_DIR=$HODLR_PATH/deps
-mkdir ${DEPS_DIR} 
+if [ ! -d "${DEPS_DIR}" ]; then
+    mkdir ${DEPS_DIR}
+fi
 cd ${DEPS_DIR} 
 
 # Getting CMake:
-CMAKE_URL="http://www.cmake.org/files/v3.3/cmake-3.3.2-Linux-x86_64.tar.gz"
-mkdir cmake && wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
-export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+if [ ! -d "cmake/" ]; then
+    CMAKE_URL="http://www.cmake.org/files/v3.3/cmake-3.3.2-Linux-x86_64.tar.gz"
+    mkdir cmake && wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
+    export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+fi
 
 # Getting Eigen:
-wget http://bitbucket.org/eigen/eigen/get/3.3.7.tar.bz2
-tar xjf 3.3.7.tar.bz2
-mv eigen-eigen-323c052e1731 eigen
-export EIGEN_PATH=$PWD/eigen/
+if [ ! -d "eigen/" ]; then
+    wget http://bitbucket.org/eigen/eigen/get/3.3.7.tar.bz2
+    tar xjf 3.3.7.tar.bz2
+    mv eigen-eigen-323c052e1731 eigen
+    export EIGEN_PATH=$PWD/eigen/
+fi
+
 # Returning the the home folder:
 cd ..
+
+echo "Writing the necessary enviroment variables to .bashrc"
+echo "# Added by HODLRlib:" >> ~/.bashrc
+to_add="export HODLR_PATH=$HODLR_PATH"
+echo $to_add >> ~/.bashrc
+to_add="export PATH=$PATH:${DEPS_DIR}/cmake/bin/"
+echo $to_add >> ~/.bashrc
+to_add="export EIGEN_PATH=$EIGEN_PATH"
+echo $to_add >> ~/.bashrc

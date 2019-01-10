@@ -90,7 +90,7 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
         remaining_col_ind.insert(k);
     }
 
-    dtype max, gamma, unused_max;
+    dtype max, gamma;
 
     // Initialize the matrix norm and the the first row index
     dtype_base matrix_norm = 0;
@@ -232,7 +232,82 @@ void HODLR_Matrix::rookPiv(int n_row_start, int n_col_start,
             col = col - v[i](col_ind.back()) * u[i];
         }
 
-        this->maxAbsVector(col, remaining_row_ind, unused_max, pivot);
+        this->maxAbsVector(col, remaining_row_ind, max, pivot);
+        // Repeating the same randomization we carried out for the rows, now for the columns:
+        while (fabs(max)<tolerance && 
+               count < max_tries && 
+               remaining_col_ind.size() >0 && 
+               remaining_row_ind.size() >0
+              ) 
+        {
+            col_ind.pop_back();
+
+            int new_col_ind;
+
+            if(col_ind.size() < 3)
+            {
+                if(eval_at_end)
+                {
+                    new_col_ind = *remaining_col_ind.end();
+                }
+
+                else
+                {
+                    new_col_ind = *remaining_col_ind.begin();
+                }
+    
+                eval_at_end = !eval_at_end;
+            }
+
+            else
+            {                
+                if(use_randomization == true)
+                {
+                    std::set<int>::const_iterator it(remaining_col_ind.begin());
+                    std::advance(it, rand() % remaining_col_ind.size());
+                    new_col_ind = *it;
+                }
+
+                else
+                {
+                    std::vector<int> col_ind_sort(col_ind);
+                    std::sort(col_ind_sort.begin(), col_ind_sort.end());
+                    std::vector<int> col_ind_diff(col_ind_sort.size() - 1);
+
+                    int max = 0;
+                    int idx = 0;
+
+                    for(int i = 0; i < col_ind_sort.size() - 1; i++)
+                    {
+                        col_ind_diff[i] = col_ind_sort[i+1] - col_ind_sort[i];
+                        if(col_ind_diff[i] > max)
+                        {
+                            idx = i;
+                            max = col_ind_diff[i];
+                        }
+                    }
+
+                    new_col_ind = col_ind_sort[idx] + max / 2;
+                }
+
+                use_randomization = !(use_randomization);
+            }
+
+            col_ind.push_back(new_col_ind);
+            remaining_col_ind.erase(new_col_ind);
+
+            // Generation of the column
+            // Column of the residuum and the pivot row:
+            col = this->getCol(n_col_start + new_col_ind, n_row_start, n_rows);
+            for(int i = 0; i < computed_rank; i++) 
+            {
+                col = col - v[i](col_ind.back()) * u[i];
+            }
+
+            this->maxAbsVector(col, remaining_row_ind, max, pivot);
+            count++;
+        }
+
         row_ind.push_back(pivot);
         remaining_row_ind.erase(pivot);
 

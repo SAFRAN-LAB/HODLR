@@ -36,9 +36,9 @@ Our code makes use of shared-memory parallelism through OpenMP. The solver is fa
 The current release has the following capabilities:
 
 - MatVecs: Obtains $A x$ at a cost of $\mathcal{O}\left(N\log{N}\right)$
-- Factorization: Factors the matrix $A$ into the desired form at a cost of $\mathcal{O}\left(N\log\left(N\right)\right)$
+- Factorization: Factors the matrix $A$ into the desired form at a cost of $\mathcal{O}\left(N\log^2\left(N\right)\right)$
 - Cholesky-like Symmetric Factorization: Obtains $A = W W^T$ at a cost of $\mathcal{O}\left(N\log^2\left(N\right)\right)$
-- Solve: Solves linear systems $A x = b$ in $\mathcal{O}\left(N\log\left(N\right)\right)$
+- Solve: Solves linear systems $A x = b$ at an additional cost of $\mathcal{O}\left(N\log\left(N\right)\right)$
 - Determinant Computation: Additional Cost of $\mathcal{O}\left(N\log{N} \right)$
 
 ``HODLRlib`` is released under the MPL2 license, and the source code is available at <https://github.com/sivaramambikasaran/HODLR>

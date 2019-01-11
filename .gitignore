@@ -61,6 +61,10 @@ Thumbs.db
 ###################
 build/
 
+# dependency directory #
+########################
+deps/
+
 # Python Generated, IDE Files #
 ###############################
 __pycache__/

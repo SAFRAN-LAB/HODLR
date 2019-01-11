@@ -12,7 +12,7 @@ Downloading the Source
 Dependencies
 -------------
 
-- Eigen Linear Algebra Library(get it `here <https://bitbucket.org/eigen/eigen/>`_)
+- Eigen Linear Algebra Library (get it `here <https://bitbucket.org/eigen/eigen/>`_)
 - (optional) An OpenMP enabled compiler (e.g. gcc4.2 or above) is required to use shared-memory parallelism.
 - (optional) MKL libraries(:math:`\texttt{HODLRlib}` has improved performance when compiled against MKL)
 

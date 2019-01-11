@@ -34,7 +34,7 @@ The easiest way to get running is to install the needed dependencies by running 
 
     user@computer HODLR$ source install.sh
 
-The above command should create a folder ``deps/`` in the current directory with the needed dependencies. Additionally, the script should set the environment variables that would be needed during the build and execution stages. This only needs to be done once since the environment variables are automatically written to ``.bashrc``.
+The above command should create a folder ``deps/`` in the current directory with the needed dependencies. Additionally, the script should set the environment variables that would be needed during the build and execution stages. This only needs to be done once since the environment variables are automatically written to ``.bash_profile``.
 
 Manually Installing
 ^^^^^^^^^^^^^^^^^^^

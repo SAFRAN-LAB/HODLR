@@ -36,4 +36,4 @@ Other Links
 Learn more about :math:`\texttt{HODLRlib}` by visiting the
 
 * Code Repository: http://github.com/sivaramambikasaran/HODLR
-* Documentation: http://hodlr.rtfd.io
+* Documentation: http://hodlrlib.rtfd.io

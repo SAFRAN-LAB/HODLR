@@ -1,5 +1,5 @@
 ---
-title: 'HODLRlib: An Library for HODLR Matrices'
+title: 'HODLRlib: A Library for Hierarchical Matrices'
 tags:
   - Hierachical Matrix
   - Fast Algorithms
@@ -19,7 +19,7 @@ affiliations:
     index: 1
   - name: Department of Computational & Data Sciences, Indian Institute of Science
     index: 2
-date: 6th January 2019
+date: 11th January 2019
 bibliography: paper.bib
 ---
 
@@ -27,18 +27,19 @@ bibliography: paper.bib
 
 ``HODLRlib`` is a flexible library for working with matrices that have a Hierarchical Off-Diagonal Low-Rank (HODLR) structure. The current version performs matrix operations like matrix-vector products, solving linear systems, Cholesky-like symmetric factorization and determinant computation in almost linear complexity. A key motivation for ``HODLRlib`` is to provide a high-performance, easy to use library for working with matrices that possess a HODLR structure. 
 
-``HODLRlib`` is an optimized implementation of the ideas illustrated in these articles[@ambikasaran2013mathcal][@ambikasaran2014fast]. The goal of ``HODLRlib`` is to serve as a reference implementation and is designed to have a simple interface with a minimum number of dependencies. Our benchmarks demonstrate the large order of magnitude speedup that our library offers when compared to naive matrix factorization.
+``HODLRlib`` is an optimized implementation of the ideas illustrated in these articles[@ambikasaran2013mathcal][@ambikasaran2014fast]. The goal of ``HODLRlib`` is to serve as a reference implementation and is designed to have a simple interface with minimum number of dependencies. Our benchmarks demonstrate the large order of speedup that our library offers when compared to naive matrix factorizations.
 
-Our code makes use of shared-memory parallelism through OpenMP. The solver has also been extended to matrices not necessarily arising out of kernels and also to higher dimensions. Further, the solver has been optimized and the running time of the solver is now massively (a few orders of magnitude) faster than the running times reported in the original articles.
+Our code makes use of shared-memory parallelism through OpenMP. The solver is fairly generic and can handle matrices not necessarily arising out of kernel functions. Further, the solver has been optimized and the running time of the solver is now massively (a few orders of magnitude) faster than the running times reported in the original articles.
 
-``HODLRlib`` is designed to be solved such that the matrix to be solved is abstracted through the ``HODLR_Matrix`` object which needs to have the function ``getMatrixEntry`` which takes in the arguments as the index in the matrix and returns the particular entry. This allows the reduction in storage costs. This instance of ``HODLR_Matrix`` is then passed to the ``HODLR_Tree`` class whose methods are used for the various matrix operations.
+``HODLRlib`` is designed such that the matrix corresponding to the linear system to be solved is abstracted through the ``HODLR_Matrix`` object, which needs to have the function ``getMatrixEntry``. This function takes in the arguments as the index in the matrix and returns the particular entry, which facilitates the reduction in storage costs, since only a few entries of the low-rank sub-blocks are needed to reconstruct these sub-blocks. This instance of ``HODLR_Matrix`` is then passed to the ``HODLR_Tree`` class, whose methods are used for the various matrix operations.
 
 The current release has the following capabilities:
 
-- Fast MatVecs: Obtains $A x$ at a cost of $\mathcal{O}\left(N\log{N}\right)$
-- Fast Symmetric Factorization: Obtains $A = W W^T$ at a cost of $\mathcal{O}\left(N\log^2\left(N\right)\right)$
-- Fast Solve: Solves linear systems $A x = b$ in $\mathcal{O}\left(N\log^2\left(N\right)\right)$
-- Fast Determinant Computation: Additional Cost of $\mathcal{O}\left(N\log{N} \right)$
+- MatVecs: Obtains $A x$ at a cost of $\mathcal{O}\left(N\log{N}\right)$
+- Factorization: Factors the matrix $A$ into the desired form at a cost of $\mathcal{O}\left(N\log\left(N\right)\right)$
+- Cholesky-like Symmetric Factorization: Obtains $A = W W^T$ at a cost of $\mathcal{O}\left(N\log^2\left(N\right)\right)$
+- Solve: Solves linear systems $A x = b$ in $\mathcal{O}\left(N\log\left(N\right)\right)$
+- Determinant Computation: Additional Cost of $\mathcal{O}\left(N\log{N} \right)$
 
 ``HODLRlib`` is released under the MPL2 license, and the source code is available at <https://github.com/sivaramambikasaran/HODLR>
 

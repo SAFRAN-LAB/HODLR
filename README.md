@@ -22,11 +22,19 @@ For more details on the usage of the library, visit the [documentation](https://
 
 ## Features
 
+- Factorization: Factors the matrix $A$ into the desired form at a cost of $\mathcal{O}\left(N\log^2\left(N\right)\right)$
+- Cholesky-like Symmetric Factorization: Obtains $A = W W^T$ at a cost of $\mathcal{O}\left(N\log^2\left(N\right)\right)$
+- Solve: Solves linear systems $A x = b$ at an additional cost of $\mathcal{O}\left(N\log\left(N\right)\right)$
+- Determinant Computation: Additional Cost of $\mathcal{O}\left(N\log{N} \right)$
+
+
 Fast matrix vector products: Obtains <img src="https://cdn.jsdelivr.net/gh/sivaramambikasaran/HODLR@master/docs/source/images//af44b92b9a0ae94e08b5e1e8abce573e.svg?invert_in_darkmode" align=middle width=21.723786149999988pt height=22.465723500000017pt/> at a cost of <img src="https://cdn.jsdelivr.net/gh/sivaramambikasaran/HODLR@master/docs/source/images//2d74209c531ea025d06c0a66dbbd0bb1.svg?invert_in_darkmode" align=middle width=85.780695pt height=24.65753399999998pt/>
 
-Fast solution of linear systems: Solves linear systems <img src="https://cdn.jsdelivr.net/gh/sivaramambikasaran/HODLR@master/docs/source/images//70681e99f542745bf6a0c56bd4600b39.svg?invert_in_darkmode" align=middle width=50.69621369999999pt height=22.831056599999986pt/> in <img src="https://cdn.jsdelivr.net/gh/sivaramambikasaran/HODLR@master/docs/source/images//dad06decfe9b6527d7a6d23885d23d04.svg?invert_in_darkmode" align=middle width=95.43830174999998pt height=29.534320200000014pt/>
+Fast factorization: Factors the matrix <img src="https://latex.codecogs.com/gif.latex?%24A%24"> into the desired form at a cost of <img src="https://cdn.jsdelivr.net/gh/sivaramambikasaran/HODLR@master/docs/source/images//dad06decfe9b6527d7a6d23885d23d04.svg?invert_in_darkmode" align=middle width=95.43830174999998pt height=29.534320200000014pt/>
 
 Fast symmetric factorization: Compute <img src="https://cdn.jsdelivr.net/gh/sivaramambikasaran/HODLR@master/docs/source/images//c0b7ce204101fd85e5ae745c31f7781f.svg?invert_in_darkmode" align=middle width=79.39666349999999pt height=27.6567522pt/> at a cost of <img src="https://cdn.jsdelivr.net/gh/sivaramambikasaran/HODLR@master/docs/source/images//dad06decfe9b6527d7a6d23885d23d04.svg?invert_in_darkmode" align=middle width=95.43830174999998pt height=29.534320200000014pt/>
+
+Fast solve: Solves the linear system <img src="https://latex.codecogs.com/gif.latex?%24Ax%3Db%24"> at an additional cost of <img src="https://cdn.jsdelivr.net/gh/sivaramambikasaran/HODLR@master/docs/source/images//2d74209c531ea025d06c0a66dbbd0bb1.svg?invert_in_darkmode" align=middle width=85.780695pt height=24.65753399999998pt/>
 
 Fast determinant computation: Compute the determinant at an additional cost of <img src="https://cdn.jsdelivr.net/gh/sivaramambikasaran/HODLR@master/docs/source/images//2d74209c531ea025d06c0a66dbbd0bb1.svg?invert_in_darkmode" align=middle width=85.780695pt height=24.65753399999998pt/>
 

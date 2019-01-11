@@ -34,11 +34,11 @@ fi
 # Returning the the home folder:
 cd ..
 
-echo "Writing the necessary enviroment variables to .bashrc"
-echo "# Added by HODLRlib:" >> ~/.bashrc
+echo "Writing the necessary enviroment variables to .bash_profile"
+echo "# Added by HODLRlib:" >> ~/.bash_profile
 to_add="export HODLR_PATH=$HODLR_PATH"
-echo $to_add >> ~/.bashrc
+echo $to_add >> ~/.bash_profile
 to_add="export PATH=$PATH:${DEPS_DIR}/cmake/bin/"
-echo $to_add >> ~/.bashrc
+echo $to_add >> ~/.bash_profile
 to_add="export EIGEN_PATH=$EIGEN_PATH"
-echo $to_add >> ~/.bashrc
+echo $to_add >> ~/.bash_profile

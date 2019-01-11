@@ -15,10 +15,11 @@ The code is written in C++ and features an easy-to-use interface, where the user
 
 The current release has the following capabilities:
 
-- Fast MatVecs: Obtains :math:`A x` at a cost of :math:`\mathcal{O}\left(N\log{N}\right)`
-- Fast Symmetric Factorization: Obtains :math:`A = W W^T` at a cost of :math:`\mathcal{O}\left(N\log^2\left(N\right)\right)`
-- Fast Solve: Solves linear systems :math:`A x = b` in :math:`\mathcal{O}\left(N\log^2\left(N\right)\right)`
-- Fast Determinant Computation: Additional Cost of :math:`\mathcal{O}\left(N\log{N} \right)`
+- MatVecs: Obtains $A x$ at a cost of $\mathcal{O}\left(N\log{N}\right)$
+- Factorization: Factors the matrix $A$ into the desired form at a cost of $\mathcal{O}\left(N\log^2\left(N\right)\right)$
+- Cholesky-like Symmetric Factorization: Obtains $A = W W^T$ at a cost of $\mathcal{O}\left(N\log^2\left(N\right)\right)$
+- Solve: Solves linear systems $A x = b$ at an additional cost of $\mathcal{O}\left(N\log\left(N\right)\right)$
+- Determinant Computation: Additional Cost of $\mathcal{O}\left(N\log{N} \right)$
 
 Doc Contents
 ============

@@ -110,7 +110,6 @@ void testHODLR(int N, int n_levels, double tolerance, kernel K)
     x_fast = T->solve(b_exact);
     assert((x_fast - x).norm() / (x.norm()) < N * tolerance);
 
-
     dtype log_det;
     Eigen::PartialPivLU<Mat> lu;
     lu.compute(B);
@@ -129,8 +128,6 @@ void testHODLR(int N, int n_levels, double tolerance, kernel K)
     is_sym = true;
     is_pd = true;
     T->assembleTree(is_sym, is_pd);
-    T->printTreeDetails();
-    T->plotTree();
 
     b_fast      = T->matmatProduct(x);
     // Computing the relative error in the solution obtained:
@@ -201,5 +198,6 @@ int main(int argc, char* argv[])
     testHODLR(N, n_levels, tolerance, K3);
     delete K3;
 
+    cout << "Reached End of Test File Successfully! All functions work as intended!" << endl;
     return 0;
 }

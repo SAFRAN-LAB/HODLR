@@ -462,3 +462,19 @@ This function returns the product of the transpose of the symmetric factor with 
 Explicitly builds and returns the symmetric factor :math:`W`::
 
     W = getSymmetricFactor();
+
+Running the Program:
+--------------------
+
+For this particular tutorial, the problem parameters are passed to the executable during runtime. In the beginning of this file, we have the lines::
+
+    // Size of the Matrix in consideration:
+    int N             = atoi(argv[1]);
+    // Size of Matrices at leaf level:
+    int M             = atoi(argv[2]);
+    // Dimensionality of the problem:
+    int dim           = atoi(argv[3]);
+    // Tolerance of problem
+    double tolerance  = pow(10, -atoi(argv[4]));
+
+This means that the first argument would be the matrix size considered, the second one would be the size at the leaf level, the third one would be the dimensionality considered and the final argument is approximately the number of digits of accuracy we want. For instance, running ``./tutorial 1000 100 1 12`` would correspond to solving the problem with parameters :math:`N=1000, M = 100, \texttt{dim} = 1, \epsilon=10^{-12}`.

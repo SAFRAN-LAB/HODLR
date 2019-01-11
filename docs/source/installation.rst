@@ -16,6 +16,12 @@ Dependencies
 - (optional) An OpenMP enabled compiler (e.g. gcc4.2 or above) is required to use shared-memory parallelism.
 - (optional) MKL libraries(:math:`\texttt{HODLRlib}` has improved performance when compiled against MKL)
 
+
+**NOTE**: On MacOS, the default compiler is `clang` which doesn't have OpenMP support. You will have to use g++ to make use of the speedups from OpenMP::
+
+    user@computer HODLR$ brew install g++-8
+    user@computer HODLR$ export CXX=g++
+
 Installation
 -------------
 
@@ -28,7 +34,7 @@ The easiest way to get running is to install the needed dependencies by running 
 
     user@computer HODLR$ source install.sh
 
-The above command should create a folder ``deps/`` in the current directory with the needed dependencies. Additionally, the script should set the environment variables that would be needed during the build and execution stages.
+The above command should create a folder ``deps/`` in the current directory with the needed dependencies. Additionally, the script should set the environment variables that would be needed during the build and execution stages. This only needs to be done once since the environment variables are automatically written to ``.bashrc``.
 
 Manually Installing
 ^^^^^^^^^^^^^^^^^^^
@@ -42,6 +48,18 @@ Then, set the environment variable ``EIGEN_PATH`` to the location of your Eigen 
 Optionally: set the environment variable ``MKLROOT`` to take advantage of speedups from MKL.::
 
     user@computer HODLR$ export MKLROOT=path/to/mkl/
+
+Testing
+-------
+
+Now, we need to ensure that all the functions of the libraries function as intended. For this purpose, we will be running the script ``test/test_HODLR.cpp``. To check this on your computer, run the following lines::
+
+    user@computer HODLR$ mkdir build && cd build
+    user@computer build$ cmake .. -DCMAKE_BUILD_TYPE=COVERAGE -DINPUT_FILE=../test/test_HODLR.cpp -DOUTPUT_EXECUTABLE=test_HODLR
+    user@computer build$ make
+    user@computer build$ ./test_HODLR
+
+For a succesful test, the final line of output for this run would read:"Reached End of Test File Successfully! All functions work as intended!".
 
 Building and Executing
 ----------------------

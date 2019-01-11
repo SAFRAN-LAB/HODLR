@@ -93,6 +93,13 @@ int main(int argc, char* argv[])
     Kernel* K         = new Kernel(N, dim);
     int n_levels      = log(N / M) / log(2);
 
+    cout << "========================= Problem Parameters =========================" << endl;
+    cout << "Matrix Size                        :" << N << endl;
+    cout << "Leaf Size                          :" << M << endl;
+    cout << "Number of Levels in Tree           :" << n_levels << endl;
+    cout << "Dimensionality                     :" << dim << endl;
+    cout << "Tolerance                          :" << tolerance << endl << endl;
+
     // Variables used in timing:
     double start, end;
 

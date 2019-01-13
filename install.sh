@@ -14,11 +14,12 @@ export DEPS_DIR=$HODLR_PATH/deps
 if [ ! -d "${DEPS_DIR}" ]; then
     mkdir ${DEPS_DIR}
 fi
-cd ${DEPS_DIR} 
+cd ${DEPS_DIR}
 
 # Getting CMake:
 if [ ! -d "cmake/" ]; then
-    CMAKE_URL="http://www.cmake.org/files/v3.3/cmake-3.3.2-Linux-x86_64.tar.gz"
+    echo "Setting up the necessary dependencies. Hold on tight! (this may take a few minutes)"
+    CMAKE_URL="https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz"
     mkdir cmake && wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
     export PATH=${DEPS_DIR}/cmake/bin:${PATH}
 fi
@@ -42,3 +43,4 @@ to_add="export PATH=$PATH:${DEPS_DIR}/cmake/bin/"
 echo $to_add >> ~/.bash_profile
 to_add="export EIGEN_PATH=$EIGEN_PATH"
 echo $to_add >> ~/.bash_profile
+source ~/.bash_profile

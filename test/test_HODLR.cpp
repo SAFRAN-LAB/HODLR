@@ -81,7 +81,7 @@ public:
 };
 
 template<class kernel>
-void testHODLR(int N, int n_levels, double tolerance, kernel K)
+void testHODLR(int N, int n_levels, double tolerance, kernel K, std::string image_name)
 {
     // Througout, we have ensured that the error in the method is lesser than 
     // N X tolerance that was requested for ACA. It is not always necessary
@@ -98,7 +98,7 @@ void testHODLR(int N, int n_levels, double tolerance, kernel K)
     bool is_pd = false;
     T->assembleTree(is_sym, is_pd);
     T->printTreeDetails();
-    T->plotTree();
+    T->plotTree(image_name);
     
     b_fast      = T->matmatProduct(x);
     Mat B       = K->getMatrix(0, 0, N, N);
@@ -181,13 +181,13 @@ int main(int argc, char* argv[])
     delete K_dummy;
     
     Kernel_Gaussian* K = new Kernel_Gaussian(N, dim);
-    testHODLR(N, n_levels, tolerance, K);
+    testHODLR(N, n_levels, tolerance, K, "gaussian_kernel.svg");
     delete K;
 
     // Setting lower tolerance since this is a harsh test to reproduce at higher tolerances:
     tolerance = pow(10, -7);
     Random_Matrix* K2  = new Random_Matrix(N);
-    testHODLR(N, n_levels, tolerance, K2);
+    testHODLR(N, n_levels, tolerance, K2, "random_matrix_N_1000.svg");
     delete K2;
 
     // Trying out odd sizes:
@@ -195,7 +195,7 @@ int main(int argc, char* argv[])
     M        = 123;
     n_levels = log(N / M) / log(2);
     Random_Matrix* K3  = new Random_Matrix(N);
-    testHODLR(N, n_levels, tolerance, K3);
+    testHODLR(N, n_levels, tolerance, K3, "random_matrix_N_1943.svg");
     delete K3;
 
     cout << "Reached End of Test File Successfully! All functions work as intended!" << endl;

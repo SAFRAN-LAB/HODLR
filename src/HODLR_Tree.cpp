@@ -184,11 +184,11 @@ dtype HODLR_Tree::logDeterminant()
 // Basically, this function shows the extent of "lowrankness" through
 // different intensity of colors in the plots.
 // Additionally, it also shows the ranks of the blocks. Again useful to debug:
-void HODLR_Tree::plotTree()
+void HODLR_Tree::plotTree(std::string image_name)
 {
     std::string HODLR_PATH = std::getenv("HODLR_PATH");
-    std::string FILE       = HODLR_PATH + "/src/plot_tree.py";
-    std::string COMMAND    = "python " + FILE;
+    std::string FILE       = HODLR_PATH + "/src/plot_tree.py ";
+    std::string COMMAND    = "python " + FILE + image_name;
     std::ofstream myfile;
     myfile.open ("rank.txt");
     // First entry is the number of levels:

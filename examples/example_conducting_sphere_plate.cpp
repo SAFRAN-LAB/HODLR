@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
     bool is_pd = true;
 
     T->assembleTree(is_sym, is_pd);
-    // T->plotTree();
+    // T->plotTree("plot.svg");
     // Compute factorization 
     T->factorize();
     // Compute determinant 

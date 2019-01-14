@@ -45,6 +45,6 @@ The current release has the following capabilities:
 
 # Acknowledgements
 
-The authors were supported by the Department of Atomic Energy (DAE), India and Department of Science and Technology (DST), India. The authors would also like to thanks Vaishnavi Gujjula for her valuable comments, suggestions and code edits.
+The authors were supported by the Department of Atomic Energy (DAE), India and Department of Science and Technology (DST), India. The authors would also like to thanks Vaishnavi Gujjula and Michael Hartmann for their valuable comments, suggestions and code edits.
 
 # References

@@ -19,17 +19,21 @@ cd ${DEPS_DIR}
 # Getting CMake:
 if [ ! -d "cmake/" ]; then
     echo "Setting up the necessary dependencies. Hold on tight! (this may take a few minutes)"
+    echo "\nDOWNLOADING CMAKE...\n"
     CMAKE_URL="https://cmake.org/files/v3.12/cmake-3.12.4-Linux-x86_64.tar.gz"
     mkdir cmake && wget --no-check-certificate --quiet -O - ${CMAKE_URL} | tar --strip-components=1 -xz -C cmake
     export PATH=${DEPS_DIR}/cmake/bin:${PATH}
+    echo "\nCOMPLETED CMAKE INSTALLATION.\n"
 fi
 
 # Getting Eigen:
 if [ ! -d "eigen/" ]; then
+    echo "\nDOWNLOADING EIGEN...\n"
     wget http://bitbucket.org/eigen/eigen/get/3.3.7.tar.bz2
     tar xjf 3.3.7.tar.bz2
     mv eigen-eigen-323c052e1731 eigen
     export EIGEN_PATH=$PWD/eigen/
+    echo "\nCOMPLETED EIGEN INSTALLATION.\n"
 fi
 
 # Returning the the home folder:

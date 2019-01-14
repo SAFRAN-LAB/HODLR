@@ -57,7 +57,7 @@ public:
     void printNodeDetails(int level_number, int node_number);
     // Lists details of all boxes in the tree
     void printTreeDetails();
-    void plotTree();
+    void plotTree(std::string image_name);
     Mat matmatProduct(Mat x);
     void factorize();
     Mat solve(Mat b);

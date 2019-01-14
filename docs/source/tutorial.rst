@@ -101,9 +101,9 @@ We proceed to call the ``assembleTree`` method. This obtains the complete matrix
 ``plotTree``
 ^^^^^^^^^^^^
 
-This function is used to visualize the rank structure of the matrix encoded through the defined ``Kernel`` object. It's useful to build a visual understanding of the "low-rankness" of the sub-blocks of the matrix::
+This function is used to visualize the rank structure of the matrix encoded through the defined ``Kernel`` object. It's useful to build a visual understanding of the "low-rankness" of the sub-blocks of the matrix. This function takes the filename and extension of the output image as a string::
 
-    T->symmetricFactorProduct(x);
+    T->plotTree("plot.svg");
 
 For instance, with the gaussian kernel with :math:`N = 1000`, :math:`M = 100` and tolerance :math:`\epsilon = 10^{-12}`, we obtain this image:
 
@@ -461,7 +461,7 @@ This function returns the product of the transpose of the symmetric factor with 
 
 Explicitly builds and returns the symmetric factor :math:`W`::
 
-    W = getSymmetricFactor();
+    W = T->getSymmetricFactor();
 
 Running the Program:
 --------------------

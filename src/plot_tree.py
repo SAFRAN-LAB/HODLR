@@ -143,8 +143,10 @@ def plot_graph(cx, cy, rx, ry, rank):
                                                -rx[i], -ry[i], facecolor = 'white',
                                                edgecolor = 'black', linewidth = 0.1))
 
-rank   = np.loadtxt("rank.txt")
-levels = int(rank[0])
+import sys
+imgname = str(sys.argv[1])
+rank    = np.loadtxt("rank.txt")
+levels  = int(rank[0])
 cx, cy, rx, ry = extract_centers_radii(return_HODLR_tree(levels))
 plot_graph(cx, cy, rx, ry, rank[1:])
-pl.savefig('plot.svg', bbox_inches = 'tight')
+pl.savefig(imgname, bbox_inches = 'tight')

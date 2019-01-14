@@ -28,7 +28,7 @@ The matrix that needs to be solved for is abstracted through this derived class 
 
             dtype getMatrixEntry(int i, int j) 
             {
-                return (1 / (i + j + 1));
+                return (1. / (i + j + 1));
             }
     }
 

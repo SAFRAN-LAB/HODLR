@@ -32,7 +32,7 @@ Install Script
 
 The easiest way to get running is to install the needed dependencies by running the ``install.sh`` provided in the root level of this repository::
 
-    user@computer HODLR$ source install.sh
+    user@computer HODLR$ ./install.sh
 
 The above command should create a folder ``deps/`` in the current directory with the needed dependencies. Additionally, the script should set the environment variables that would be needed during the build and execution stages. This only needs to be done once since the environment variables are automatically written to ``.bash_profile``.
 

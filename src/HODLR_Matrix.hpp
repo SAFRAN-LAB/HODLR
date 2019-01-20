@@ -14,9 +14,6 @@
 #include <fstream>
 #include <complex>
 
-using std::cout;
-using std::endl;
-
 #ifdef USE_FLOAT
     using dtype=float;
     using dtype_base=float;
@@ -70,7 +67,7 @@ public:
     {
         // FROM EXPERIENCE: Incase the user makes a mistake in 
         // setting the derived class, this warns the user:
-        cout << "Returning zero! Ensure that derived class is properly set!" << endl;
+        std::cout << "Returning zero! Ensure that derived class is properly set!" << std::endl;
         return 0.0;
     }
 

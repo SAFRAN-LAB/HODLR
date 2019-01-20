@@ -35,12 +35,31 @@ public:
 
 int main(int argc, char* argv[]) 
 {
-    // Size of the Matrix in consideration:
-    int N             = atoi(argv[1]);
-    // Size of Matrices at leaf level:
-    int M             = atoi(argv[2]);
-    // Tolerance of problem
-    double tolerance  = pow(10, -atoi(argv[3]));
+    int N, M;
+    double tolerance;
+
+    if(argc < 4)
+    {
+        std::cout << "All arguments weren't passed to executable!" << std::endl;
+        std::cout << "Using Default Arguments:" << std::endl;
+        // Size of the Matrix in consideration:
+        N          = 10000;
+        // Size of Matrices at leaf level:
+        M          = 200;
+        // Tolerance of problem
+        tolerance  = pow(10, -12);
+    }
+
+    else
+    {
+        // Size of the Matrix in consideration:
+        N          = atoi(argv[1]);
+        // Size of Matrices at leaf level:
+        M          = atoi(argv[2]);
+        // Tolerance of problem
+        tolerance  = pow(10, -atoi(argv[3]));
+    }
+
     // Declaration of HODLR_Matrix object that abstracts data in Matrix:
     // Taking σ = 10, ρ = 5:
     Kernel* K         = new Kernel(N, 10, 5);

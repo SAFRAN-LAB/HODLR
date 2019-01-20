@@ -198,6 +198,6 @@ int main(int argc, char* argv[])
     testHODLR(N, n_levels, tolerance, K3, "random_matrix_N_1943.svg");
     delete K3;
 
-    cout << "Reached End of Test File Successfully! All functions work as intended!" << endl;
+    std::cout << "Reached End of Test File Successfully! All functions work as intended!" << std::endl;
     return 0;
 }

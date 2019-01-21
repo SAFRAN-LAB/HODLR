@@ -58,26 +58,26 @@ void HODLR_Node::matmatProductNonLeaf(Mat x, Mat& b)
 
 void HODLR_Node::printNodeDetails()
 {
-    cout << "Level Number       :" << level_number << endl;
-    cout << "Node Number        :" << node_number << endl;
-    cout << "Start of Node      :" << n_start <<  endl;
-    cout << "Size of Node       :" << n_size <<  endl;
-    cout << "Tolerance          :" << tolerance << endl;
+    std::cout << "Level Number       :" << level_number << std::endl;
+    std::cout << "Node Number        :" << node_number << std::endl;
+    std::cout << "Start of Node      :" << n_start <<  std::endl;
+    std::cout << "Size of Node       :" << n_size <<  std::endl;
+    std::cout << "Tolerance          :" << tolerance << std::endl;
 
     for(int i = 0; i < 2; i++)
     {
         if(i == 0)
-            cout << "Left Child:" << endl;
+            std::cout << "Left Child:" << std::endl;
         else
-            cout << "Right Child:" << endl;
+            std::cout << "Right Child:" << std::endl;
 
-        cout << "Start of Child Node:" << c_start[i] <<  endl;
-        cout << "Size of Child Node :" << c_size[i]  <<  endl;
+        std::cout << "Start of Child Node:" << c_start[i] <<  std::endl;
+        std::cout << "Size of Child Node :" << c_size[i]  <<  std::endl;
     }
 
-    cout << "Shape of U[0]      :" << U[0].rows() << ", " << U[0].cols() << endl;
-    cout << "Shape of U[1]      :" << U[1].rows() << ", " << U[1].cols() << endl;
-    cout << "Shape of V[0]      :" << V[0].rows() << ", " << V[0].cols() << endl;
-    cout << "Shape of V[1]      :" << V[1].rows() << ", " << V[1].cols() << endl;
-    cout << "Shape of K         :" << K.rows() << ", " << K.cols() << endl;
+    std::cout << "Shape of U[0]      :" << U[0].rows() << ", " << U[0].cols() << std::endl;
+    std::cout << "Shape of U[1]      :" << U[1].rows() << ", " << U[1].cols() << std::endl;
+    std::cout << "Shape of V[0]      :" << V[0].rows() << ", " << V[0].cols() << std::endl;
+    std::cout << "Shape of V[1]      :" << V[1].rows() << ", " << V[1].cols() << std::endl;
+    std::cout << "Shape of K         :" << K.rows() << ", " << K.cols() << std::endl;
 }

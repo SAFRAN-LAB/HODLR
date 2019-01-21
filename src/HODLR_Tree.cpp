@@ -120,9 +120,9 @@ void HODLR_Tree::printTreeDetails()
         for(int k = 0; k < nodes_in_level[j]; k++)
         {
             this->printNodeDetails(j, k);
-            cout << "=======================================================================================================================================" << endl;
+            std::cout << "=======================================================================================================================================" << std::endl;
         }
-        cout << endl << endl;
+        std::cout << std::endl << std::endl;
     }
 }
 
@@ -186,22 +186,22 @@ dtype HODLR_Tree::logDeterminant()
 // Additionally, it also shows the ranks of the blocks. Again useful to debug:
 void HODLR_Tree::plotTree(std::string image_name)
 {
-    std::string HODLR_PATH = std::getenv("HODLR_PATH");
-    std::string FILE       = HODLR_PATH + "/src/plot_tree.py ";
-    std::string COMMAND    = "python " + FILE + image_name;
+    std::string hodlr_path = std::getenv("HODLR_PATH");
+    std::string file       = hodlr_path + "/src/plot_tree.py ";
+    std::string command    = "python " + file + image_name;
     std::ofstream myfile;
     myfile.open ("rank.txt");
     // First entry is the number of levels:
-    myfile << n_levels << endl;
+    myfile << n_levels << std::endl;
     for(int j = 0; j < n_levels; j++)
     {
         for(int k = 0; k < nodes_in_level[j]; k++)
         {
-            myfile << tree[j][k]->rank[0] << endl;
+            myfile << tree[j][k]->rank[0] << std::endl;
         }
     }
     // Closing the file:
     myfile.close();
-    cout << "Plotting Tree..." << endl;
-    system(COMMAND.c_str());
+    std::cout << "Plotting Tree..." << std::endl;
+    system(command.c_str());
 }

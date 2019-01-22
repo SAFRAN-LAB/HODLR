@@ -2,14 +2,14 @@ project (HODLRlib)
 cmake_minimum_required (VERSION 3.0)
 set (CMAKE_CXX_STANDARD 11)
 # Provide the input file that you want to solve for:
-# This can be passed as a command line argument:
+# This can also be passed as a command line argument:
 if(NOT INPUT_FILE)
-    set (INPUT_FILE "examples/tutorial.cpp")
+    set (INPUT_FILE "")
 endif()
 # Here set the name for the output executable:
-# This can be passed as a command line argument:
+# This can also be passed as a command line argument:
 if(NOT OUTPUT_EXECUTABLE)
-    set (OUTPUT_EXECUTABLE "tutorial")
+    set (OUTPUT_EXECUTABLE "")
 endif()
 # Set this to: "float", "double", "complex32" and "complex64"
 set (DTYPE "double")
@@ -62,19 +62,29 @@ set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "${CMAKE_SHARED_LINKER_FLAGS} --coverage"
 ################ ADDING OF THE NECESSARY HEADER FOLDERS ####################
 # Adding folders which contain necessary header files:
 include_directories("${EIGEN_PATH}" 
-                    "src"
+                    "include"
                    )
 
 ################ MENTIONING C++ FILES TO LINK WITH HEADERS + FILE TO BUILD ####################
-add_executable(${OUTPUT_EXECUTABLE} 
-               ${INPUT_FILE}
-               src/HODLR_Matrix.cpp
-               src/HODLR_Node.cpp
-               src/HODLR_Tree.cpp
-               src/HODLR_Tree_NonSPD.cpp
-               src/HODLR_Tree_SPD.cpp
-               src/KDTree.cpp
-              )
+
+set(HODLRlib_SRCS
+    ${PROJECT_SOURCE_DIR}/src/HODLR_Matrix.cpp
+    ${PROJECT_SOURCE_DIR}/src/HODLR_Node.cpp
+    ${PROJECT_SOURCE_DIR}/src/HODLR_Tree.cpp
+    ${PROJECT_SOURCE_DIR}/src/HODLR_Tree_NonSPD.cpp
+    ${PROJECT_SOURCE_DIR}/src/HODLR_Tree_SPD.cpp
+    ${PROJECT_SOURCE_DIR}/src/KDTree.cpp
+   )
+
+add_subdirectory(examples)
+add_subdirectory(test)
+
+if(INPUT_FILE)
+  add_executable(${OUTPUT_EXECUTABLE}
+                 ${INPUT_FILE}
+                 ${HODLRlib_SRCS}
+                )
+endif()
 
 ################ SUMMARY OF BUILD INFORMATION ################
 

@@ -61,7 +61,7 @@ public:
 int main(int argc, char *argv[])
 {
     unsigned int seed = time(NULL);
-    cout << "Seed is: " << seed << endl;
+    std::cout << "Seed is: " << seed << std::endl;
     srand(seed);
 
     // dimension
@@ -86,9 +86,9 @@ int main(int argc, char *argv[])
     // Compute log det(Id+M)
     logdet_hodlr = T->logDeterminant();
 
-    cout << "Log determinant is: " << setprecision(16) << logdet_hodlr << endl;
-    cout << "Log determinant is: " << setprecision(16) << logdet_exact << endl;
-    cout << "Relative error is: "  << setprecision(16) << fabs(1-logdet_hodlr/logdet_exact) << endl;
+    std::cout << "Log determinant is: " << setprecision(16) << logdet_hodlr << std::endl;
+    std::cout << "Log determinant is: " << setprecision(16) << logdet_exact << std::endl;
+    std::cout << "Relative error is: "  << setprecision(16) << fabs(1-logdet_hodlr/logdet_exact) << std::endl;
 
     return 0;
 }

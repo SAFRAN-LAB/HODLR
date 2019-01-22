@@ -123,7 +123,7 @@ int main(int argc, char* argv[])
     // Variables used in timing:
     double start, end;
 
-    cout << "Fast method..." << endl;
+    std::cout << "Fast method..." << std::endl;
     start = omp_get_wtime();
     // Creating a pointer to the HODLR Tree structure:
     HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, K);
@@ -131,7 +131,7 @@ int main(int argc, char* argv[])
     bool is_pd  = true;
     T->assembleTree(is_sym, is_pd);
     end = omp_get_wtime();
-    cout << "Time for assembly in HODLR form:" << (end - start) << endl;
+    std::cout << "Time for assembly in HODLR form:" << (end - start) << std::endl;
 
     // Random Matrix to multiply with
     Mat x = (Mat::Random(N * dim, 1)).real();
@@ -142,37 +142,37 @@ int main(int argc, char* argv[])
     b_fast = T->matmatProduct(x);
     end    = omp_get_wtime();
     
-    cout << "Time for matrix-vector product:" << (end - start) << endl << endl;
+    std::cout << "Time for matrix-vector product:" << (end - start) << std::endl << std::endl;
 
     start = omp_get_wtime();
     T->factorize();
     end   = omp_get_wtime();
-    cout << "Time to factorize:" << (end-start) << endl;
+    std::cout << "Time to factorize:" << (end-start) << std::endl;
 
     Mat x_fast;
     start  = omp_get_wtime();
     x_fast = T->solve(b_fast);
     end    = omp_get_wtime();
 
-    cout << "Time to solve:" << (end-start) << endl;
+    std::cout << "Time to solve:" << (end-start) << std::endl;
 
     if(is_sym == true && is_pd == true)
     {
         start  = omp_get_wtime();
         y_fast = T->symmetricFactorTransposeProduct(x);
         end    = omp_get_wtime();
-        cout << "Time to calculate product of factor transpose with given vector:" << (end - start) << endl;
+        std::cout << "Time to calculate product of factor transpose with given vector:" << (end - start) << std::endl;
         
         start  = omp_get_wtime();
         b_fast = T->symmetricFactorProduct(y_fast);
         end    = omp_get_wtime();
-        cout << "Time to calculate product of factor with given vector:" << (end - start) << endl;        
+        std::cout << "Time to calculate product of factor with given vector:" << (end - start) << std::endl;        
     }
         
     start = omp_get_wtime();
     dtype log_det_hodlr = T->logDeterminant();
     end = omp_get_wtime();
-    cout << "Time to calculate log determinant using HODLR:" << (end-start) << endl;
+    std::cout << "Time to calculate log determinant using HODLR:" << (end-start) << std::endl;
 
     // Direct method:
     start = omp_get_wtime();
@@ -185,7 +185,7 @@ int main(int argc, char* argv[])
         Eigen::LLT<Mat> llt;
         llt.compute(B);
         end = omp_get_wtime();
-        cout << "Time to calculate LLT Factorization:" << (end-start) << endl;
+        std::cout << "Time to calculate LLT Factorization:" << (end-start) << std::endl;
     }
 
     else
@@ -194,7 +194,7 @@ int main(int argc, char* argv[])
         Eigen::PartialPivLU<Mat> lu;
         lu.compute(B);
         end = omp_get_wtime();
-        cout << "Time to calculate LU Factorization:" << (end-start) << endl;        
+        std::cout << "Time to calculate LU Factorization:" << (end-start) << std::endl;        
     }
 
     delete K;

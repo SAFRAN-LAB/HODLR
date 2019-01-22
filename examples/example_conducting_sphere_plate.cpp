@@ -95,9 +95,9 @@ int main(int argc, char *argv[])
     // Compute determinant 
     logdet = T->logDeterminant();
 
-    cout << "Log determinant(Exact):" << setprecision(16) << exact << endl;
-    cout << "Log determinant(HODLR):" << setprecision(16) << logdet << endl;
-    cout << "Relative error is: "  << setprecision(16) << fabs(1 - logdet / exact) << endl;
+    std::cout << "Log determinant(Exact):" << setprecision(16) << exact << std::endl;
+    std::cout << "Log determinant(HODLR):" << setprecision(16) << logdet << std::endl;
+    std::cout << "Relative error is: "  << setprecision(16) << fabs(1 - logdet / exact) << std::endl;
 
     return 0;
 }

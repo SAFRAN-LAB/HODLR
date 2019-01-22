@@ -52,12 +52,11 @@ Optionally: set the environment variable ``MKLROOT`` to take advantage of speedu
 Testing
 -------
 
-Now, we need to ensure that all the functions of the libraries function as intended. For this purpose, we will be running the script ``test/test_HODLR.cpp``. To check this on your computer, run the following lines::
+Now, we need to ensure that all the functions of the libraries function as intended. For this purpose, we will be running the script ``test/test_HODLR.cpp``. By default, during a build this file under ``test/`` gets compiled, and would show up under the ``test/`` directory in your build folder. To check this on your computer, run the following lines::
 
     user@computer HODLR$ mkdir build && cd build
-    user@computer build$ cmake .. -DCMAKE_BUILD_TYPE=COVERAGE -DINPUT_FILE=../test/test_HODLR.cpp -DOUTPUT_EXECUTABLE=test_HODLR
-    user@computer build$ make
-    user@computer build$ ./test_HODLR
+    user@computer build$ cmake ..
+    user@computer build$ ./test/test_HODLR
 
 For a succesful test, the final line of output for this run would read:"Reached End of Test File Successfully! All functions work as intended!".
 

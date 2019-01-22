@@ -64,6 +64,12 @@ int main(int argc, char *argv[])
 
     HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, &K);
 
+    std::cout << "========================= Problem Parameters =========================" << std::endl;
+    std::cout << "Matrix Size                        :" << dim << std::endl;
+    std::cout << "Leaf Size                          :" << nLeaf << std::endl;
+    std::cout << "Number of Levels in Tree           :" << n_levels << std::endl;
+    std::cout << "Tolerance                          :" << tolerance << std::endl << std::endl;
+
     // Assemble symmetric matrix 
     // If we are assembling a symmetric matrix:
     bool is_sym = true;

@@ -74,6 +74,13 @@ int main(int argc, char *argv[])
     Test_Kernel K(dim);
 
     int n_levels  = log(dim / nLeaf) / log(2);
+
+    std::cout << "========================= Problem Parameters =========================" << std::endl;
+    std::cout << "Matrix Size                        :" << dim << std::endl;
+    std::cout << "Leaf Size                          :" << nLeaf << std::endl;
+    std::cout << "Number of Levels in Tree           :" << n_levels << std::endl;
+    std::cout << "Tolerance                          :" << tolerance << std::endl << std::endl;
+
     HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, &K);
 
     double logdet_exact = -33.22918044445708; // computed using Python script logdet.py

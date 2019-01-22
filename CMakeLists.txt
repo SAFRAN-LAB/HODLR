@@ -55,6 +55,7 @@ else()
 endif ()
 
 # Flags for testing coverage information
+# Need by coveralls:
 set(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS} --coverage")
 set(CMAKE_EXE_LINKER_FLAGS_COVERAGE "${CMAKE_EXE_LINKER_FLAGS} --coverage")
 set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "${CMAKE_SHARED_LINKER_FLAGS} --coverage")
@@ -76,8 +77,10 @@ set(HODLRlib_SRCS
     ${PROJECT_SOURCE_DIR}/src/KDTree.cpp
    )
 
-add_subdirectory(examples)
-add_subdirectory(test)
+if(NOT("${CMAKE_BUILD_TYPE}" STREQUAL "COVERAGE"))
+    add_subdirectory(examples)
+    add_subdirectory(test)
+endif()
 
 if(INPUT_FILE)
   add_executable(${OUTPUT_EXECUTABLE}

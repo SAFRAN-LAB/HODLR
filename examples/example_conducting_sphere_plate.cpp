@@ -61,8 +61,9 @@ int main(int argc, char *argv[])
     int n_levels  = log(dim / nLeaf) / log(2);
 
     kernel K(dim, RbyL);
+    Matrix_Factorizer F(&K);
 
-    HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, &K);
+    HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, &F);
 
     std::cout << "========================= Problem Parameters =========================" << std::endl;
     std::cout << "Matrix Size                        :" << dim << std::endl;

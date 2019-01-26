@@ -1,12 +1,12 @@
 #include "HODLR_Tree.hpp"
 
 // Contructor for the HODLR Tree class:
-HODLR_Tree::HODLR_Tree(int n_levels, double tolerance, HODLR_Matrix* A) 
+HODLR_Tree::HODLR_Tree(int n_levels, double tolerance, Matrix_Factorizer* F) 
 {
     this->n_levels  = n_levels;
     this->tolerance = tolerance;
-    this->A         = A;
-    this->N         = A->N;
+    this->F         = F;
+    this->N         = F->N;
     nodes_in_level.push_back(1);
 
     for (int j = 1; j <= n_levels; j++) 
@@ -92,7 +92,7 @@ void HODLR_Tree::assembleTree(bool is_sym, bool is_pd)
         #pragma omp parallel for
         for(int k = 0; k < nodes_in_level[j]; k++) 
         {
-            tree[j][k]->assembleNonLeafNode(A, is_sym);
+            tree[j][k]->assembleNonLeafNode(F, is_sym);
         }
     }
 
@@ -100,7 +100,7 @@ void HODLR_Tree::assembleTree(bool is_sym, bool is_pd)
     #pragma omp parallel for
     for (int k = 0; k < nodes_in_level[n_levels]; k++) 
     {
-        tree[n_levels][k]->assembleLeafNode(A);
+        tree[n_levels][k]->assembleLeafNode(F->A);
     }
 }
 

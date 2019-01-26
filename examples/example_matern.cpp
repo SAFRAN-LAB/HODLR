@@ -62,8 +62,9 @@ int main(int argc, char* argv[])
 
     // Declaration of HODLR_Matrix object that abstracts data in Matrix:
     // Taking σ = 10, ρ = 5:
-    Kernel* K         = new Kernel(N, 10, 5);
-    int n_levels      = log(N / M) / log(2);
+    Kernel* K            = new Kernel(N, 10, 5);
+    Matrix_Factorizer* F = new Matrix_Factorizer(K);
+    int n_levels         = log(N / M) / log(2);
 
     std::cout << "========================= Problem Parameters =========================" << std::endl;
     std::cout << "Matrix Size                        :" << N << std::endl;
@@ -78,7 +79,7 @@ int main(int argc, char* argv[])
     
     start = omp_get_wtime();
     // Creating a pointer to the HODLR Tree structure:
-    HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, K);
+    HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, F);
     bool is_sym = true;
     bool is_pd  = true;
     T->assembleTree(is_sym, is_pd);

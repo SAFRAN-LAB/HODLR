@@ -72,6 +72,7 @@ int main(int argc, char *argv[])
     const double tolerance = 1e-12;
 
     Test_Kernel K(dim);
+    Matrix_Factorizer F(&K);
 
     int n_levels  = log(dim / nLeaf) / log(2);
 
@@ -81,7 +82,7 @@ int main(int argc, char *argv[])
     std::cout << "Number of Levels in Tree           :" << n_levels << std::endl;
     std::cout << "Tolerance                          :" << tolerance << std::endl << std::endl;
 
-    HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, &K);
+    HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, &F);
 
     double logdet_exact = -33.22918044445708; // computed using Python script logdet.py
     double logdet_hodlr = 0;

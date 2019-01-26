@@ -2,7 +2,7 @@
 #define __HODLR_Tree__
 
 #include <Eigen/Dense>
-#include "HODLR_Matrix.hpp"
+#include "Matrix_Factorizer.hpp"
 #include "HODLR_Node.hpp"
 
 class HODLR_Tree 
@@ -12,7 +12,7 @@ private:
     int n_levels;
     double tolerance;
     std::vector<int> nodes_in_level;
-    HODLR_Matrix* A;
+    Matrix_Factorizer* F;
     bool is_sym, is_pd;
     
     // Vector of levels(which contain nodes) thereby giving the tree:
@@ -48,7 +48,7 @@ private:
     dtype logDeterminantSPD();
 
 public:
-    HODLR_Tree(int n_levels, double tolerance, HODLR_Matrix* A);
+    HODLR_Tree(int n_levels, double tolerance, Matrix_Factorizer* F);
     ~HODLR_Tree();
 
     //  Methods for HODLR solver

@@ -1,8 +1,7 @@
 // This file serves as a gentle introduction to the usage of this library:
-// It is also used in CI testing:
 
-#include "HODLR_Tree.hpp"
 #include "HODLR_Matrix.hpp"
+#include "HODLR_Tree.hpp"
 #include "KDTree.hpp"
 
 // Derived class of HODLR_Matrix which is ultimately
@@ -111,8 +110,9 @@ int main(int argc, char* argv[])
     }
 
     // Declaration of HODLR_Matrix object that abstracts data in Matrix:
-    Kernel* K    = new Kernel(N, dim);
-    int n_levels = log(N / M) / log(2);
+    Kernel* K            = new Kernel(N, dim);
+    Matrix_Factorizer* F = new Matrix_Factorizer(K);
+    int n_levels         = log(N / M) / log(2);
 
     std::cout << "========================= Problem Parameters =========================" << std::endl;
     std::cout << "Matrix Size                        :" << N << std::endl;
@@ -129,7 +129,7 @@ int main(int argc, char* argv[])
     std::cout << "========================= Assembly Time =========================" << std::endl;
     start = omp_get_wtime();
     // Creating a pointer to the HODLR Tree structure:
-    HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, K);
+    HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, F);
     // If we are assembling a symmetric matrix:
     bool is_sym = false;
     // If we know that the matrix is also PD:

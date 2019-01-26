@@ -3,6 +3,7 @@
 
 #include <Eigen/Dense>
 #include "HODLR_Matrix.hpp"
+#include "Matrix_Factorizer.hpp"
 
 class HODLR_Node 
 {
@@ -40,7 +41,7 @@ private:
     void matmatProductLeaf(Mat x, Mat& b);
 
     // Methods for Non-leaf Nodes:
-    void assembleNonLeafNode(HODLR_Matrix* A, bool is_sym);
+    void assembleNonLeafNode(Matrix_Factorizer* A, bool is_sym);
     void matmatProductNonLeaf(Mat x, Mat& b);
 
     // Method to print the parameters of the node(mainly used to debug)

@@ -20,12 +20,14 @@ set(EIGEN_PATH "$ENV{EIGEN_PATH}")
 ################ FINDING MKL ####################
 
 # Checking for MKL:
-if (DEFINED ENV{MKLROOT})
-    add_compile_definitions(MKL_ENABLED)
-    set (MKLROOT "$ENV{MKLROOT}")
-    set (LDFLAGS "${LDFLAGS} -DMKL_ENABLED -Wl,--start-group ${MKLROOT}/lib/intel64/libmkl_intel_lp64.a ${MKLROOT}/lib/intel64/libmkl_intel_thread.a ${MKLROOT}/lib/intel64/libmkl_core.a -Wl,--end-group")
-    set (MKL_FLAGS "-DMKL_LP64 -DMKL_ENABLED -I${MKLROOT}/include")
-endif ()
+# Currently disabling MKL. Sometimes a linker error pops up
+# TODO: Look into this
+#if (DEFINED ENV{MKLROOT})
+#    add_compile_definitions(MKL_ENABLED)
+#    set (MKLROOT "$ENV{MKLROOT}")
+#    set (LDFLAGS "${LDFLAGS} -DMKL_ENABLED -Wl,--start-group ${MKLROOT}/lib/intel64/libmkl_intel_lp64.a ${MKLROOT}/lib/intel64/libmkl_intel_thread.a ${MKLROOT}/lib/intel64/libmkl_core.a -Wl,--end-group")
+#    set (MKL_FLAGS "-DMKL_LP64 -DMKL_ENABLED -I${MKLROOT}/include")
+#endif ()
 
 ################ FINDING EIGEN ####################
 if(NOT EIGEN_PATH)
@@ -70,6 +72,7 @@ include_directories("${EIGEN_PATH}"
 
 set(HODLRlib_SRCS
     ${PROJECT_SOURCE_DIR}/src/HODLR_Matrix.cpp
+    ${PROJECT_SOURCE_DIR}/src/Matrix_Factorizer.cpp
     ${PROJECT_SOURCE_DIR}/src/HODLR_Node.cpp
     ${PROJECT_SOURCE_DIR}/src/HODLR_Tree.cpp
     ${PROJECT_SOURCE_DIR}/src/HODLR_Tree_NonSPD.cpp
@@ -101,6 +104,6 @@ message("Data Type        : " ${DTYPE})
 message("CXX Compiler     : " ${CMAKE_CXX_COMPILER})
 message("CXX_FLAGS        : " ${CMAKE_CXX_FLAGS})
 message("Eigen dir        : " ${EIGEN_PATH})
-message("MKL dir          : " ${MKLROOT})
+# message("MKL dir          : " ${MKLROOT})
 message("Build dir        : " ${CMAKE_BINARY_DIR})
 message("")

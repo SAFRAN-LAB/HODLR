@@ -14,10 +14,15 @@ private:
                       dtype& max, int& index
                      );
 
-    void rookPiv(int n_row_start, int n_col_start, 
-                 int n_rows, int n_cols, double tolerance, 
-                 Mat& L,  Mat& R, int& computed_rank
+    void rookPiv(Mat& L,  Mat& R, double rank_or_tolerance,
+                 int n_row_start, int n_col_start, 
+                 int n_rows, int n_cols
                 );
+
+    void SVD(Mat& L,  Mat& R, double rank_or_tolerance,
+             int n_row_start, int n_col_start, 
+             int n_rows, int n_cols
+            );
 
 public:
 
@@ -35,7 +40,7 @@ public:
         this->N    = A->N;
     }
 
-    void getFactorization(Mat& L,  Mat& R, double tolerance = 1e-8,
+    void getFactorization(Mat& L,  Mat& R, double rank_or_tolerance = 1e-8,
                           int n_row_start = 0, int n_col_start = 0, 
                           int n_rows = -1, int n_cols = -1
                          );

@@ -1,9 +1,9 @@
 #include "Matrix_Factorizer.hpp"
  
 void Matrix_Factorizer::maxAbsVector(const Vec& v, 
-                                        const std::set<int>& allowed_indices,
-                                        dtype& max, int& index
-                                       ) 
+                                     const std::set<int>& allowed_indices,
+                                     dtype& max, int& index
+                                    ) 
 {
     std::set<int>::iterator it;
     index = *allowed_indices.begin();
@@ -19,10 +19,10 @@ void Matrix_Factorizer::maxAbsVector(const Vec& v,
     }
 }
 
-void Matrix_Factorizer::rookPiv(int n_row_start, int n_col_start, 
-                                   int n_rows, int n_cols, double tolerance, 
-                                   Mat& L, Mat& R, int& computed_rank
-                                  )
+void Matrix_Factorizer::rookPiv(Mat& L, Mat& R, double tolerance,
+                                int n_row_start, int n_col_start,
+                                int n_rows, int n_cols
+                               )
 {
     // Indices which have been used:
     std::vector<int> row_ind;      
@@ -57,7 +57,7 @@ void Matrix_Factorizer::rookPiv(int n_row_start, int n_col_start,
     int pivot;
 
     // This would get updated:
-    computed_rank = 0;
+    int computed_rank = 0;
     Vec row, col;
     // These quantities in finding the stopping criteria:
     dtype_base row_squared_norm, row_norm, col_squared_norm, col_norm;
@@ -330,10 +330,24 @@ void Matrix_Factorizer::rookPiv(int n_row_start, int n_col_start,
     }
 }
 
-void Matrix_Factorizer::getFactorization(Mat& L,  Mat& R, double tolerance,
-                                            int n_row_start, int n_col_start, 
-                                            int n_rows, int n_cols
-                                           )
+void Matrix_Factorizer::SVD(Mat& L,  Mat& R, double tolerance_or_rank,
+                            int n_row_start, int n_col_start, 
+                            int n_rows, int n_cols
+                           )
+{
+    Mat temp = this->A->getMatrix(n_row_start, n_col_start, n_rows, n_cols);
+    Eigen::BDCSVD<Eigen::MatrixXd> svd(temp, Eigen::ComputeThinU | Eigen::ComputeThinV);
+
+    svd.setThreshold(tolerance_or_rank);
+    int rank = svd.rank();
+    L        = svd.matrixU().block(0, 0, n_rows, rank) * svd.singularValues().block(0, 0, rank, 1).asDiagonal();
+    R        = svd.matrixV().block(0, 0, n_cols, rank);
+}
+
+void Matrix_Factorizer::getFactorization(Mat& L,  Mat& R, double tolerance_or_rank,
+                                         int n_row_start, int n_col_start, 
+                                         int n_rows, int n_cols
+                                        )
 {
     if(n_rows == -1)
         n_rows = this->N;
@@ -343,10 +357,18 @@ void Matrix_Factorizer::getFactorization(Mat& L,  Mat& R, double tolerance,
     if(this->type == "rookPivoting")
     {
         int computed_rank;
-        rookPiv(n_row_start, n_col_start, 
-                n_rows, n_cols, tolerance, 
-                L, R, computed_rank
+        rookPiv(L, R, tolerance_or_rank,
+                n_row_start, n_col_start, 
+                n_rows, n_cols
                );
+    }
+
+    else if(this->type == "SVD")
+    {
+        SVD(L, R, tolerance_or_rank,
+            n_row_start, n_col_start, 
+            n_rows, n_cols
+           );
     }
 
     else

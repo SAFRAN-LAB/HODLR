@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
     const double tolerance = 1e-12;
 
     Test_Kernel K(dim);
-    Matrix_Factorizer F(&K);
+    Matrix_Factorizer F(&K, "SVD");
 
     int n_levels  = log(dim / nLeaf) / log(2);
 

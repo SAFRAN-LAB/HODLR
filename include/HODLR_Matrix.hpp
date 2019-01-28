@@ -68,6 +68,8 @@ public:
 
     Vec getRow(int j, int n_col_start, int n_cols);
     Vec getCol(int k, int n_row_start, int n_rows);
+    Vec getDiag1(int j, int k, int n_rows, int n_cols);
+    Vec getDiag2(int j, int k, int n_rows, int n_cols);
     Mat getMatrix(int j, int k, int n_rows, int n_cols);
 
     // Destructor:

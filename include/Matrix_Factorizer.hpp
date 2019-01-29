@@ -19,6 +19,11 @@ private:
                  int n_rows, int n_cols
                 );
 
+    void queenPiv(Mat& L,  Mat& R, double rank_or_tolerance,
+                  int n_row_start, int n_col_start, 
+                  int n_rows, int n_cols
+                 );
+
     void SVD(Mat& L,  Mat& R, double rank_or_tolerance,
              int n_row_start, int n_col_start, 
              int n_rows, int n_cols

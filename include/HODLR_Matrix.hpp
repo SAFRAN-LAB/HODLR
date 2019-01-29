@@ -51,6 +51,14 @@ public:
     // Size of the matrix:
     int N;
 
+    // Modulo operator:
+    // This is separately defined to make sure 
+    // that positive values are always returned
+    int mod(int a, int b)
+    {
+        return ((a % b + b) % b);
+    }
+
     // Constructor:
     HODLR_Matrix(int N)
     {

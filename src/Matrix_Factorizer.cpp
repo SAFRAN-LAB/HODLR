@@ -330,149 +330,274 @@ void Matrix_Factorizer::rookPiv(Mat& L, Mat& R, double tolerance,
     }
 }
 
-// void Matrix_Factorizer::queenPiv(Mat& L, Mat& R, double tolerance,
-//                                  int n_row_start, int n_col_start,
-//                                  int n_rows, int n_cols
-//                                 )
-// {
-//     // Indices which have been used:
-//     std::vector<int> row_ind;      
-//     std::vector<int> col_ind;
+void Matrix_Factorizer::queenPiv(Mat& L, Mat& R, double tolerance,
+                                 int n_row_start, int n_col_start,
+                                 int n_rows, int n_cols
+                                )
+{
+    // Indices which have been used:
+    std::vector<int> row_ind;      
+    std::vector<int> col_ind;
 
-//     // Indices that are remaining:
-//     std::set<int> remaining_row_ind;
-//     std::set<int> remaining_col_ind;
+    // Indices that are remaining:
+    std::set<int> remaining_row_ind;
+    std::set<int> remaining_col_ind;
     
-//     // Bases:
-//     std::vector<Vec> u; 
-//     std::vector<Vec> v;
+    // Bases:
+    std::vector<Vec> u; 
+    std::vector<Vec> v;
 
-//     for(int k = 0; k < n_rows; k++) 
-//     {
-//         remaining_row_ind.insert(k);
-//     }
+    for(int k = 0; k < n_rows; k++) 
+    {
+        remaining_row_ind.insert(k);
+    }
     
-//     for(int k = 0; k < n_cols; k++) 
-//     {
-//         remaining_col_ind.insert(k);
-//     }
+    for(int k = 0; k < n_cols; k++) 
+    {
+        remaining_col_ind.insert(k);
+    }
 
-//     dtype max, gamma;
+    dtype max1, max2, max, gamma;
 
-//     // Initialize the matrix norm and the the first row index
-//     dtype_base matrix_norm = 0;
-//     row_ind.push_back(0);
-//     remaining_row_ind.erase(0);
+    // Initialize the matrix norm:
+    dtype_base matrix_norm = 0;
+    // Stores the pivot entry of the considered row / col:
+    int pivot1, pivot2, pivot;
 
-//     // Stores the pivot entry of the considered row / col:
-//     int pivot;
+    // This would get updated:
+    int computed_rank = 0;
+    Vec diag1, diag2, row, col;
+    // These quantities in finding the stopping criteria:
+    dtype_base row_squared_norm, row_norm, col_squared_norm, col_norm;
 
-//     // This would get updated:
-//     int computed_rank = 0;
-//     Vec row, col;
-//     // These quantities in finding the stopping criteria:
-//     dtype_base row_squared_norm, row_norm, col_squared_norm, col_norm;
+    // Repeat till the desired tolerance is obtained
+    do 
+    {
+        std::cout << "Iteration Number:" << computed_rank << std::endl << std::endl;
+        if(computed_rank == 0)
+        {
+            diag1 = this->A->getDiag1(n_row_start, n_col_start, n_rows, n_cols);
+        }
 
-//     // Repeat till the desired tolerance is obtained
-//     do 
-//     {
-//         diag1 = this->A->getDiag1(n_row_start + row_ind.back(), n_col_start + col_ind.back(), n_rows, n_cols);
-//         for(int i = 0; i < computed_rank; i++)
-//         {
-//             int row_idx, col_idx;
-//             #pragma omp parallel for 
-//             for (int j = 0; j < diag1.size(); j++)
-//             {
-//                 row_idx = n_row_start + j;
-//                 col_idx = n_col_start + j;
+        else
+        {
+            diag1 = this->A->getDiag1(n_row_start + row_ind.back(), n_col_start + col_ind.back(), n_rows, n_cols);
+        }
 
-//                 while(col_idx >= n_cols)
-//                     col_idx = col_idx - n_cols;
-//                 while(row_idx >= n_rows)
-//                     row_idx = row_idx - n_rows;
-//                 while(col_idx < 0)
-//                     col_idx = col_idx + n_cols;
-//                 while(row_idx < 0)
-//                     row_idx = row_idx + n_rows;
+        Mat res = this->A->getMatrix(0, 0, 5, 5);
+        for(int i = 0; i < computed_rank; i++)
+        {
+            res = res - (u[i] * v[i].transpose());
+        }
 
-//                 diag1(j) = diag1(j) - u[i](row_idx) * v[i](col_idx);
-//             }
-//         }
-
-//         if(n_rows > n_cols)
-//             this->maxAbsVector(diag, remaining_row_ind, max, pivot);
-//         else
-//             this->maxAbsVector(diag, remaining_col_ind, max, pivot);
-
-//         int new_row_ind, new_col_ind;
-//         new_col_ind = n_col_start + pivot;
-
-//         col_ind.push_back(new_col_ind);
-//         remaining_col_ind.erase(new_col_ind);
-//         // Normalizing constant
-//         gamma = dtype_base(1.0) / max;
-//         row_ind.push_back(n_row_start + pivot);
-//         remaining_row_ind.erase(n_row_start + pivot);
-
-//         // New vectors
-//         u.push_back(gamma * col);
-//         v.push_back(row);
-
-//         // New approximation of matrix norm
-//         row_squared_norm = row.squaredNorm();
-//         row_norm         = sqrt(row_squared_norm);
-
-//         col_squared_norm = col.squaredNorm();
-//         col_norm         = sqrt(col_squared_norm);
-
-//         // Updating the matrix norm:
-//         matrix_norm += std::abs(gamma * gamma * row_squared_norm * col_squared_norm);
-
-//         for(int j = 0; j < computed_rank; j++) 
-//         {
-//             matrix_norm += 2.0 * std::abs(u[j].dot(u.back())) 
-//                                * std::abs(v[j].dot(v.back()));
-//         }
+        std::cout << "Matrix Now is:" << std::endl;
+        std::cout <<  res << std::endl << std::endl;
         
-//         computed_rank++;
-//     }
-//     while(computed_rank * (n_rows + n_cols) * row_norm * col_norm > 
-//           fabs(max) * tolerance * matrix_norm && 
-//           computed_rank < fmin(n_rows, n_cols)
-//          );
+        for(int i = 0; i < computed_rank; i++)
+        {
+            int row_idx, col_idx;
+            #pragma omp parallel for 
+            for (int j = 0; j < diag1.size(); j++)
+            {
+                if(n_cols > n_rows)
+                {
+                    row_idx = this->A->mod((n_row_start + row_ind.back()) - (n_col_start + col_ind.back()) + j, n_rows);
+                    col_idx = j;
+                }
 
-//     // If the computed_rank is >= to full-rank
-//     // then return the trivial full-rank decomposition
-//     if (computed_rank >= fmin(n_rows, n_cols) - 1) 
-//     {
-//         if (n_rows < n_cols) 
-//         {
-//             L = Mat::Identity(n_rows, n_rows);
-//             R = this->A->getMatrix(n_row_start, n_col_start, n_rows, n_cols).transpose();
-//             computed_rank = n_rows;
-//         }
+                else
+                {
+                    row_idx = j;
+                    col_idx = this->A->mod((n_col_start + col_ind.back()) - (n_row_start + row_ind.back()) + j, n_cols);
+                }
 
-//         else 
-//         {
-//             L = this->A->getMatrix(n_row_start, n_col_start, n_rows, n_cols);
-//             R = Mat::Identity(n_cols, n_cols);
-//             computed_rank = n_cols;
-//         }
-//     }
-    
-//     // This is when ACA has succeeded:
-//     else 
-//     {
-//         L = Mat(n_rows, computed_rank);
-//         R = Mat(n_cols, computed_rank);
+                diag1(j) = diag1(j) - u[i](row_idx) * v[i](col_idx);
+            }
+        }
+
+        std::cout << "Diagonal 1:" << std::endl << diag1 << std::endl << std::endl;
+
+        if(computed_rank == 0)
+            diag2 = this->A->getDiag2(n_row_start, n_col_start, n_rows, n_cols);
+        else
+            diag2 = this->A->getDiag2(n_row_start + row_ind.back(), n_col_start + col_ind.back(), n_rows, n_cols);
+
+        for(int i = 0; i < computed_rank; i++)
+        {
+            int row_idx, col_idx;
+            #pragma omp parallel for 
+            for (int j = 0; j < diag2.size(); j++)
+            {
+                if(n_cols > n_rows)
+                {
+                    row_idx = this->A->mod((n_row_start + row_ind.back()) + (n_col_start + col_ind.back()) - j, n_rows);
+                    col_idx = j;
+                }
+
+                else
+                {
+                    row_idx = j;
+                    col_idx = this->A->mod((n_col_start + col_ind.back()) + (n_row_start + row_ind.back()) - j, n_cols);
+                }
+
+                diag2(j) = diag2(j) - u[i](row_idx) * v[i](col_idx);
+            }
+        }
+
+        std::cout << "Diagonal 2:" << std::endl << diag2 << std::endl << std::endl;
+        if(n_cols > n_rows)
+            this->maxAbsVector(diag1, remaining_col_ind, max1, pivot1);
+        else
+            this->maxAbsVector(diag1, remaining_row_ind, max1, pivot1);
+
+        std::cout << "MAX1:" << max1 << std::endl;
+        std::cout << "PIV1:" << pivot1 << std::endl;
+
+        if(n_cols > n_rows)
+            this->maxAbsVector(diag2, remaining_col_ind, max2, pivot2);
+        else
+            this->maxAbsVector(diag2, remaining_row_ind, max2, pivot2);
+
+        std::cout << "MAX2:" << max2 << std::endl;
+        std::cout << "PIV2:" << pivot2 << std::endl;
+
+        int new_row_ind, new_col_ind;
+        if(fabs(max2) > fabs(max1))
+        {
+            std::cout << "We are choosing diag2" << std::endl;
+            max   = max2;
+            pivot = pivot2;
+
+            if(n_cols > n_rows)
+            {
+                new_row_ind = this->A->mod((n_col_start + col_ind.back()) + (n_row_start + row_ind.back()) - pivot, n_rows);
+                new_col_ind = pivot;
+            }
+
+            else
+            {
+                new_row_ind = pivot;
+                new_col_ind = this->A->mod((n_col_start + col_ind.back()) + (n_row_start + row_ind.back()) - pivot, n_cols);
+            }
+        }
+
+        else
+        {
+            std::cout << "We are choosing diag1" << std::endl;
+            max   = max1;
+            pivot = pivot1;
+
+            if(n_cols > n_rows)
+            {
+                if(computed_rank == 0)
+                    new_row_ind = this->A->mod(n_col_start - n_row_start + pivot, n_rows);
+
+                else
+                    new_row_ind = this->A->mod((n_col_start + col_ind.back()) - (n_row_start + row_ind.back()) + pivot, n_rows);
+
+                new_col_ind = pivot;
+            }
+
+            else
+            {
+                new_row_ind = pivot;
+
+                if(computed_rank == 0)
+                    new_col_ind = this->A->mod(n_col_start - n_row_start + pivot, n_cols);
+                else
+                    new_col_ind = this->A->mod((n_col_start + col_ind.back()) - (n_row_start + row_ind.back()) + pivot, n_cols);
+            }
+        }
+
+        // If the max value ~ machine ε, we terminate the process:
+        if(fabs(max) < 1e-14)
+            break;
+
+        std::cout << "ROWI:" << new_row_ind << std::endl;
+        std::cout << "COLI:" << new_col_ind << std::endl << std::endl;
+
+        col_ind.push_back(new_col_ind);
+        remaining_col_ind.erase(new_col_ind);
+        // Normalizing constant
+        gamma = dtype_base(1.0) / max;
+        row_ind.push_back(new_row_ind);
+        remaining_row_ind.erase(new_row_ind);
+
+        // New vectors
+        row = this->A->getRow(new_row_ind, n_col_start, n_cols);
+        for(int i = 0; i < computed_rank; i++) 
+        {
+            row = row - u[i](row_ind.back()) * v[i];
+        }
+
+        col = this->A->getCol(new_col_ind, n_row_start, n_rows);
+        for(int i = 0; i < computed_rank; i++) 
+        {
+            col = col - v[i](col_ind.back()) * u[i];
+        }
+
+        u.push_back(gamma * col);
+        v.push_back(row);
+
+        std::cout << u.back() << std::endl;
+        std::cout << v.back() << std::endl;
+        std::cout << u.back() * v.back().transpose() << std::endl;
+
+        // New approximation of matrix norm
+        row_squared_norm = row.squaredNorm();
+        row_norm         = sqrt(row_squared_norm);
+
+        col_squared_norm = col.squaredNorm();
+        col_norm         = sqrt(col_squared_norm);
+
+        // Updating the matrix norm:
+        matrix_norm += std::abs(gamma * gamma * row_squared_norm * col_squared_norm);
+
+        for(int j = 0; j < computed_rank; j++) 
+        {
+            matrix_norm += 2.0 * std::abs(u[j].dot(u.back())) 
+                               * std::abs(v[j].dot(v.back()));
+        }
         
-//         for (int j = 0; j < computed_rank; j++) 
-//         {
-//             L.col(j) = u[j];
-//             R.col(j) = v[j];
-//         }
-//     }
-// }
+        computed_rank++;
+    }
+    while(computed_rank * (n_rows + n_cols) * row_norm * col_norm > 
+          fabs(max) * tolerance * matrix_norm && 
+          computed_rank < fmin(n_rows, n_cols)
+         );
+
+    // If the computed_rank is >= to full-rank
+    // then return the trivial full-rank decomposition
+    if (computed_rank >= fmin(n_rows, n_cols) - 1) 
+    {
+        if (n_rows < n_cols) 
+        {
+            L = Mat::Identity(n_rows, n_rows);
+            R = this->A->getMatrix(n_row_start, n_col_start, n_rows, n_cols).transpose();
+            computed_rank = n_rows;
+        }
+
+        else 
+        {
+            L = this->A->getMatrix(n_row_start, n_col_start, n_rows, n_cols);
+            R = Mat::Identity(n_cols, n_cols);
+            computed_rank = n_cols;
+        }
+    }
+    
+    // This is when ACA has succeeded:
+    else 
+    {
+        L = Mat(n_rows, computed_rank);
+        R = Mat(n_cols, computed_rank);
+        
+        for (int j = 0; j < computed_rank; j++) 
+        {
+            L.col(j) = u[j];
+            R.col(j) = v[j];
+        }
+    }
+}
 
 void Matrix_Factorizer::SVD(Mat& L,  Mat& R, double tolerance_or_rank,
                             int n_row_start, int n_col_start, 
@@ -505,6 +630,15 @@ void Matrix_Factorizer::getFactorization(Mat& L,  Mat& R, double tolerance_or_ra
                 n_row_start, n_col_start, 
                 n_rows, n_cols
                );
+    }
+
+    else if(this->type == "queenPivoting")
+    {
+        int computed_rank;
+        queenPiv(L, R, tolerance_or_rank,
+                 n_row_start, n_col_start, 
+                 n_rows, n_cols
+                );
     }
 
     else if(this->type == "SVD")

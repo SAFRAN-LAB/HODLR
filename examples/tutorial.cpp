@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
         std::cout << "All arguments weren't passed to executable!" << std::endl;
         std::cout << "Using Default Arguments:" << std::endl;
         // Size of the Matrix in consideration:
-        N          = 10000;
+        N          = 6400;
         // Size of Matrices at leaf level:
         M          = 200;
         // Dimensionality of the problem:
@@ -111,7 +111,7 @@ int main(int argc, char* argv[])
 
     // Declaration of HODLR_Matrix object that abstracts data in Matrix:
     Kernel* K            = new Kernel(N, dim);
-    Matrix_Factorizer* F = new Matrix_Factorizer(K);
+    Matrix_Factorizer* F = new Matrix_Factorizer(K, "queenPivoting");
     int n_levels         = log(N / M) / log(2);
 
     std::cout << "========================= Problem Parameters =========================" << std::endl;

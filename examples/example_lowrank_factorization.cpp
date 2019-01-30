@@ -15,8 +15,8 @@ public:
     // Constructor:
     Kernel(int N) : HODLR_Matrix(N) 
     {
-        Mat a = Mat::Random(N, 2);
-        Mat b = Mat::Random(N, 2);
+        Mat a = Mat::Random(N, 100);
+        Mat b = Mat::Random(N, 100);
 
         x = a * b.transpose();
     };
@@ -40,7 +40,7 @@ int main(int argc, char* argv[])
         std::cout << "All arguments weren't passed to executable!" << std::endl;
         std::cout << "Using Default Arguments:" << std::endl;
         // Size of the Matrix in consideration:
-        N          = 5;
+        N          = 1000;
         // Tolerance of problem
         tolerance  = pow(10, -12);
     }
@@ -58,18 +58,40 @@ int main(int argc, char* argv[])
     std::cout << "Tolerance   :" << tolerance << std::endl << std::endl;
 
     // Declaration of HODLR_Matrix object that abstracts data in Matrix:
-    Kernel* K            = new Kernel(N);
-    Matrix_Factorizer* F = new Matrix_Factorizer(K, "queenPivoting");
+    Kernel* K             = new Kernel(N);
+    Matrix_Factorizer* F1 = new Matrix_Factorizer(K, "rookPivoting");
+    Matrix_Factorizer* F2 = new Matrix_Factorizer(K, "queenPivoting");
+    Matrix_Factorizer* F3 = new Matrix_Factorizer(K, "SVD");
 
     Mat B = K->getMatrix(0, 0, N, N);
-    std::cout << "The input Matrix that has been provided is:" << std::endl;
-    std::cout << B << std::endl << std::endl << std::endl;
+    Mat L, R, error;
 
-    Mat L, R;
-    F->getFactorization(L, R, tolerance);
+    for(int m = 1; m < 121; m++)
+    {
+        F1->getFactorization(L, R, m);
+        error = B - L * R.transpose();
+        std::cout << error.cwiseAbs().maxCoeff() << std::endl;
+    }
 
-    Mat error = B - L * R.transpose();
-    std::cout << "Accuracy of Factorization:" << error.maxCoeff() << std::endl << std::endl;
+    std::cout << std::endl << std::endl;
+
+    for(int m = 1; m < 121; m++)
+    {
+        F2->getFactorization(L, R, m);
+        error = B - L * R.transpose();
+        std::cout << error.cwiseAbs().maxCoeff() << std::endl;
+    }
+
+    std::cout << std::endl << std::endl;
+
+    for(int m = 1; m < 121; m++)
+    {
+        F3->getFactorization(L, R, m);
+        error = B - L * R.transpose();
+        std::cout << error.cwiseAbs().maxCoeff() << std::endl;
+    }
+
+    // std::cout << "Accuracy of Factorization:" << error.maxCoeff() << std::endl << std::endl;
 
     return 0;
 }

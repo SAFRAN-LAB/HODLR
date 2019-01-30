@@ -19,7 +19,7 @@ void Matrix_Factorizer::maxAbsVector(const Vec& v,
     }
 }
 
-void Matrix_Factorizer::rookPiv(Mat& L, Mat& R, double tolerance,
+void Matrix_Factorizer::rookPiv(Mat& L, Mat& R, double tolerance_or_rank,
                                 int n_row_start, int n_col_start,
                                 int n_rows, int n_cols
                                )
@@ -56,17 +56,25 @@ void Matrix_Factorizer::rookPiv(Mat& L, Mat& R, double tolerance,
     // Stores the pivot entry of the considered row / col:
     int pivot;
 
+    int target_rank = 0;
     // This would get updated:
     int computed_rank = 0;
     Vec row, col;
+
+    double tolerance = 0;
     // These quantities in finding the stopping criteria:
     dtype_base row_squared_norm, row_norm, col_squared_norm, col_norm;
+
+    if(tolerance_or_rank < 1)
+        tolerance = tolerance_or_rank;
+    else
+        target_rank = tolerance_or_rank;
 
     // So these would be particularly useful for poorly conditioned matrices:
     int max_tries = 10;
     int count;
 
-    // Repeat till the desired tolerance is obtained
+    // Repeat till the desired tolerance / rank is obtained
     do 
     {
         // Generation of the row
@@ -291,9 +299,12 @@ void Matrix_Factorizer::rookPiv(Mat& L, Mat& R, double tolerance,
         }
         
         computed_rank++;
-    } 
-    while(computed_rank * (n_rows + n_cols) * row_norm * col_norm > 
-          fabs(max) * tolerance * matrix_norm && 
+    }
+    while(((tolerance_or_rank < 1) ? 
+          computed_rank * (n_rows + n_cols) * row_norm * col_norm > 
+          fabs(max) * tolerance * matrix_norm 
+          : computed_rank < target_rank)
+          && 
           computed_rank < fmin(n_rows, n_cols)
          );
 
@@ -330,7 +341,7 @@ void Matrix_Factorizer::rookPiv(Mat& L, Mat& R, double tolerance,
     }
 }
 
-void Matrix_Factorizer::queenPiv(Mat& L, Mat& R, double tolerance,
+void Matrix_Factorizer::queenPiv(Mat& L, Mat& R, double tolerance_or_rank,
                                  int n_row_start, int n_col_start,
                                  int n_rows, int n_cols
                                 )
@@ -364,35 +375,28 @@ void Matrix_Factorizer::queenPiv(Mat& L, Mat& R, double tolerance,
     // Stores the pivot entry of the considered row / col:
     int pivot1, pivot2, pivot;
 
+    int target_rank = 0;
     // This would get updated:
     int computed_rank = 0;
     Vec diag1, diag2, row, col;
+
+    double tolerance = 0;
     // These quantities in finding the stopping criteria:
     dtype_base row_squared_norm, row_norm, col_squared_norm, col_norm;
 
-    // Repeat till the desired tolerance is obtained
+    if(tolerance_or_rank < 1)
+        tolerance = tolerance_or_rank;
+    else
+        target_rank = tolerance_or_rank;
+
+    // Repeat till the desired tolerance / rank is obtained
     do 
     {
-        std::cout << "Iteration Number:" << computed_rank << std::endl << std::endl;
         if(computed_rank == 0)
-        {
             diag1 = this->A->getDiag1(n_row_start, n_col_start, n_rows, n_cols);
-        }
-
         else
-        {
             diag1 = this->A->getDiag1(n_row_start + row_ind.back(), n_col_start + col_ind.back(), n_rows, n_cols);
-        }
 
-        Mat res = this->A->getMatrix(0, 0, 5, 5);
-        for(int i = 0; i < computed_rank; i++)
-        {
-            res = res - (u[i] * v[i].transpose());
-        }
-
-        std::cout << "Matrix Now is:" << std::endl;
-        std::cout <<  res << std::endl << std::endl;
-        
         for(int i = 0; i < computed_rank; i++)
         {
             int row_idx, col_idx;
@@ -414,8 +418,6 @@ void Matrix_Factorizer::queenPiv(Mat& L, Mat& R, double tolerance,
                 diag1(j) = diag1(j) - u[i](row_idx) * v[i](col_idx);
             }
         }
-
-        std::cout << "Diagonal 1:" << std::endl << diag1 << std::endl << std::endl;
 
         if(computed_rank == 0)
             diag2 = this->A->getDiag2(n_row_start, n_col_start, n_rows, n_cols);
@@ -444,27 +446,19 @@ void Matrix_Factorizer::queenPiv(Mat& L, Mat& R, double tolerance,
             }
         }
 
-        std::cout << "Diagonal 2:" << std::endl << diag2 << std::endl << std::endl;
         if(n_cols > n_rows)
             this->maxAbsVector(diag1, remaining_col_ind, max1, pivot1);
         else
             this->maxAbsVector(diag1, remaining_row_ind, max1, pivot1);
-
-        std::cout << "MAX1:" << max1 << std::endl;
-        std::cout << "PIV1:" << pivot1 << std::endl;
 
         if(n_cols > n_rows)
             this->maxAbsVector(diag2, remaining_col_ind, max2, pivot2);
         else
             this->maxAbsVector(diag2, remaining_row_ind, max2, pivot2);
 
-        std::cout << "MAX2:" << max2 << std::endl;
-        std::cout << "PIV2:" << pivot2 << std::endl;
-
         int new_row_ind, new_col_ind;
         if(fabs(max2) > fabs(max1))
         {
-            std::cout << "We are choosing diag2" << std::endl;
             max   = max2;
             pivot = pivot2;
 
@@ -483,7 +477,6 @@ void Matrix_Factorizer::queenPiv(Mat& L, Mat& R, double tolerance,
 
         else
         {
-            std::cout << "We are choosing diag1" << std::endl;
             max   = max1;
             pivot = pivot1;
 
@@ -513,9 +506,6 @@ void Matrix_Factorizer::queenPiv(Mat& L, Mat& R, double tolerance,
         if(fabs(max) < 1e-14)
             break;
 
-        std::cout << "ROWI:" << new_row_ind << std::endl;
-        std::cout << "COLI:" << new_col_ind << std::endl << std::endl;
-
         col_ind.push_back(new_col_ind);
         remaining_col_ind.erase(new_col_ind);
         // Normalizing constant
@@ -539,10 +529,6 @@ void Matrix_Factorizer::queenPiv(Mat& L, Mat& R, double tolerance,
         u.push_back(gamma * col);
         v.push_back(row);
 
-        std::cout << u.back() << std::endl;
-        std::cout << v.back() << std::endl;
-        std::cout << u.back() * v.back().transpose() << std::endl;
-
         // New approximation of matrix norm
         row_squared_norm = row.squaredNorm();
         row_norm         = sqrt(row_squared_norm);
@@ -561,8 +547,11 @@ void Matrix_Factorizer::queenPiv(Mat& L, Mat& R, double tolerance,
         
         computed_rank++;
     }
-    while(computed_rank * (n_rows + n_cols) * row_norm * col_norm > 
-          fabs(max) * tolerance * matrix_norm && 
+    while(((tolerance_or_rank < 1) ? 
+          computed_rank * (n_rows + n_cols) * row_norm * col_norm > 
+          fabs(max) * tolerance * matrix_norm 
+          : computed_rank < target_rank)
+          && 
           computed_rank < fmin(n_rows, n_cols)
          );
 
@@ -607,10 +596,23 @@ void Matrix_Factorizer::SVD(Mat& L,  Mat& R, double tolerance_or_rank,
     Mat temp = this->A->getMatrix(n_row_start, n_col_start, n_rows, n_cols);
     Eigen::BDCSVD<Eigen::MatrixXd> svd(temp, Eigen::ComputeThinU | Eigen::ComputeThinV);
 
-    svd.setThreshold(tolerance_or_rank);
-    int rank = svd.rank();
-    L        = svd.matrixU().block(0, 0, n_rows, rank) * svd.singularValues().block(0, 0, rank, 1).asDiagonal();
-    R        = svd.matrixV().block(0, 0, n_cols, rank);
+    int rank;
+    if(tolerance_or_rank < 1)
+    {
+        svd.setThreshold(tolerance_or_rank);
+        rank = svd.rank();
+    }
+
+    else
+    {
+        rank = int(tolerance_or_rank);
+    }
+
+    std::cout << "Error of SVD:" << std::endl;
+    std::cout << (temp - (svd.matrixU() * svd.singularValues().asDiagonal() * svd.matrixV().transpose())).maxCoeff() << std::endl;
+
+    L = svd.matrixU().block(0, 0, n_rows, rank) * svd.singularValues().block(0, 0, rank, 1).asDiagonal();
+    R = svd.matrixV().block(0, 0, n_cols, rank);
 }
 
 void Matrix_Factorizer::getFactorization(Mat& L,  Mat& R, double tolerance_or_rank,

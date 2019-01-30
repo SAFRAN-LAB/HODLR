@@ -8,22 +8,39 @@ class Kernel : public HODLR_Matrix
 {
 
 private:
-    Mat x;
+    Vec x, y;
 
 public:
 
     // Constructor:
     Kernel(int N) : HODLR_Matrix(N) 
     {
-        Mat a = Mat::Random(N, 100);
-        Mat b = Mat::Random(N, 100);
+        x = 2 * Vec::Ones(N) + Vec::Random(N);
+        y = 7 * Vec::Ones(N) + Vec::Random(N);
 
-        x = a * b.transpose();
+        std::sort(x.data(), x.data() + x.size(), std::greater<double>());
+        std::sort(y.data(), y.data() + y.size());
+        std::ofstream myfile;
+        myfile.open("x.txt");
+        for(int j = 0; j < x.size(); j++)
+        {
+            myfile << x[j] << std::endl;
+        }
+        // Closing the file:
+        myfile.close();
+
+        myfile.open("y.txt");
+        for(int j = 0; j < y.size(); j++)
+        {
+            myfile << y[j] << std::endl;
+        }
+        // Closing the file:
+        myfile.close();
     };
     
     dtype getMatrixEntry(int i, int j) 
     {
-        return x(i, j);
+        return 1 / abs((x(i)-y(j)));
     }
 
     // Destructor:
@@ -32,6 +49,7 @@ public:
 
 int main(int argc, char* argv[]) 
 {
+    srand(time(NULL));
     int N, M, dim;
     double tolerance;
 
@@ -66,32 +84,9 @@ int main(int argc, char* argv[])
     Mat B = K->getMatrix(0, 0, N, N);
     Mat L, R, error;
 
-    for(int m = 1; m < 121; m++)
-    {
-        F1->getFactorization(L, R, m);
-        error = B - L * R.transpose();
-        std::cout << error.cwiseAbs().maxCoeff() << std::endl;
-    }
-
-    std::cout << std::endl << std::endl;
-
-    for(int m = 1; m < 121; m++)
-    {
-        F2->getFactorization(L, R, m);
-        error = B - L * R.transpose();
-        std::cout << error.cwiseAbs().maxCoeff() << std::endl;
-    }
-
-    std::cout << std::endl << std::endl;
-
-    for(int m = 1; m < 121; m++)
-    {
-        F3->getFactorization(L, R, m);
-        error = B - L * R.transpose();
-        std::cout << error.cwiseAbs().maxCoeff() << std::endl;
-    }
-
-    // std::cout << "Accuracy of Factorization:" << error.maxCoeff() << std::endl << std::endl;
+    F1->getFactorization(L, R, 1e-12);
+    error = B - L * R.transpose();
+    std::cout << "Accuracy of Factorization:" << error.maxCoeff() << std::endl << std::endl;
 
     return 0;
 }

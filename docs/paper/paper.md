@@ -27,7 +27,7 @@ bibliography: paper.bib
 
 ``HODLRlib`` is a flexible library for working with matrices that have a Hierarchical Off-Diagonal Low-Rank (HODLR) structure. The current version performs matrix operations like matrix-vector products, solving linear systems, Cholesky-like symmetric factorization and determinant computation in almost linear complexity. A key motivation for ``HODLRlib`` is to provide a high-performance, easy to use library for working with matrices that possess a HODLR structure. 
 
-``HODLRlib`` is an optimized implementation of the ideas illustrated in these articles[@ambikasaran2013mathcal][@ambikasaran2014fast]. The goal of ``HODLRlib`` is to serve as a reference implementation and is designed to have a simple interface with minimum number of dependencies. Our benchmarks demonstrate the large order of speedup that our library offers when compared to naive matrix factorizations.
+``HODLRlib`` is an optimized implementation of the ideas illustrated in @ambikasaran2013mathcal and @ambikasaran2014fast. The goal of ``HODLRlib`` is to serve as a reference implementation and is designed to have a simple interface with minimum number of dependencies. Our benchmarks demonstrate the large order of speedup that our library offers when compared to naive matrix factorizations.
 
 Our code makes use of shared-memory parallelism through OpenMP. The solver is fairly generic and can handle matrices not necessarily arising out of kernel functions. Further, the solver has been optimized and the running time of the solver is now massively (a few orders of magnitude) faster than the running times reported in the original articles.
 

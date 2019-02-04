@@ -41,7 +41,7 @@ The current release has the following capabilities:
 - Solve: Solves linear systems $A x = b$ at an additional cost of $\mathcal{O}\left(N\log\left(N\right)\right)$
 - Determinant Computation: Additional Cost of $\mathcal{O}\left(N\log{N} \right)$
 
-``HODLRlib`` is released under the MPL2 license, and the source code is available at <https://github.com/sivaramambikasaran/HODLR>
+``HODLRlib`` is released under the MPL2 license.
 
 # Acknowledgements
 

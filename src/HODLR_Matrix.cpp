@@ -53,7 +53,7 @@ void HODLR_Matrix::maxAbsVector(const Vec& v,
     index = *allowed_indices.begin();
     max   = v(index);
 
-    for(it = allowed_indices.begin(); it != allowed_indices.end(); it++) 
+    for(it = allowed_indices.begin(); it != allowed_indices.end(); ++it) 
     {
         if(fabs(v(*it))>fabs(max)) 
         {

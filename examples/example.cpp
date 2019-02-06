@@ -30,7 +30,7 @@ double logKn(int n, double x)
 class Test_Kernel : public HODLR_Matrix
 {
 public:
-    Test_Kernel (unsigned N) : HODLR_Matrix(N) 
+    explicit Test_Kernel (unsigned N) : HODLR_Matrix(N) 
     {};
 
     dtype getMatrixEntry(int i, int j)

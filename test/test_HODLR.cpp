@@ -15,7 +15,7 @@ private:
 public:
 
     // Constructor:
-    Kernel_Gaussian(int N, int dim) : HODLR_Matrix(N) 
+    explicit Kernel_Gaussian(int N, int dim) : HODLR_Matrix(N) 
     {
         x = (Mat::Random(N, dim)).real();
         // This is being sorted to ensure that we get
@@ -62,7 +62,7 @@ private:
 public:
 
     // Constructor:
-    Random_Matrix(int N) : HODLR_Matrix(N) 
+    explicit Random_Matrix(int N) : HODLR_Matrix(N) 
     {
         x = (Mat::Random(N, N)).real().cwiseAbs();
         x = 0.5 * (x + x.transpose());

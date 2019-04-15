@@ -60,7 +60,7 @@ public:
     }
 
     // Constructor:
-    HODLR_Matrix(int N)
+    explicit HODLR_Matrix(int N)
     {
         this->N = N;
     }

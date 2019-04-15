@@ -1,7 +1,7 @@
 ---
 title: 'HODLRlib: A Library for Hierarchical Matrices'
 tags:
-  - Hierachical Matrix
+  - Hierarchical Matrix
   - Fast Algorithms
   - Covariance Matrices
   - Gaussian Processes
@@ -25,9 +25,15 @@ bibliography: paper.bib
 
 # Summary
 
-``HODLRlib`` is a flexible library for working with matrices that have a Hierarchical Off-Diagonal Low-Rank (HODLR) structure. The current version performs matrix operations like matrix-vector products, solving linear systems, Cholesky-like symmetric factorization and determinant computation in almost linear complexity. A key motivation for ``HODLRlib`` is to provide a high-performance, easy to use library for working with matrices that possess a HODLR structure. 
+``HODLRlib`` is a flexible library for working with matrices that have a Hierarchical Off-Diagonal Low-Rank (HODLR) [@ambikasaran2013mathcal] structure. The current version performs matrix operations like matrix-vector products, solving linear systems, Cholesky-like symmetric factorization and determinant computation in almost linear complexity. 
 
-``HODLRlib`` is an optimized implementation of the ideas illustrated in these articles[@ambikasaran2013mathcal][@ambikasaran2014fast]. The goal of ``HODLRlib`` is to serve as a reference implementation and is designed to have a simple interface with minimum number of dependencies. Our benchmarks demonstrate the large order of speedup that our library offers when compared to naive matrix factorizations.
+Significant speedups are obtained with ``HODLRlib`` when dealing with matrices that have underlying data sparsity (rank-structured). Most rank-structured matrices fall in the class of Hierarchical matrices: some examples are $\mathcal{H}$ [@hmatrix1999; @hmatrix2000], $\mathcal{H}^2$ [@h2matrix2002], HSS [@chandrasekaran2006fast] and HODLR. These formats differ from each other in their matrix partitioning, low-rank sub-blocks and nested basis behaviour. A thorough comparison of these different formats has been provided in @ambikasaran2013fast.
+
+Among these hierarchical matrices, HODLR matrices are applicable for a wide range of problems of practical interest [@kressner2017fast; @Hartmann2018; @ambikasaran2016fast]. In addition, they possess the simplest data-sparse representation, which allows for easier implementation and obtaining large speed-ups.
+
+``HODLRlib`` strives to provide functionality for ``HODLR`` matrices similar to that which libraries such as STRUMPACK [@ghysels2016efficient] and H2lib [@h2matrix2002] provide for the HSS and $\mathcal{H}^2$ matrix formats respectively. Some unique features of our library are Cholesky-like symmetric factorization and determinant computation. While it is difficult to determine which matrix format works best, studies [@rouet_2015] in the past have revealed that it isn't a case of "one size fits all". Rather, it reveals that the optimum hierarchical matrix format is dependent on the problem and the size considered.
+
+``HODLRlib`` is an optimized implementation of the ideas illustrated in @ambikasaran2013mathcal, @ambikasaran2016fast and @ambikasaran2014fast. The goal of ``HODLRlib`` is to serve as a high-performance, easy to use reference implementation for working with any HODLR matrix. We believe that apart from the features provided by the library, the simplicity and the extendability of the implementation distinguishes ours from other libraries. Our interfaces are kept simple with a minimum number of dependencies, with well-documented code to ensure that a potential user/developer can hit the ground running as soon as possible.
 
 Our code makes use of shared-memory parallelism through OpenMP. The solver is fairly generic and can handle matrices not necessarily arising out of kernel functions. Further, the solver has been optimized and the running time of the solver is now massively (a few orders of magnitude) faster than the running times reported in the original articles.
 
@@ -41,7 +47,7 @@ The current release has the following capabilities:
 - Solve: Solves linear systems $A x = b$ at an additional cost of $\mathcal{O}\left(N\log\left(N\right)\right)$
 - Determinant Computation: Additional Cost of $\mathcal{O}\left(N\log{N} \right)$
 
-``HODLRlib`` is released under the MPL2 license, and the source code is available at <https://github.com/sivaramambikasaran/HODLR>
+``HODLRlib`` is released under the MPL2 license.
 
 # Acknowledgements
 

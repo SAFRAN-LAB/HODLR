@@ -4,13 +4,13 @@ CXX = g++
 UNAME := $(shell uname -s)
 
 FCFLAGS= 
-CCFLAGS=
+CCFLAGS=-I $(EIGEN_PATH) -I $(HODLR_PATH)/include -DUSE_DOUBLE
 LDFLAGS=-lstdc++
 
 all: test.x
-test.o : foo_mod.o
+test.o : kernel_mod.o
 
-%.x : %.o foo_mod.o foo_capi.o Foo.o
+%.x : %.o kernel_mod.o kernel_capi.o Kernel.o
 	${FC} $^ -o $@ ${LDFLAGS}
 
 %.o : %.f90

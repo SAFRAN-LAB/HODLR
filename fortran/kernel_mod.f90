@@ -1,61 +1,66 @@
 module libkernel
+
     use iso_c_binding
 
     private
     public :: kernel
 
+    ! Yes, include is a keyword in Fortran !
     include "kernel_cdef.f90"
 
+    ! We'll use a Fortan type to represent a C++ class here, in an opaque maner
     type kernel
         private
-        type(c_ptr) :: ptr 
+        type(c_ptr) :: ptr ! pointer to the Kernel class
     contains
 
+! We can bind some functions to this type, allowing for a cleaner syntax.
+#ifdef __GNUC__
+        procedure :: delete => delete_kernel_polymorph ! Destructor for gfortran
+#else
         final :: delete_kernel ! Destructor
-        procedure :: get_matrix => foo_baz
+#endif
+
+        ! Function member
+        procedure :: getmatrixentry => get_matrix_entry
 
     end type
 
-    ! This function will act as the constructor for kernel type
+    ! This function will act as the constructor for Kernel type
     interface kernel
         procedure create_kernel
     end interface
 
-! Implementation of the functions. We just wrap the C function here.
-contains 
+! Implementation of the functions. We just wrap the C function here
+contains
+
     function create_kernel(N)
         implicit none
         type(kernel) :: create_kernel
         integer, intent(in) :: N
-        create_kernel%ptr = create_kernel(a, b)
+        create_kernel%ptr = create_kernel_c(N)
     end function
 
-    subroutine delete_foo(this)
+    subroutine delete_kernel(this)
         implicit none
-        type(foo) :: this
-        call delete_foo_c(this%ptr)
+        type(kernel) :: this
+        call delete_kernel_c(this%ptr)
     end subroutine
 
-    double precision function foo_baz(this, c)
+    ! Bounds procedure needs to take a polymorphic (class) argument
+    subroutine delete_kernel_polymorph(this)
         implicit none
-        class(foo), intent(in) :: this
-        double precision, intent(in) :: c
-        foo_baz = foo_baz_c(this%ptr, c)
+        class(kernel) :: this
+        call delete_kernel_c(this%ptr)
+    end subroutine
+
+    double precision function get_matrix_entry(this, i, j)
+        implicit none
+        class(kernel), intent(in) :: this
+        integer, intent(in) :: i
+        integer, intent(in) :: j
+
+        get_matrix_entry = get_matrix_entry_c(this%ptr, i, j)
     end function
 
-    subroutine foo_speaker(str)
-        implicit none
-        character(len=*), intent(in) :: str
-        character(len=1, kind=C_CHAR) :: c_str(len_trim(str) + 1)
-        integer :: N, i
-
-        ! Converting Fortran string to C string
-        N = len_trim(str)
-        do i = 1, N
-            c_str(i) = str(i:i)
-        end do
-        c_str(N + 1) = C_NULL_CHAR
-
-        call foo_speaker_c(c_str)
-    end subroutine
 end module

@@ -19,3 +19,8 @@ dtype Kernel::getMatrixEntry(int i, int j) const
 {
     return 1 / abs((x(i)-y(j)));
 }
+
+dtype* Kernel::getVectorX() const
+{
+    return (this->x).data();
+}

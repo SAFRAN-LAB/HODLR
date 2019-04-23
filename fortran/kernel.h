@@ -18,6 +18,8 @@ void delete_kernel(KERNEL* K);
 // to pointers to the class instances.
 double get_matrix_entry(const KERNEL* K, int i, int j);
 
+double get_vector_x(const KERNEL* K);
+
 #ifdef __cplusplus
 }
 #endif

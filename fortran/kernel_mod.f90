@@ -23,6 +23,7 @@ module libkernel
 
         ! Function member
         procedure :: getmatrixentry => get_matrix_entry
+        ! procedure :: getmatrix => get_matrix
 
     end type
 
@@ -62,5 +63,25 @@ contains
 
         get_matrix_entry = get_matrix_entry_c(this%ptr, i, j)
     end function
+
+    function get_vector_x(this)
+        implicit none
+        class(kernel), intent(in) :: this
+        double precision, pointer :: get_vector_x
+        
+        get_vector_x = get_vector_x_c(this%ptr)
+    end function
+
+    ! subroutine get_matrix(this, row_start, col_start, row_end, col_end, a)
+    !     implicit none
+    !     class(kernel), intent(in) :: this
+    !     integer, intent(in) :: row_start
+    !     integer, intent(in) :: col_start
+    !     integer, intent(in) :: row_end
+    !     integer, intent(in) :: col_end
+
+    !     double precision :: a(row_end - row_start, col_end - col_start)
+    !     call get_matrix_c(this%ptr, row_start, col_start, row_end, col_end, a)
+    ! end subroutine
 
 end module

@@ -23,4 +23,26 @@ interface
         integer(c_int), value :: j
     end function
 
+    function get_vector_x_c(K) bind(C, name="get_vector_x")
+        use iso_c_binding
+        implicit none
+        real(c_double) :: get_vector_x_c(*)
+        type(c_ptr), intent(in), value :: K
+    end function
+
+    ! function get_matrix_c(K, row_start, col_start, row_end, col_end) bind(C, name = "get_matrix")
+
+    !     use iso_c_binding
+    !     implicit none
+
+    !     real(c_double), dimension(row_end - row_start, col_end - col_start) :: get_matrix_c
+    !     type(c_ptr), intent(in), value :: K
+
+    !     integer(c_int), value :: row_start
+    !     integer(c_int), value :: col_start
+    !     integer(c_int), value :: row_end
+    !     integer(c_int), value :: col_end
+    
+    ! end function
+
 end interface

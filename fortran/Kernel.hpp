@@ -13,4 +13,7 @@ public:
 
     // Returns a particular entry of the matrix:
     dtype getMatrixEntry(int i, int j) const;
+
+    // Returns Matrix x:
+    // dtype
 };

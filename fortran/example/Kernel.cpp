@@ -20,7 +20,7 @@ dtype Kernel::getMatrixEntry(int i, int j) const
     return 1 / abs((x(i)-y(j)));
 }
 
-dtype* Kernel::getVectorX() const
+void Kernel::getVectorX(const double* x) const
 {
-    return (this->x).data();
+    x = (this->x).data();
 }

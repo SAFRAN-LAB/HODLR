@@ -23,12 +23,12 @@ interface
         integer(c_int), value :: j
     end function
 
-    function get_vector_x_c(K) bind(C, name="get_vector_x")
+    subroutine get_vector_x_c(K, x) bind(C, name="get_vector_x")
         use iso_c_binding
         implicit none
-        real(c_double) :: get_vector_x_c(*)
         type(c_ptr), intent(in), value :: K
-    end function
+        real(c_double) :: x(*)
+    end subroutine
 
     ! function get_matrix_c(K, row_start, col_start, row_end, col_end) bind(C, name = "get_matrix")
 

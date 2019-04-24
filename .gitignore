@@ -60,6 +60,7 @@ Thumbs.db
 # build directory #
 ###################
 build/
+fortran/build/
 
 # dependency directory #
 ########################

@@ -16,9 +16,9 @@ double get_matrix_entry(const KERNEL* K, int i, int j)
     return K->getMatrixEntry(i, j);
 }
 
-double* get_vector_x(const KERNEL* K)
+void get_vector_x(const KERNEL* K, const double* x)
 {
-    return K->getVectorX();
+    K->getVectorX(x);
 }
 
 // double* get_matrix(const KERNEL* K, int row_start, int col_start, int row_end, int col_end)

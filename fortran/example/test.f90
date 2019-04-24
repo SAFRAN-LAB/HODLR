@@ -11,12 +11,18 @@ program test
     ! Counters used to loop over elements of the data matrix:
     integer :: i, j
 
+    double precision :: vector_x(N)
+
     ! Random number:
     double precision :: rand
 
     ! Create an object of type foo
     k = kernel(N)
     print *, k%getmatrixentry(0, 0)
+
+
+    call k%getvectorx(p)
+
     ! call k%getmatrix(0, 0, N, N, a)
 
 ! The destructor should be called automatically here, but this is not yet

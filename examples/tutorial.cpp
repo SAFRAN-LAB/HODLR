@@ -47,30 +47,8 @@ public:
                 R2 += (x(i,k) - x(j,k)) * (x(i,k) - x(j,k));
             }
 
-            R = sqrt(R2);
-
-            // Exponential: exp(-R)
-            // return exp(-R);
             // Gaussian Kernel: e(-R^2)
             return exp(-R2);
-            // Sinc Kernel: sin(R) / R
-            // return (sin(R) / R);
-            // // Quadric Kernel: (1 + R^2)
-            // return (1 + R2);
-            // // Inverse-Quadric Kernel: 1 / (1 + R^2)
-            // return (1 / (1 + R2));
-            // // Multi-Quadric Kernel: sqrt(1 + R^2)
-            // return sqrt(1 + R2);
-            // // Inverse-Multiquadric Kernel: 1 / sqrt(1 + R^2)
-            // return (1 / sqrt(1 + R2));
-            // // Log(R) Kernel:
-            // return log(R);
-            // // R^2 log(R) Kernel:
-            // return (R2 * log(R));
-            // // 1 / R Kernel:
-            // return (1 / R);
-            // // log(1 + R) Kernel:
-            // return log(1 + R);
         }
     }
 

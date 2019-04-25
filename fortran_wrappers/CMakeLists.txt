@@ -34,12 +34,14 @@ include_directories("${EIGEN_PATH}"
 set(HODLRlib_SRCS
     ${HODLR_PATH}/src/HODLR_Matrix.cpp
     ${HODLR_PATH}/src/KDTree.cpp
+    ${HODLR_PATH}/src/Matrix_Factorizer.cpp
    )
 
 add_executable(${OUTPUT_EXECUTABLE}
                ${INPUT_FILE}
                ${HODLRlib_SRCS}
                "${HODLR_PATH}/fortran_wrappers/wrapper/fortran_wrapper.cpp"
+               "${HODLR_PATH}/fortran_wrappers/wrapper/hodlr_mod.f90"
               )
 
 set_property(TARGET example PROPERTY LINKER_LANGUAGE Fortran)

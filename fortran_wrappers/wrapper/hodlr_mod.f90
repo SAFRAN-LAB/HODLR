@@ -45,23 +45,23 @@ module hodlr_mod
 
             real(c_double), intent(inout) :: l(*)
             real(c_double), intent(inout) :: r(*)
-            real(c_double), intent(in) :: eps
+            integer(c_int), intent(in) :: eps
 
         end subroutine
     end interface
 
-    ! interface
-    !     subroutine initialize_hodlr_tree(tree, n_levels, eps, factorizer) bind(c)
-    !         use iso_c_binding
+    interface
+        subroutine initialize_hodlr_tree(tree, n_levels, eps, factorizer) bind(c)
+            use iso_c_binding
 
-    !         type(c_ptr), intent(inout) :: tree
+            type(c_ptr), intent(inout) :: tree
 
-    !         integer(c_int), intent(in) :: n_levels
-    !         real(c_double), intent(in) :: eps
+            integer(c_int), intent(in) :: n_levels
+            real(c_double), intent(in) :: eps
 
-    !         type(c_ptr), intent(in) :: factorizer
+            type(c_ptr), intent(in) :: factorizer
 
-    !     end subroutine
-    ! end interface
+        end subroutine
+    end interface
 
 end module hodlr_mod

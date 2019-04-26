@@ -35,6 +35,10 @@ set(HODLRlib_SRCS
     ${HODLR_PATH}/src/HODLR_Matrix.cpp
     ${HODLR_PATH}/src/KDTree.cpp
     ${HODLR_PATH}/src/Matrix_Factorizer.cpp
+    ${HODLR_PATH}/src/HODLR_Node.cpp
+    ${HODLR_PATH}/src/HODLR_Tree.cpp
+    ${HODLR_PATH}/src/HODLR_Tree_NonSPD.cpp
+    ${HODLR_PATH}/src/HODLR_Tree_SPD.cpp
    )
 
 add_executable(${OUTPUT_EXECUTABLE}

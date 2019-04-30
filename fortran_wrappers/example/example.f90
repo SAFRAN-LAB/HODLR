@@ -11,20 +11,20 @@ program main
     type(c_ptr) :: tree
 
     ! Size of the matrix:
-    integer, parameter :: N = 5
+    integer, parameter :: N = 1000
     ! Size of the matrix at the leaf level:
-    integer, parameter :: M = 5
+    integer, parameter :: M = 200
     ! Dimensionality of the problem considered:
     integer, parameter :: dim = 1
     ! Number of digits of tolerance required:
-    real(c_double), parameter :: eps = 1.0d-12
+    real(c_double), parameter :: eps = 1.0d-15
     ! Number of levels in the tree:
     integer :: n_levels = LOG(REAL(N) / REAL(M)) / LOG(2.)
 
     ! Whether matrix encoded is symmetric:
     logical(c_bool) :: is_sym = .true.
     ! Whether matrix encoded is positive-definite:
-    logical(c_bool) :: is_pd = .false.
+    logical(c_bool) :: is_pd = .true.
 
     ! Used to store the complete matrix:
     real(c_double) :: flattened_matrix(N * N)
@@ -40,6 +40,11 @@ program main
     ! Creating random vectors used on the RHS and LHS for multiplication and solving:
     real(c_double) :: x(N)
     real(c_double) :: b(N)
+    real(c_double) :: b_exact(N)
+    real(c_double) :: x_approx(N)
+
+    ! Used to store the log determinant of the matrix:
+    real(c_double) :: log_det
 
     ! Method used for low-rank matrix decomposition:
     character(len = 20) :: factorization_method = "rookPivoting"
@@ -58,16 +63,16 @@ program main
     call initialize_matrix_factorizer(factorizer, kernel, factorization_method)
 
     ! Example of directly getting the factorization:
-    call get_factorization(factorizer, l_flat, r_flat, eps)
+    ! call get_factorization(factorizer, l_flat, r_flat, eps)
 
-    ! Reshaping the flattened matrices:
-    l = reshape(l_flat, (/ N, N /))
-    r = reshape(r_flat, (/ N, N /))
+    ! ! Reshaping the flattened matrices:
+    ! l = reshape(l_flat, (/ N, N /))
+    ! r = reshape(r_flat, (/ N, N /))
 
-    ! Printing the Matrices and the error matrix:
-    call print_matrix(l, N)
-    call print_matrix(r, N)
-    call print_matrix(matrix - matmul(l, r), N)
+    ! ! Printing the Matrices and the error matrix:
+    ! call print_matrix(l, N)
+    ! call print_matrix(r, N)
+    ! call print_matrix(matrix - matmul(l, r), N)
 
     ! Building the HODLR tree object:
     call initialize_hodlr_tree(tree, n_levels, eps, factorizer)
@@ -81,6 +86,23 @@ program main
     
     ! Performing matrix multiplication using HODLR:
     call matmat_product(tree, x, b)
+    ! Performing the matrix multiplication directly:
+    b_exact = matmul(matrix, x)
+    ! Printing the error of matmul:
+    print *, "Error in Matrix Multiplication:", sum(abs(b_exact - b))
+
+    ! Factorizing the elements of the tree:
+    call factorize(tree)
+
+    ! Solve for x in the equation Ax = b:
+    call solve(tree, b_exact, x_approx)
+
+    ! Printing the error of solve:
+    print *, "Error in Solve:", sum(abs(x_approx - x))
+
+    ! Getting the determinant of the matrix encoded:
+    call logdeterminant(tree, log_det)
+    print *, "Determinant of Matrix:", log_det
 
     contains
         ! Use this subroutine to print and check the matrix:

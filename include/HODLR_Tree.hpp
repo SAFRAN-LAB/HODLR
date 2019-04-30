@@ -8,7 +8,6 @@
 class HODLR_Tree 
 {
 private:
-    int N;
     int n_levels;
     double tolerance;
     std::vector<int> nodes_in_level;
@@ -48,6 +47,10 @@ private:
     dtype logDeterminantSPD();
 
 public:
+    
+    // Size of the matrix considered:
+    int N;
+
     HODLR_Tree(int n_levels, double tolerance, Matrix_Factorizer* F);
     ~HODLR_Tree();
 

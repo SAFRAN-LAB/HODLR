@@ -639,7 +639,7 @@ void Matrix_Factorizer::getFactorization(Mat& L,  Mat& R, double tolerance_or_ra
     if(n_cols == -1)
         n_cols = this->N;
 
-    if(this->type == "rookPivoting")
+    if(this->type.compare("rookPivoting"))
     {
         int computed_rank;
         rookPiv(L, R, tolerance_or_rank,
@@ -648,7 +648,7 @@ void Matrix_Factorizer::getFactorization(Mat& L,  Mat& R, double tolerance_or_ra
                );
     }
 
-    else if(this->type == "queenPivoting")
+    else if(this->type.compare("queenPivoting"))
     {
         int computed_rank;
         queenPiv(L, R, tolerance_or_rank,
@@ -657,7 +657,7 @@ void Matrix_Factorizer::getFactorization(Mat& L,  Mat& R, double tolerance_or_ra
                 );
     }
 
-    else if(this->type == "SVD")
+    else if(this->type.compare("SVD"))
     {
         SVD(L, R, tolerance_or_rank,
             n_row_start, n_col_start, 
@@ -668,6 +668,7 @@ void Matrix_Factorizer::getFactorization(Mat& L,  Mat& R, double tolerance_or_ra
     else
     {
         std::cout << "Invalid option for matrix factorization" << std::endl;
+        std::cout << "Chosen Option:" << this->type << std::endl;
         exit(1);
     }
 }

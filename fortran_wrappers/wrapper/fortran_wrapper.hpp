@@ -15,9 +15,9 @@ extern "C"
     void initialize_hodlr_tree_c(HODLR_Tree** tree, int n_levels, double eps, Matrix_Factorizer** factorizer);
     void assemble_tree_c(HODLR_Tree** tree, bool is_sym, bool is_pd);
     void matmat_product_c(HODLR_Tree** tree, double* x, double* b);
-    // void factorize_c(HODLR_Tree** tree);
-    // void solve_c(HODLR_Tree** tree, double* b, double* x);
-    // void logdeterminant_c(HODLR_Tree** tree, double &log_det);
+    void factorize_c(HODLR_Tree** tree);
+    void solve_c(HODLR_Tree** tree, double* b, double* x);
+    void logdeterminant_c(HODLR_Tree** tree, double &log_det);
 }
 
 #endif /* (defined(__fortran_wrapper__) */

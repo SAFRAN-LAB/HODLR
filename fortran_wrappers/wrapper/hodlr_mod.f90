@@ -101,38 +101,39 @@ module hodlr_mod
         end subroutine
     end interface
 
-    ! interface
-    !     subroutine factorize(tree) &
-    !     bind(c, name = "factorize_c")
+    interface
+        subroutine factorize(tree) &
+        bind(c, name = "factorize_c")
 
-    !         use iso_c_binding
-    !         type(c_ptr) ::tree
+            use iso_c_binding
+            type(c_ptr) ::tree
 
-    !     end subroutine
-    ! end interface
+        end subroutine
+    end interface
 
-    ! interface
-    !     subroutine solve(tree, b) &
-    !     bind(c, name = "solve_c")
+    interface
+        subroutine solve(tree, b, x) &
+        bind(c, name = "solve_c")
 
-    !         use iso_c_binding
+            use iso_c_binding
 
-    !         type(c_ptr) :: tree
-    !         real(c_double) :: b(*)
+            type(c_ptr) :: tree
+            real(c_double) :: b(*)
+            real(c_double) :: x(*)
 
-    !     end subroutine
-    ! end interface
+        end subroutine
+    end interface
 
-    ! interface
-    !     subroutine logdeterminant(tree, log_det) &
-    !     bind(c, name = "logdeterminant_c")
+    interface
+        subroutine logdeterminant(tree, log_det) &
+        bind(c, name = "logdeterminant_c")
 
-    !         use iso_c_binding
+            use iso_c_binding
 
-    !         type(c_ptr) :: tree
-    !         real(c_double) :: log_det
+            type(c_ptr) :: tree
+            real(c_double) :: log_det
 
-    !     end subroutine
-    ! end interface
+        end subroutine
+    end interface
 
 end module hodlr_mod

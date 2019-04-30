@@ -15,14 +15,27 @@ void removeSpaces(char *str)
     str[count] = '\0'; 
 } 
 
-void initialize_kernel_object(Kernel** kernel, int N, int dim)
+void initialize_kernel_object_c(Kernel** kernel, int N, int dim)
 {
+    std::cout << "This is the input given to initialize_kernel_object_c" << std::endl;
+    std::cout << "kernel = " << kernel << std::endl;
+    std::cout << "N = " << N << std::endl;
+    std::cout << "dim = " << dim << std::endl;
+
     (*kernel) = new Kernel(N, dim);
     return;
 }
 
-void get_matrix(double* matrix, Kernel** kernel, int row_start, int col_start, int row_end, int col_end)
+void get_matrix_c(double* matrix, Kernel** kernel, int row_start, int col_start, int row_end, int col_end)
 {
+
+    std::cout << "This is the input given to get_matrix_c" << std::endl;
+    std::cout << "kernel = " << kernel << std::endl;
+    std::cout << "row_start = " << row_start << std::endl;
+    std::cout << "col_start = " << col_start << std::endl;
+    std::cout << "row_end = " << row_end << std::endl;
+    std::cout << "col_end = " << col_end << std::endl;
+
     Mat temp = (*kernel)->getMatrix(row_start, col_start, row_end, col_end);
     // Counter variables:
     int i, j;
@@ -33,17 +46,25 @@ void get_matrix(double* matrix, Kernel** kernel, int row_start, int col_start, i
     return;
 }
 
-void initialize_matrix_factorizer(Matrix_Factorizer** factorizer, Kernel** kernel, char* factorization_type)
+void initialize_matrix_factorizer_c(Matrix_Factorizer** factorizer, Kernel** kernel, char* factorization_type)
 {   
+    std::cout << "This is the input given to initialize_matrix_factorizer_c" << std::endl;
+    std::cout << "factorizer = " << factorizer << std::endl;
+    std::cout << "kernel = " << kernel << std::endl;
     removeSpaces(factorization_type);
-    std::cout << "The factorization type selected is " << factorization_type << " type" << std::endl;
+    std::cout << "factorization_type = " << std::string(factorization_type) << " type" << std::endl;
     (*factorizer) = new Matrix_Factorizer((*kernel), std::string(factorization_type));
     return;
 }
 
-void get_factorization(Matrix_Factorizer** factorizer, double* l, double* r, int eps)
+void get_factorization_c(Matrix_Factorizer** factorizer, double* l, double* r, double eps)
 {
-    std::cout << eps << std::endl;
+    std::cout << "This is the input given to get_factorization_c" << std::endl;
+    std::cout << "factorizer = " << factorizer << std::endl;
+    std::cout << "l = " << l << std::endl;
+    std::cout << "r = " << r << std::endl;
+    std::cout << "eps = " << eps << std::endl;
+
     Mat U, V;
     (*factorizer)->getFactorization(U, V, eps);
 
@@ -60,11 +81,56 @@ void get_factorization(Matrix_Factorizer** factorizer, double* l, double* r, int
     return;
 }
 
-void initialize_hodlr_tree(HODLR_Tree** tree, int n_levels, double eps, Matrix_Factorizer** factorizer)
+void initialize_hodlr_tree_c(HODLR_Tree** tree, int n_levels, double eps, Matrix_Factorizer** factorizer)
 {
-    std::cout << n_levels << std::endl;
-    std::cout << eps << std::endl;
+    std::cout << "This is the input given to initialize_hodlr_tree_c" << std::endl;
+    std::cout << "tree = " << tree << std::endl;
+    std::cout << "n_levels = " << n_levels << std::endl;
+    std::cout << "eps = " << eps << std::endl;
+    std::cout << "factorizer = " << factorizer << std::endl;
 
     (*tree) = new HODLR_Tree(n_levels, eps, (*factorizer));
     return;
 }
+
+void assemble_tree_c(HODLR_Tree** tree, bool is_sym, bool is_pd)
+{
+    std::cout << "This is the input given to assemble_tree_c" << std::endl;
+    std::cout << "tree = " << tree << std::endl;
+    std::cout << "is_sym = " << is_sym << std::endl;
+    std::cout << "is_pd = " << is_pd << std::endl;
+
+    (*tree)->assembleTree(is_sym, is_pd);
+    return;
+}
+
+void matmat_product_c(HODLR_Tree** tree, double* x, double* b)
+{
+    std::cout << "This is the input given to matmat_product_c" << std::endl;
+    std::cout << "tree = " << tree << std::endl;
+
+    Mat b_eig, x_eig;
+    x_eig = Eigen::Map<Mat>(x, (*tree)->N, 1);
+    b_eig = (*tree)->matmatProduct(x_eig);
+
+    for(int i = 0; i < (*tree)->N; i++)
+        b[i] = b_eig(i, 0);
+
+    return;
+}
+
+// void factorize_c(HODLR_Tree** tree)
+// {
+//     (*tree)->factorize();
+// }
+
+// void solve_c(HODLR_Tree** tree, double* b, double* x)
+// {
+//     Mat b_eig, x_eig;
+//     Eigen::Map<Mat> b_eig()
+// }
+
+// void logdeterminant_c(HODLR_Tree** tree, double &log_det)
+// {
+//     log_det = (*tree)->logDeterminant()
+// }

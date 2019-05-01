@@ -80,13 +80,26 @@ int main(int argc, char* argv[])
     Matrix_Factorizer* F1 = new Matrix_Factorizer(K, "rookPivoting");
     Matrix_Factorizer* F2 = new Matrix_Factorizer(K, "queenPivoting");
     Matrix_Factorizer* F3 = new Matrix_Factorizer(K, "SVD");
+    Matrix_Factorizer* F4 = new Matrix_Factorizer(K, "RRQR");
 
     Mat B = K->getMatrix(0, 0, N, N);
     Mat L, R, error;
 
-    F1->getFactorization(L, R, 1e-12);
+    F1->getFactorization(L, R, tolerance);
     error = B - L * R.transpose();
-    std::cout << "Accuracy of Factorization:" << error.maxCoeff() << std::endl << std::endl;
+    std::cout << "Accuracy of Factorization using Rook Pivoting:" << error.cwiseAbs().maxCoeff() << std::endl;
+
+    F2->getFactorization(L, R, tolerance);
+    error = B - L * R.transpose();
+    std::cout << "Accuracy of Factorization using Queen Pivoting:" << error.cwiseAbs().maxCoeff() << std::endl;
+
+    F3->getFactorization(L, R, tolerance);
+    error = B - L * R.transpose();
+    std::cout << "Accuracy of Factorization using SVD:" << error.cwiseAbs().maxCoeff() << std::endl;
+
+    F4->getFactorization(L, R, tolerance);
+    error = B - L * R.transpose();
+    std::cout << "Accuracy of Factorization using RRQR:" << error.cwiseAbs().maxCoeff() << std::endl << std::endl;
 
     return 0;
 }

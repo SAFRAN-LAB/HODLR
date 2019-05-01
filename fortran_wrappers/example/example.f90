@@ -11,9 +11,9 @@ program main
     type(c_ptr) :: tree
 
     ! Size of the matrix:
-    integer, parameter :: N = 1000
-    ! Size of the matrix at the leaf level:
-    integer, parameter :: M = 200
+    integer, parameter :: N = 5
+    ! Size of the matrix at 5 leaf level:
+    integer, parameter :: M = 5
     ! Dimensionality of the problem considered:
     integer, parameter :: dim = 1
     ! Number of digits of tolerance required:
@@ -63,16 +63,16 @@ program main
     call initialize_matrix_factorizer(factorizer, kernel, factorization_method)
 
     ! Example of directly getting the factorization:
-    ! call get_factorization(factorizer, l_flat, r_flat, eps)
+    call get_factorization(factorizer, l_flat, r_flat, eps)
 
-    ! ! Reshaping the flattened matrices:
-    ! l = reshape(l_flat, (/ N, N /))
-    ! r = reshape(r_flat, (/ N, N /))
+    ! Reshaping the flattened matrices:
+    l = reshape(l_flat, (/ N, N /))
+    r = reshape(r_flat, (/ N, N /))
 
-    ! ! Printing the Matrices and the error matrix:
-    ! call print_matrix(l, N)
-    ! call print_matrix(r, N)
-    ! call print_matrix(matrix - matmul(l, r), N)
+    ! Printing the Matrices and the error matrix:
+    call print_matrix(l, N)
+    call print_matrix(r, N)
+    call print_matrix(matrix - matmul(l, r), N)
 
     ! Building the HODLR tree object:
     call initialize_hodlr_tree(tree, n_levels, eps, factorizer)

@@ -611,7 +611,7 @@ void Matrix_Factorizer::SVD(Mat& L,  Mat& R, double tolerance_or_rank,
                            )
 {
     Mat temp = this->A->getMatrix(n_row_start, n_col_start, n_rows, n_cols);
-    Eigen::BDCSVD<Eigen::MatrixXd> svd(temp, Eigen::ComputeThinU | Eigen::ComputeThinV);
+    Eigen::BDCSVD<Mat> svd(temp, Eigen::ComputeThinU | Eigen::ComputeThinV);
 
     int rank;
     if(tolerance_or_rank < 1)
@@ -629,6 +629,31 @@ void Matrix_Factorizer::SVD(Mat& L,  Mat& R, double tolerance_or_rank,
     R = svd.matrixV().block(0, 0, n_cols, rank);
 }
 
+void Matrix_Factorizer::RRQR(Mat& L,  Mat& R, double tolerance_or_rank,
+                             int n_row_start, int n_col_start, 
+                             int n_rows, int n_cols
+                            )
+{
+    Mat temp = this->A->getMatrix(n_row_start, n_col_start, n_rows, n_cols);
+    Eigen::ColPivHouseholderQR<Mat> rrqr(temp);
+
+    int rank;
+    if(tolerance_or_rank < 1)
+    {
+        rrqr.setThreshold(tolerance_or_rank);
+        rank = rrqr.rank();
+    }
+
+    else
+    {
+        rank = int(tolerance_or_rank);
+    }
+
+    L = Mat(rrqr.matrixQ()).block(0, 0, n_rows, rank);
+    R =   Mat(rrqr.matrixQR().triangularView<Eigen::Upper>()).block(0, 0, n_cols, rank) 
+        * Mat(rrqr.colsPermutation()).transpose().block(0, 0, rank, rank);
+}
+
 void Matrix_Factorizer::getFactorization(Mat& L,  Mat& R, double tolerance_or_rank,
                                          int n_row_start, int n_col_start, 
                                          int n_rows, int n_cols
@@ -639,7 +664,7 @@ void Matrix_Factorizer::getFactorization(Mat& L,  Mat& R, double tolerance_or_ra
     if(n_cols == -1)
         n_cols = this->N;
 
-    if(this->type.compare("rookPivoting"))
+    if(this->type.compare("rookPivoting") == 0)
     {
         int computed_rank;
         rookPiv(L, R, tolerance_or_rank,
@@ -648,7 +673,7 @@ void Matrix_Factorizer::getFactorization(Mat& L,  Mat& R, double tolerance_or_ra
                );
     }
 
-    else if(this->type.compare("queenPivoting"))
+    else if(this->type.compare("queenPivoting") == 0)
     {
         int computed_rank;
         queenPiv(L, R, tolerance_or_rank,
@@ -657,12 +682,20 @@ void Matrix_Factorizer::getFactorization(Mat& L,  Mat& R, double tolerance_or_ra
                 );
     }
 
-    else if(this->type.compare("SVD"))
+    else if(this->type.compare("SVD") == 0)
     {
         SVD(L, R, tolerance_or_rank,
             n_row_start, n_col_start, 
             n_rows, n_cols
            );
+    }
+
+    else if(this->type.compare("RRQR") == 0)
+    {
+        RRQR(L, R, tolerance_or_rank,
+             n_row_start, n_col_start, 
+             n_rows, n_cols
+            );
     }
 
     else

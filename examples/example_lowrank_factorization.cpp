@@ -81,6 +81,7 @@ int main(int argc, char* argv[])
     Matrix_Factorizer* F2 = new Matrix_Factorizer(K, "queenPivoting");
     Matrix_Factorizer* F3 = new Matrix_Factorizer(K, "SVD");
     Matrix_Factorizer* F4 = new Matrix_Factorizer(K, "RRQR");
+    Matrix_Factorizer* F5 = new Matrix_Factorizer(K, "rSVD");
 
     Mat B = K->getMatrix(0, 0, N, N);
     Mat L, R, error;
@@ -99,7 +100,14 @@ int main(int argc, char* argv[])
 
     F4->getFactorization(L, R, tolerance);
     error = B - L * R.transpose();
-    std::cout << "Accuracy of Factorization using RRQR:" << error.cwiseAbs().maxCoeff() << std::endl << std::endl;
+    std::cout << "Accuracy of Factorization using RRQR:" << error.cwiseAbs().maxCoeff() << std::endl;
+
+    // Here, we are explicitly setting our target rank as 7:
+    // In the current implementation, target rank needs to be mentioned
+    // explicitly for the randomized SVD algorithm
+    F5->getFactorization(L, R, 5);
+    error = B - L * R.transpose();
+    std::cout << "Accuracy of Factorization using rSVD:" << error.cwiseAbs().maxCoeff() << std::endl << std::endl;
 
     return 0;
 }

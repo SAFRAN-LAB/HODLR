@@ -628,6 +628,52 @@ void Matrix_Factorizer::SVD(Mat& L,  Mat& R, double tolerance_or_rank,
     L = svd.matrixU().block(0, 0, n_rows, rank) * svd.singularValues().block(0, 0, rank, 1).asDiagonal();
     R = svd.matrixV().block(0, 0, n_cols, rank);
 }
+  
+// Finds a set of orthonormal vectors that approximates the range of A
+// Basic idea is that finding orthonormal basis vectors for A*W, where W is set of some
+// random vectors w_i, can approximate the range of A
+// Most of the time/computation in the randomized SVD is spent here
+// Computes an orthonormal matrix whose range approximates the range of A
+Mat randomizedRangeFinder(Mat& A, int size, int n_iter = 2) 
+{
+    Mat Q = Mat::Random(A.cols(), size);
+
+    // Power iteration normalization(adds stability):
+    // Intuition: multiply by A a few times to find a matrix Q that's "more in the range of A"
+    // Simply multiplying by A repeatedly can make alg unstable, so can use LU or QR to "normalize"
+    for(int i = 0; i < n_iter; i++)
+    {   
+        Q = A * Q;
+        Q = A.transpose() * Q;
+    }
+
+    Q = A * Q;
+    Eigen::HouseholderQR<Mat> qr(Q);
+    return Mat(qr.householderQ());
+}
+
+// Randomized SVD based on the work of Halko et al.
+void Matrix_Factorizer::rSVD(Mat& L,  Mat& R, double rank,
+                             int n_row_start, int n_col_start, 
+                             int n_rows, int n_cols
+                            )
+{
+    // Number of oversamples considered:
+    int n_oversamples = 5;
+
+    Mat temp = this->A->getMatrix(n_row_start, n_col_start, n_rows, n_cols);
+    if(rank < 1)
+    {
+        std::cout << "Invalid option for randomized SVD. Rank needs to be explicitly mentioned" << std::endl;
+        exit(1);
+    }
+
+    Mat Q = randomizedRangeFinder(temp, int(rank) + n_oversamples);
+    Eigen::BDCSVD<Mat> svd(Q.transpose() * temp, Eigen::ComputeThinU | Eigen::ComputeThinV);
+
+    L = (Q * svd.matrixU()).block(0, 0, n_rows, int(rank)) * svd.singularValues().block(0, 0, int(rank), 1).asDiagonal();
+    R = svd.matrixV().block(0, 0, n_cols, int(rank));
+}
 
 void Matrix_Factorizer::RRQR(Mat& L,  Mat& R, double tolerance_or_rank,
                              int n_row_start, int n_col_start, 
@@ -650,8 +696,8 @@ void Matrix_Factorizer::RRQR(Mat& L,  Mat& R, double tolerance_or_rank,
     }
 
     L = Mat(rrqr.matrixQ()).block(0, 0, n_rows, rank);
-    R =   Mat(rrqr.matrixQR().triangularView<Eigen::Upper>()).block(0, 0, n_cols, rank) 
-        * Mat(rrqr.colsPermutation()).transpose().block(0, 0, rank, rank);
+    R =   Mat(rrqr.colsPermutation()).block(0, 0, n_cols, n_cols)
+        * Mat(rrqr.matrixQR().triangularView<Eigen::Upper>()).block(0, 0, rank, n_cols).transpose();
 }
 
 void Matrix_Factorizer::getFactorization(Mat& L,  Mat& R, double tolerance_or_rank,
@@ -693,6 +739,14 @@ void Matrix_Factorizer::getFactorization(Mat& L,  Mat& R, double tolerance_or_ra
     else if(this->type.compare("RRQR") == 0)
     {
         RRQR(L, R, tolerance_or_rank,
+             n_row_start, n_col_start, 
+             n_rows, n_cols
+            );
+    }
+
+    else if(this->type.compare("rSVD") == 0)
+    {
+        rSVD(L, R, tolerance_or_rank,
              n_row_start, n_col_start, 
              n_rows, n_cols
             );

@@ -1,5 +1,6 @@
 #include "HODLR_Matrix.hpp"
 #include "Matrix_Factorizer.hpp"
+#include "HODLR_Tree.hpp"
 
 #include <pybind11/pybind11.h>
 #include <pybind11/eigen.h>
@@ -39,4 +40,16 @@ PYBIND11_MODULE(pyhodlrlib, m)
         .def("factorize", &Matrix_Factorizer::factorize)
         .def("getL", &Matrix_Factorizer::getL)
         .def("getR", &Matrix_Factorizer::getR);
+
+    py::class_<HODLR_Tree> hodlr_tree(m, "HODLR_Tree");
+    hodlr_tree
+        .def(py::init<int, double, Matrix_Factorizer*>())
+        .def("assembleTree", &HODLR_Tree::assembleTree)
+        .def("matmatProduct", &HODLR_Tree::matmatProduct)
+        .def("factorize", &HODLR_Tree::factorize)
+        .def("solve", &HODLR_Tree::solve)
+        .def("symmetricFactorProduct", &HODLR_Tree::symmetricFactorProduct)
+        .def("symmetricFactorTransposeProduct", &HODLR_Tree::symmetricFactorTransposeProduct)
+        .def("getSymmetricFactor", &HODLR_Tree::getSymmetricFactor)
+        .def("logDeterminant", &HODLR_Tree::logDeterminant);
 }

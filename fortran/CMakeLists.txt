@@ -6,12 +6,12 @@ enable_language(Fortran)
 # Provide the input file that you want to solve for:
 # This can also be passed as a command line argument:
 if(NOT INPUT_FILE)
-    set (INPUT_FILE "example/test.f90")
+    set (INPUT_FILE "example/example.f90")
 endif()
 # Here set the name for the output executable:
 # This can also be passed as a command line argument:
 if(NOT OUTPUT_EXECUTABLE)
-    set (OUTPUT_EXECUTABLE "test")
+    set (OUTPUT_EXECUTABLE "example")
 endif()
 
 set(EIGEN_PATH "$ENV{EIGEN_PATH}")
@@ -25,7 +25,7 @@ set(CMAKE_Fortran_FLAGS "-lstdc++")
 # Adding folders which contain necessary header files:
 include_directories("${EIGEN_PATH}" 
                     "${HODLR_PATH}/include"
-                    "${HODLR_PATH}/fortran/kernel"
+                    "${HODLR_PATH}/fortran/wrapper"
                     "${HODLR_PATH}/fortran/example"
                    )
 
@@ -33,18 +33,19 @@ include_directories("${EIGEN_PATH}"
 
 set(HODLRlib_SRCS
     ${HODLR_PATH}/src/HODLR_Matrix.cpp
-   )
-
-set(kernellib_SRCS
-    ${HODLR_PATH}/fortran/kernel/kernel_capi.cpp
-    ${HODLR_PATH}/fortran/kernel/kernel_mod.f90
+    ${HODLR_PATH}/src/KDTree.cpp
+    ${HODLR_PATH}/src/Matrix_Factorizer.cpp
+    ${HODLR_PATH}/src/HODLR_Node.cpp
+    ${HODLR_PATH}/src/HODLR_Tree.cpp
+    ${HODLR_PATH}/src/HODLR_Tree_NonSPD.cpp
+    ${HODLR_PATH}/src/HODLR_Tree_SPD.cpp
    )
 
 add_executable(${OUTPUT_EXECUTABLE}
                ${INPUT_FILE}
                ${HODLRlib_SRCS}
-               ${kernellib_SRCS}
-               "${HODLR_PATH}/fortran/example/Kernel.cpp"
+               "${HODLR_PATH}/fortran/wrapper/fortran_wrapper.cpp"
+               "${HODLR_PATH}/fortran/wrapper/hodlr_mod.f90"
               )
 
-set_property(TARGET test PROPERTY LINKER_LANGUAGE Fortran)
+set_property(TARGET example PROPERTY LINKER_LANGUAGE Fortran)

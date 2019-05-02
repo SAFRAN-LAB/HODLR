@@ -1,15 +1,13 @@
 module hodlr_mod
     
     interface
-        subroutine initialize_kernel_object(kernel, N, dim) &
+        subroutine initialize_kernel_object(kernel, N) &
         bind(c, name = "initialize_kernel_object_c")
         
             use iso_c_binding
 
             type(c_ptr) :: kernel
-
             integer(c_int), value :: N
-            integer(c_int), value :: dim
 
         end subroutine
     end interface

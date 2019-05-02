@@ -8,7 +8,7 @@
 // Extern C needs to be used to prevent name mangling
 extern "C"
 {
-    void initialize_kernel_object_c(Kernel** kernel, int N, int dim);
+    void initialize_kernel_object_c(Kernel** kernel, int N);
     void get_matrix_c(double* matrix, Kernel** kernel, int row_start, int col_start, int row_end, int col_end);
     void initialize_matrix_factorizer_c(Matrix_Factorizer** factorizer, Kernel** kernel, char* factorization_type);
     void get_factorization_c(Matrix_Factorizer** factorizer, double* l, double* r, double eps);

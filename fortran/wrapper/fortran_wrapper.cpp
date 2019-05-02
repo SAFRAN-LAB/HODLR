@@ -1,23 +1,19 @@
 #include "fortran_wrapper.hpp"
 
 // This is a helper function:
-void removeSpaces(char *str) 
+void removeEndSpaces(char *str) 
 { 
-    // To keep track of non-space character count 
-    int count = 0; 
-  
-    // Traverse the given string. If current character 
-    // is not space, then place it at index 'count++' 
-    for (int i = 0; str[i]; i++) 
-        if (str[i] != ' ') 
-            str[count++] = str[i]; // here count is 
-                                   // incremented 
-    str[count] = '\0'; 
+    int i;
+    for (i = 0; str[i]; i++) 
+        if(str[i] == ' ')
+            break;
+
+    str[i] = '\0'; 
 } 
 
-void initialize_kernel_object_c(Kernel** kernel, int N, int dim)
+void initialize_kernel_object_c(Kernel** kernel, int N)
 {
-    (*kernel) = new Kernel(N, dim);
+    (*kernel) = new Kernel(N);
     return;
 }
 
@@ -35,8 +31,8 @@ void get_matrix_c(double* matrix, Kernel** kernel, int row_start, int col_start,
 
 void initialize_matrix_factorizer_c(Matrix_Factorizer** factorizer, Kernel** kernel, char* factorization_type)
 {   
-    removeSpaces(factorization_type);
-    (*factorizer) = new Matrix_Factorizer((*kernel), std::string(factorization_type));
+    removeEndSpaces(factorization_type);
+    (*factorizer) = new Matrix_Factorizer((*kernel), factorization_type);
     return;
 }
 

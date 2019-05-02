@@ -1,3 +1,13 @@
+! Function that returns the matrix values:
+function get_matrix_entry(i, j) bind(c, name="get_matrix_entry")
+    implicit none
+    integer, intent(in) :: i
+    integer, intent(in) :: j
+
+    double precision :: get_matrix_entry
+    get_matrix_entry = 1 / DFLOAT(i + j + 1)
+end function
+
 program main
 
     use iso_c_binding
@@ -12,10 +22,8 @@ program main
 
     ! Size of the matrix:
     integer, parameter :: N = 5
-    ! Size of the matrix at 5 leaf level:
+    ! Size of the matrix as 5 at leaf level:
     integer, parameter :: M = 5
-    ! Dimensionality of the problem considered:
-    integer, parameter :: dim = 1
     ! Number of digits of tolerance required:
     real(c_double), parameter :: eps = 1.0d-15
     ! Number of levels in the tree:
@@ -50,19 +58,20 @@ program main
     character(len = 20) :: factorization_method = "rookPivoting"
 
     ! Creating the kernel object:
-    call initialize_kernel_object(kernel, N, dim)
+    call initialize_kernel_object(kernel, N)
 
     ! Getting the matrix encoded by the kernel object:
     call get_matrix(flattened_matrix, kernel, 0, 0, N, N)
     matrix = reshape(flattened_matrix, (/ N, N /))
 
     ! Printing the Matrix to observe the structure:
-    ! call print_matrix(matrix, N)
+    print *, "Printing the Encoded Matrix A:"
+    call print_matrix(matrix, N)
 
     ! Building the matrix factorizer object:
     call initialize_matrix_factorizer(factorizer, kernel, factorization_method)
 
-    ! Example of directly getting the factorization:
+    ! ! Example of directly getting the factorization:
     call get_factorization(factorizer, l_flat, r_flat, eps)
 
     ! Reshaping the flattened matrices:
@@ -70,8 +79,11 @@ program main
     r = reshape(r_flat, (/ N, N /))
 
     ! Printing the Matrices and the error matrix:
+    print *, "Printing Matrix L:"
     call print_matrix(l, N)
+    print *, "Printing Matrix R:"
     call print_matrix(r, N)
+    print *, "Printing Error Matrix (A - L * R):"
     call print_matrix(matrix - matmul(l, r), N)
 
     ! Building the HODLR tree object:

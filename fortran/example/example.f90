@@ -37,6 +37,10 @@ program main
     ! Used to store the complete matrix:
     real(c_double) :: flattened_matrix(N * N)
     real(c_double) :: matrix(N, N)
+
+    ! Variables used to store the symmetric factor matrix:
+    real(c_double) :: flattened_W_matrix(N * N)
+    real(c_double) :: W_matrix(N, N)
     ! The following arrays are used in getting the direct factorization of the array:
     real(c_double) :: l_flat(N * N)
     real(c_double) :: r_flat(N * N)
@@ -50,6 +54,7 @@ program main
     real(c_double) :: b(N)
     real(c_double) :: b_exact(N)
     real(c_double) :: x_approx(N)
+    real(c_double) :: y(N)
 
     ! Used to store the log determinant of the matrix:
     real(c_double) :: log_det
@@ -58,10 +63,10 @@ program main
     character(len = 20) :: factorization_method = "rookPivoting"
 
     ! Creating the kernel object:
-    call initialize_kernel_object(kernel, N)
+    call initialize_kernel_object(N, kernel)
 
     ! Getting the matrix encoded by the kernel object:
-    call get_matrix(flattened_matrix, kernel, 0, 0, N, N)
+    call get_matrix(kernel, 0, 0, N, N, flattened_matrix)
     matrix = reshape(flattened_matrix, (/ N, N /))
 
     ! Printing the Matrix to observe the structure:
@@ -69,10 +74,10 @@ program main
     call print_matrix(matrix, N)
 
     ! Building the matrix factorizer object:
-    call initialize_matrix_factorizer(factorizer, kernel, factorization_method)
+    call initialize_matrix_factorizer(kernel, factorization_method, factorizer)
 
     ! ! Example of directly getting the factorization:
-    call get_factorization(factorizer, l_flat, r_flat, eps)
+    call get_factorization(factorizer, eps, l_flat, r_flat)
 
     ! Reshaping the flattened matrices:
     l = reshape(l_flat, (/ N, N /))
@@ -87,7 +92,7 @@ program main
     call print_matrix(matrix - matmul(l, r), N)
 
     ! Building the HODLR tree object:
-    call initialize_hodlr_tree(tree, n_levels, eps, factorizer)
+    call initialize_hodlr_tree(n_levels, eps, factorizer, tree)
     ! Assembling the tree under awareness of positive definite and symmetric nature:
     call assemble_tree(tree, is_sym, is_pd)
 
@@ -116,6 +121,17 @@ program main
     call logdeterminant(tree, log_det)
     print *, "Determinant of Matrix:", log_det
 
+    ! We set y = W^T x
+    call symmetric_factor_transpose_product(tree, x, y)
+    ! b = W y = W W^T x = B * x
+    call symmetric_factor_product(tree, y, b)
+    print *, "Error in Matrix Multiplication(using Symmetric Factor Products):", sum(abs(b_exact - b))
+
+    ! Getting the matrix encoded by the kernel object:
+    call get_symmetric_factor(tree, flattened_W_matrix)
+    W_matrix = reshape(flattened_W_matrix, (/ N, N /))
+    print *, "Error in recovering A from W", sum(matrix - matmul(W_matrix, transpose(W_matrix)))
+    
     contains
         ! Use this subroutine to print and check the matrix:
         subroutine print_matrix(matrix, N)

@@ -7,7 +7,7 @@
 class Matrix_Factorizer
 {
 private:
-    
+    Mat L, R;
     // Used by the rook-pivoting routine:
     void maxAbsVector(const Vec& v, 
                       const std::set<int>& allowed_indices, 
@@ -59,6 +59,25 @@ public:
                           int n_row_start = 0, int n_col_start = 0, 
                           int n_rows = -1, int n_cols = -1
                          );
+
+    // The following functions are needed for the Python Interface:
+    void factorize(double rank_or_tolerance,
+                   int n_row_start = 0, int n_col_start = 0, 
+                   int n_rows = -1, int n_cols = -1
+                  )
+    {
+        getFactorization(L, R, rank_or_tolerance, n_row_start, n_col_start, n_rows, n_cols);
+    }
+
+    Mat getL()
+    {
+        return L;
+    }
+
+    Mat getR()
+    {
+        return R;
+    }
 };
 
 #endif

@@ -119,7 +119,7 @@ program main
 
     ! Getting the determinant of the matrix encoded:
     call logdeterminant(tree, log_det)
-    print *, "Determinant of Matrix:", log_det
+    print *, "Log Determinant of Matrix:", log_det
 
     ! We set y = W^T x
     call symmetric_factor_transpose_product(tree, x, y)

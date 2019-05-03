@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
 
     // Declaration of HODLR_Matrix object that abstracts data in Matrix:
     Kernel* K            = new Kernel(N, dim);
-    Matrix_Factorizer* F = new Matrix_Factorizer(K, "queenPivoting");
+    Matrix_Factorizer* F = new Matrix_Factorizer(K, "rookPivoting");
     int n_levels         = log(N / M) / log(2);
 
     std::cout << "========================= Problem Parameters =========================" << std::endl;

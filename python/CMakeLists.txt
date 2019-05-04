@@ -28,6 +28,6 @@ set(HODLRlib_SRCS
    )
 
 pybind11_add_module(pyhodlrlib
-                    pyhodlrlib.cpp
+                    wrapper/pyhodlrlib.cpp
                     ${HODLRlib_SRCS}
                    )

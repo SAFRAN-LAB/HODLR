@@ -308,23 +308,6 @@ void Matrix_Factorizer::rookPiv(Mat& L, Mat& R, double tolerance_or_rank,
           computed_rank < fmin(n_rows, n_cols)
          );
 
-    std::ofstream myfile;
-    myfile.open("rows.txt");
-    for(int j = 0; j < row_ind.size(); j++)
-    {
-        myfile << row_ind[j] << std::endl;
-    }
-    // Closing the file:
-    myfile.close();
-
-    myfile.open("cols.txt");
-    for(int j = 0; j < col_ind.size(); j++)
-    {
-        myfile << col_ind[j] << std::endl;
-    }
-    // Closing the file:
-    myfile.close();
-
     // If the computed_rank is >= to full-rank
     // then return the trivial full-rank decomposition
     if (computed_rank >= fmin(n_rows, n_cols) - 1) 

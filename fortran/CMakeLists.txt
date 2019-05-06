@@ -6,12 +6,17 @@ enable_language(Fortran)
 # Provide the input file that you want to solve for:
 # This can also be passed as a command line argument:
 if(NOT INPUT_FILE)
-    set (INPUT_FILE "example/example.f90")
+    set (INPUT_FILE "example/example_factorization.f90")
 endif()
 # Here set the name for the output executable:
 # This can also be passed as a command line argument:
 if(NOT OUTPUT_EXECUTABLE)
     set (OUTPUT_EXECUTABLE "example")
+endif()
+
+if("${CMAKE_BUILD_TYPE}" STREQUAL "TESTING")
+    set (INPUT_FILE "test/test_HODLR.f90")
+    set (OUTPUT_EXECUTABLE "test_HODLR")
 endif()
 
 set(EIGEN_PATH "$ENV{EIGEN_PATH}")
@@ -47,4 +52,4 @@ add_executable(${OUTPUT_EXECUTABLE}
                "${HODLR_PATH}/fortran/wrapper/hodlr_mod.f90"
               )
 
-set_property(TARGET example PROPERTY LINKER_LANGUAGE Fortran)
+set_property(TARGET ${OUTPUT_EXECUTABLE} PROPERTY LINKER_LANGUAGE Fortran)

@@ -123,9 +123,10 @@ def plot_graph(cx, cy, rx, ry, rank):
                     fontsize = 30 / (1 + int(np.sqrt(i))))
 
             if(rank[i] > 0):
-                intensity = 0.2 + 0.8 * ((rank[i] - np.min(rank)) / (np.max(rank) - np.min(rank)))
                 if(np.min(rank) == np.max(rank)):
                     intensity = 1
+                else:
+                    intensity = 0.2 + 0.8 * ((rank[i] - np.min(rank)) / (np.max(rank) - np.min(rank)))
 
                 ax.add_patch(patches.Rectangle((cx_node, cy[i]),
                                                rx[i], ry[i], facecolor = 'green',

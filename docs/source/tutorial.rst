@@ -2,6 +2,9 @@
 Tutorial
 ********
 
+C++
+~~~
+
 For the sake of this tutorial, we are going to be using the ``tutorial.cpp`` file that is listed under ``examples/`` since it demonstrates all the features of this library. For the most part, comments in the file demonstrate intended functionality. However, we go over the main functions that may be of interest to a user on this page. 
 
 **NOTE**: It is assumed that you have already completed the installation process of getting the dependencies.
@@ -478,3 +481,13 @@ For this particular tutorial, the problem parameters are passed to the executabl
     double tolerance  = pow(10, -atoi(argv[4]));
 
 This means that the first argument would be the matrix size considered, the second one would be the size at the leaf level, the third one would be the dimensionality considered and the final argument is approximately the number of digits of accuracy we want. For instance, running ``./tutorial 1000 100 1 12`` would correspond to solving the problem with parameters :math:`N=1000, M = 100, \texttt{dim} = 1, \epsilon=10^{-12}`.
+
+Fortran
+~~~~~~~
+
+This is where details for the tutorial of the Fortran wrapper for HODLRlib will come in
+
+Python
+~~~~~~
+
+This is where details for the tutorial of the Python wrapper for HODLRlib will come in

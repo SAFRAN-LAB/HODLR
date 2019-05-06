@@ -180,17 +180,36 @@ int main(int argc, char* argv[])
     HODLR_Matrix* K_dummy = new HODLR_Matrix(N);
     assert(K_dummy->getMatrixEntry(rand() % N, rand() % N) == 0);
     delete K_dummy;
-    
+
     Kernel_Gaussian* K   = new Kernel_Gaussian(N, dim);
     Matrix_Factorizer* F = new Matrix_Factorizer(K);
     testHODLR(N, n_levels, tolerance, F, "gaussian_kernel.svg");
+    delete F;
     delete K;
 
     // Setting lower tolerance since this is a harsh test to reproduce at higher tolerances:
     tolerance = pow(10, -7);
-    Random_Matrix* K2     = new Random_Matrix(N);
-    Matrix_Factorizer* F2 = new Matrix_Factorizer(K2);
-    testHODLR(N, n_levels, tolerance, F2, "random_matrix_N_1000.svg");
+    Random_Matrix* K2 = new Random_Matrix(N);
+    F = new Matrix_Factorizer(K2);
+    testHODLR(N, n_levels, tolerance, F, "random_matrix_N_1000.svg");
+    delete F;
+
+    F = new Matrix_Factorizer(K2, "queenPivoting");
+    testHODLR(N, n_levels, tolerance, F, "random_matrix_N_1000.svg");
+    delete F;
+
+    F = new Matrix_Factorizer(K2, "SVD");
+    testHODLR(N, n_levels, tolerance, F, "random_matrix_N_1000.svg");
+    delete F;
+
+    F = new Matrix_Factorizer(K2, "RRQR");
+    testHODLR(N, n_levels, tolerance, F, "random_matrix_N_1000.svg");
+    delete F;
+
+    F = new Matrix_Factorizer(K2, "rSVD");
+    // Setting 20 as the rank for all the factorizations carried out:
+    testHODLR(N, n_levels, 20, F, "random_matrix_N_1000.svg");
+    delete F;
     delete K2;
 
     // Trying out odd sizes:

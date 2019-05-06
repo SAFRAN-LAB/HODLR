@@ -29,7 +29,7 @@ private:
              int n_rows, int n_cols
             );
 
-    void rSVD(Mat& L,  Mat& R, double rank_or_tolerance,
+    void rSVD(Mat& L,  Mat& R, int rank,
               int n_row_start, int n_col_start, 
               int n_rows, int n_cols
              );

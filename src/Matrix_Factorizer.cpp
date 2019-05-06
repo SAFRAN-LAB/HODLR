@@ -636,7 +636,7 @@ Mat randomizedRangeFinder(Mat& A, int size, int n_iter = 2)
 }
 
 // Randomized SVD based on the work of Halko et al.
-void Matrix_Factorizer::rSVD(Mat& L,  Mat& R, double rank,
+void Matrix_Factorizer::rSVD(Mat& L,  Mat& R, int rank,
                              int n_row_start, int n_col_start, 
                              int n_rows, int n_cols
                             )
@@ -729,7 +729,7 @@ void Matrix_Factorizer::getFactorization(Mat& L,  Mat& R, double tolerance_or_ra
 
     else if(this->type.compare("rSVD") == 0)
     {
-        rSVD(L, R, tolerance_or_rank,
+        rSVD(L, R, int(tolerance_or_rank),
              n_row_start, n_col_start, 
              n_rows, n_cols
             );

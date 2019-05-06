@@ -2,7 +2,7 @@ import numpy as np
 import pyhodlrlib
 
 # Size of the matrix:
-N = 6400
+N = 1000
 x = np.sort(np.random.rand(N))
 
 # Returning the Gaussian Kernel:

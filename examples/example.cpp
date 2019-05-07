@@ -1,9 +1,6 @@
 // Example provided by Michael-Hartmann:
-
-#include "HODLR_Tree.hpp"
 #include "HODLR_Matrix.hpp"
-
-using std::setprecision;
+#include "HODLR.hpp"
 
 #define LMAX 6000
 #define GAMMA 0.57721566490153286 // Euler-Mascheroni constant
@@ -72,31 +69,25 @@ int main(int argc, char *argv[])
     const double tolerance = 1e-12;
 
     Test_Kernel K(dim);
-    Matrix_Factorizer F(&K, "rookPivoting");
-
-    int n_levels  = log(dim / nLeaf) / log(2);
 
     std::cout << "========================= Problem Parameters =========================" << std::endl;
     std::cout << "Matrix Size                        :" << dim << std::endl;
     std::cout << "Leaf Size                          :" << nLeaf << std::endl;
-    std::cout << "Number of Levels in Tree           :" << n_levels << std::endl;
     std::cout << "Tolerance                          :" << tolerance << std::endl << std::endl;
 
-    HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, &F);
+    HODLR* T = new HODLR(dim, nLeaf, tolerance, &K, "rookPivoting", true, false);
 
     double logdet_exact = -33.22918044445708; // computed using Python script logdet.py
     double logdet_hodlr = 0;
 
-    // Assemble symmetric matrix 
-    T->assembleTree(true, false);
     // Compute factorization 
     T->factorize();
     // Compute log det(Id+M)
     logdet_hodlr = T->logDeterminant();
 
-    std::cout << "Log determinant is: " << setprecision(16) << logdet_hodlr << std::endl;
-    std::cout << "Log determinant is: " << setprecision(16) << logdet_exact << std::endl;
-    std::cout << "Relative error is: "  << setprecision(16) << fabs(1-logdet_hodlr/logdet_exact) << std::endl;
+    std::cout << "Log determinant is: " << std::setprecision(16) << logdet_hodlr << std::endl;
+    std::cout << "Log determinant is: " << std::setprecision(16) << logdet_exact << std::endl;
+    std::cout << "Relative error is: "  << std::setprecision(16) << fabs(1-logdet_hodlr/logdet_exact) << std::endl;
 
     return 0;
 }

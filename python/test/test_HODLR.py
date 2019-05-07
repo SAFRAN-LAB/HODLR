@@ -20,17 +20,11 @@ def test_functions(factorization_type, is_sym, is_pd):
     A = K.getMatrix(0, 0, N, N)
     # Tolerance for all factorizations:
     eps = 1e-12
-    # Declaring the Factorizer Object:
-    F = pyhodlrlib.Matrix_Factorizer(K, factorization_type)
-
     # Size of leaf level:
     M = 50
-    # Number of levels:
-    n_levels = int(np.log(N / M) / np.log(2))
 
     # Creating the HODLR Tree object:
-    T = pyhodlrlib.HODLR_Tree(n_levels, eps, F)
-    T.assembleTree(is_sym, is_pd)
+    T = pyhodlrlib.HODLR(N, M, eps, K, factorization_type, is_sym, is_pd)
 
     # Random vector to take product with:
     x = np.random.rand(N)

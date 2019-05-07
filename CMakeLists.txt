@@ -72,11 +72,11 @@ include_directories("${EIGEN_PATH}"
 
 set(HODLRlib_SRCS
     ${PROJECT_SOURCE_DIR}/src/HODLR_Matrix.cpp
-    ${PROJECT_SOURCE_DIR}/src/Matrix_Factorizer.cpp
+    ${PROJECT_SOURCE_DIR}/src/LowRank.cpp
     ${PROJECT_SOURCE_DIR}/src/HODLR_Node.cpp
-    ${PROJECT_SOURCE_DIR}/src/HODLR_Tree.cpp
-    ${PROJECT_SOURCE_DIR}/src/HODLR_Tree_NonSPD.cpp
-    ${PROJECT_SOURCE_DIR}/src/HODLR_Tree_SPD.cpp
+    ${PROJECT_SOURCE_DIR}/src/HODLR.cpp
+    ${PROJECT_SOURCE_DIR}/src/HODLR_NonSPD.cpp
+    ${PROJECT_SOURCE_DIR}/src/HODLR_SPD.cpp
     ${PROJECT_SOURCE_DIR}/src/KDTree.cpp
    )
 

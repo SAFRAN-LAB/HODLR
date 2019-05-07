@@ -1,9 +1,9 @@
-#include "HODLR_Tree.hpp"
+#include "HODLR.hpp"
 
 // Factorizing out the leaf nodes:
 // This is the first step of the process of factoring out:
 // That is we are making K^(κ) = K_κ * K^(κ-1)
-void HODLR_Tree::factorizeLeafNonSPD(int k) 
+void HODLR::factorizeLeafNonSPD(int k) 
 {
     int child;
     int parent = k;
@@ -27,7 +27,7 @@ void HODLR_Tree::factorizeLeafNonSPD(int k)
 
 // Factorizing out the nonleaf nodes:
 // That is we are making K^(k) = K_k * K^(k-1)
-void HODLR_Tree::factorizeNonLeafNonSPD(int j, int k) 
+void HODLR::factorizeNonLeafNonSPD(int j, int k) 
 {
     int r0 = tree[j][k]->rank[0];
     int r1 = tree[j][k]->rank[1];
@@ -75,7 +75,7 @@ void HODLR_Tree::factorizeNonLeafNonSPD(int j, int k)
     }
 }
 
-void HODLR_Tree::factorizeNonSPD() 
+void HODLR::factorizeNonSPD() 
 {
     // Initializing for the non-leaf levels:
     for(int j = 0; j < n_levels; j++) 
@@ -113,13 +113,13 @@ void HODLR_Tree::factorizeNonSPD()
 }
 
 // Solve at the leaf is just directly performed by solving Kx = b:
-Mat HODLR_Tree::solveLeafNonSPD(int k, Mat b) 
+Mat HODLR::solveLeafNonSPD(int k, Mat b) 
 {
     Mat x = tree[n_levels][k]->K_factor_LU.solve(b);
     return x;
 }
 
-Mat HODLR_Tree::solveNonLeafNonSPD(int j, int k, Mat b) 
+Mat HODLR::solveNonLeafNonSPD(int j, int k, Mat b) 
 {
     int r0 = tree[j][k]->rank[0];
     int r1 = tree[j][k]->rank[1];
@@ -153,7 +153,7 @@ Mat HODLR_Tree::solveNonLeafNonSPD(int j, int k, Mat b)
     return(b - y);
 }
 
-Mat HODLR_Tree::solveNonSPD(Mat b) 
+Mat HODLR::solveNonSPD(Mat b) 
 {   
     int start, size;
     Mat x = Mat::Zero(b.rows(),b.cols());
@@ -188,7 +188,7 @@ Mat HODLR_Tree::solveNonSPD(Mat b)
     return x;
 }
 
-dtype HODLR_Tree::logDeterminantNonSPD()
+dtype HODLR::logDeterminantNonSPD()
 {
     dtype log_det = 0.0;
     for(int j = n_levels; j >= 0; j--) 

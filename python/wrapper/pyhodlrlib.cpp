@@ -1,6 +1,6 @@
 #include "HODLR_Matrix.hpp"
-#include "Matrix_Factorizer.hpp"
-#include "HODLR_Tree.hpp"
+#include "LowRank.hpp"
+#include "HODLR.hpp"
 
 #include <pybind11/pybind11.h>
 #include <pybind11/eigen.h>
@@ -34,22 +34,21 @@ PYBIND11_MODULE(pyhodlrlib, m)
         .def("getMatrixEntry", &HODLR_Matrix::getMatrixEntry)
         .def("getMatrix", &HODLR_Matrix::getMatrix);
 
-    py::class_<Matrix_Factorizer> matrix_factorizer(m, "Matrix_Factorizer");
-    matrix_factorizer
+    py::class_<LowRank> lowrank(m, "LowRank");
+    lowrank
         .def(py::init<HODLR_Matrix*, std::string>())
-        .def("factorize", &Matrix_Factorizer::factorize)
-        .def("getL", &Matrix_Factorizer::getL)
-        .def("getR", &Matrix_Factorizer::getR);
+        .def("factorize", &LowRank::factorize)
+        .def("getL", &LowRank::getL)
+        .def("getR", &LowRank::getR);
 
-    py::class_<HODLR_Tree> hodlr_tree(m, "HODLR_Tree");
-    hodlr_tree
-        .def(py::init<int, double, Matrix_Factorizer*>())
-        .def("assembleTree", &HODLR_Tree::assembleTree)
-        .def("matmatProduct", &HODLR_Tree::matmatProduct)
-        .def("factorize", &HODLR_Tree::factorize)
-        .def("solve", &HODLR_Tree::solve)
-        .def("symmetricFactorProduct", &HODLR_Tree::symmetricFactorProduct)
-        .def("symmetricFactorTransposeProduct", &HODLR_Tree::symmetricFactorTransposeProduct)
-        .def("getSymmetricFactor", &HODLR_Tree::getSymmetricFactor)
-        .def("logDeterminant", &HODLR_Tree::logDeterminant);
+    py::class_<HODLR> hodlr(m, "HODLR");
+    hodlr
+        .def(py::init<int, int, double, HODLR_Matrix*, std::string, bool, bool>())
+        .def("matmatProduct", &HODLR::matmatProduct)
+        .def("factorize", &HODLR::factorize)
+        .def("solve", &HODLR::solve)
+        .def("symmetricFactorProduct", &HODLR::symmetricFactorProduct)
+        .def("symmetricFactorTransposeProduct", &HODLR::symmetricFactorTransposeProduct)
+        .def("getSymmetricFactor", &HODLR::getSymmetricFactor)
+        .def("logDeterminant", &HODLR::logDeterminant);
 }

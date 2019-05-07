@@ -3,11 +3,11 @@
 
 #include <Eigen/Dense>
 #include "HODLR_Matrix.hpp"
-#include "Matrix_Factorizer.hpp"
+#include "LowRank.hpp"
 
 class HODLR_Node 
 {
-friend class HODLR_Tree;
+friend class HODLR;
 
 // All methods are declared as private since all usage happens from
 // the friend class HODLR_Tree:
@@ -41,7 +41,7 @@ private:
     void matmatProductLeaf(Mat x, Mat& b);
 
     // Methods for Non-leaf Nodes:
-    void assembleNonLeafNode(Matrix_Factorizer* A, bool is_sym);
+    void assembleNonLeafNode(LowRank* A, bool is_sym);
     void matmatProductNonLeaf(Mat x, Mat& b);
 
     // Method to print the parameters of the node(mainly used to debug)

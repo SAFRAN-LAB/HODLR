@@ -1,9 +1,9 @@
-#include "Matrix_Factorizer.hpp"
+#include "LowRank.hpp"
  
-void Matrix_Factorizer::maxAbsVector(const Vec& v, 
-                                     const std::set<int>& allowed_indices,
-                                     dtype& max, int& index
-                                    ) 
+void LowRank::maxAbsVector(const Vec& v, 
+                           const std::set<int>& allowed_indices,
+                           dtype& max, int& index
+                          ) 
 {
     std::set<int>::iterator it;
     index = *allowed_indices.begin();
@@ -19,10 +19,10 @@ void Matrix_Factorizer::maxAbsVector(const Vec& v,
     }
 }
 
-void Matrix_Factorizer::rookPiv(Mat& L, Mat& R, double tolerance_or_rank,
-                                int n_row_start, int n_col_start,
-                                int n_rows, int n_cols
-                               )
+void LowRank::rookPiv(Mat& L, Mat& R, double tolerance_or_rank,
+                      int n_row_start, int n_col_start,
+                      int n_rows, int n_cols
+                     )
 {
     // Indices which have been used:
     std::vector<int> row_ind;      
@@ -341,10 +341,10 @@ void Matrix_Factorizer::rookPiv(Mat& L, Mat& R, double tolerance_or_rank,
     }
 }
 
-void Matrix_Factorizer::queenPiv(Mat& L, Mat& R, double tolerance_or_rank,
-                                 int n_row_start, int n_col_start,
-                                 int n_rows, int n_cols
-                                )
+void LowRank::queenPiv(Mat& L, Mat& R, double tolerance_or_rank,
+                       int n_row_start, int n_col_start,
+                       int n_rows, int n_cols
+                      )
 {
     // Indices which have been used:
     std::vector<int> row_ind;      
@@ -588,10 +588,10 @@ void Matrix_Factorizer::queenPiv(Mat& L, Mat& R, double tolerance_or_rank,
     }
 }
 
-void Matrix_Factorizer::SVD(Mat& L,  Mat& R, double tolerance_or_rank,
-                            int n_row_start, int n_col_start, 
-                            int n_rows, int n_cols
-                           )
+void LowRank::SVD(Mat& L,  Mat& R, double tolerance_or_rank,
+                  int n_row_start, int n_col_start, 
+                  int n_rows, int n_cols
+                 )
 {
     Mat temp = this->A->getMatrix(n_row_start, n_col_start, n_rows, n_cols);
     Eigen::BDCSVD<Mat> svd(temp, Eigen::ComputeThinU | Eigen::ComputeThinV);
@@ -636,10 +636,10 @@ Mat randomizedRangeFinder(Mat& A, int size, int n_iter = 2)
 }
 
 // Randomized SVD based on the work of Halko et al.
-void Matrix_Factorizer::rSVD(Mat& L,  Mat& R, int rank,
-                             int n_row_start, int n_col_start, 
-                             int n_rows, int n_cols
-                            )
+void LowRank::rSVD(Mat& L,  Mat& R, int rank,
+                   int n_row_start, int n_col_start, 
+                   int n_rows, int n_cols
+                  )
 {
     // Number of oversamples considered:
     int n_oversamples = 5;
@@ -658,10 +658,10 @@ void Matrix_Factorizer::rSVD(Mat& L,  Mat& R, int rank,
     R = svd.matrixV().block(0, 0, n_cols, int(rank));
 }
 
-void Matrix_Factorizer::RRQR(Mat& L,  Mat& R, double tolerance_or_rank,
-                             int n_row_start, int n_col_start, 
-                             int n_rows, int n_cols
-                            )
+void LowRank::RRQR(Mat& L,  Mat& R, double tolerance_or_rank,
+                   int n_row_start, int n_col_start, 
+                   int n_rows, int n_cols
+                  )
 {
     Mat temp = this->A->getMatrix(n_row_start, n_col_start, n_rows, n_cols);
     Eigen::ColPivHouseholderQR<Mat> rrqr(temp);
@@ -683,10 +683,10 @@ void Matrix_Factorizer::RRQR(Mat& L,  Mat& R, double tolerance_or_rank,
         * Mat(rrqr.matrixQR().triangularView<Eigen::Upper>()).block(0, 0, rank, n_cols).transpose();
 }
 
-void Matrix_Factorizer::getFactorization(Mat& L,  Mat& R, double tolerance_or_rank,
-                                         int n_row_start, int n_col_start, 
-                                         int n_rows, int n_cols
-                                        )
+void LowRank::getFactorization(Mat& L,  Mat& R, double tolerance_or_rank,
+                               int n_row_start, int n_col_start, 
+                               int n_rows, int n_cols
+                              )
 {
     if(n_rows == -1)
         n_rows = this->N;

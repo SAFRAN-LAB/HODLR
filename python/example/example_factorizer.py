@@ -19,7 +19,7 @@ A = K.getMatrix(0, 0, N, N)
 eps = 1e-12
 
 # Declaring the Factorizer Object:
-F = pyhodlrlib.Matrix_Factorizer(K, 'rookPivoting')
+F = pyhodlrlib.LowRank(K, 'rookPivoting')
 # Getting the factorization of Matrix A directly:
 F.factorize(eps, 0, 0, N, N)
 L = F.getL()

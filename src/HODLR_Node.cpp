@@ -30,7 +30,7 @@ void HODLR_Node::matmatProductLeaf(Mat x, Mat& b)
     b.block(n_start, 0, n_size, x.cols()) += K * x.block(n_start, 0, n_size, x.cols());
 }
 
-void HODLR_Node::assembleNonLeafNode(Matrix_Factorizer* F, bool is_sym) 
+void HODLR_Node::assembleNonLeafNode(LowRank* F, bool is_sym) 
 {
     if(is_sym == true)
     {

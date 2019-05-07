@@ -1,10 +1,10 @@
-#ifndef __Matrix_Factorizer__
-#define __Matrix_Factorizer__
+#ifndef __LowRank__
+#define __LowRank__
 
 #include <Eigen/Dense>
 #include "HODLR_Matrix.hpp"
 
-class Matrix_Factorizer
+class LowRank
 {
 private:
     Mat L, R;
@@ -48,7 +48,7 @@ public:
     std::string type;
 
     // Constructor:
-    Matrix_Factorizer(HODLR_Matrix* A, std::string type = "rookPivoting")
+    LowRank(HODLR_Matrix* A, std::string type = "rookPivoting")
     {
         this->type = type;
         this->A    = A;

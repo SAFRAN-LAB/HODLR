@@ -1,5 +1,5 @@
-#include "HODLR_Tree.hpp"
 #include "HODLR_Matrix.hpp"
+#include "HODLR.hpp"
 
 // Taking Matern Kernel for p = 2:
 // K(r) = σ^2 * (1 + sqrt(5) * r / ρ + 5/3 * (r / ρ)^2) * exp(-sqrt(5) * r / ρ)
@@ -63,13 +63,10 @@ int main(int argc, char* argv[])
     // Declaration of HODLR_Matrix object that abstracts data in Matrix:
     // Taking σ = 10, ρ = 5:
     Kernel* K            = new Kernel(N, 10, 5);
-    Matrix_Factorizer* F = new Matrix_Factorizer(K);
-    int n_levels         = log(N / M) / log(2);
 
     std::cout << "========================= Problem Parameters =========================" << std::endl;
     std::cout << "Matrix Size                        :" << N << std::endl;
     std::cout << "Leaf Size                          :" << M << std::endl;
-    std::cout << "Number of Levels in Tree           :" << n_levels << std::endl;
     std::cout << "Tolerance                          :" << tolerance << std::endl << std::endl;
 
     // Variables used in timing:
@@ -77,12 +74,12 @@ int main(int argc, char* argv[])
 
     std::cout << "Fast method..." << std::endl;
     
-    start = omp_get_wtime();
-    // Creating a pointer to the HODLR Tree structure:
-    HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, F);
     bool is_sym = true;
     bool is_pd  = true;
-    T->assembleTree(is_sym, is_pd);
+
+    start = omp_get_wtime();
+    // Creating a pointer to the HODLR Tree structure:
+    HODLR* T = new HODLR(N, M, tolerance, K, "rookPivoting", is_sym, is_pd);
     end = omp_get_wtime();
     std::cout << "Time for assembly in HODLR form:" << (end - start) << std::endl;
 

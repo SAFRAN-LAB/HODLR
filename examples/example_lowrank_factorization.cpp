@@ -1,5 +1,5 @@
 #include "HODLR_Matrix.hpp"
-#include "Matrix_Factorizer.hpp"
+#include "LowRank.hpp"
 #include "KDTree.hpp"
 
 // Derived class of HODLR_Matrix which is ultimately
@@ -76,12 +76,12 @@ int main(int argc, char* argv[])
     std::cout << "Tolerance   :" << tolerance << std::endl << std::endl;
 
     // Declaration of HODLR_Matrix object that abstracts data in Matrix:
-    Kernel* K             = new Kernel(N);
-    Matrix_Factorizer* F1 = new Matrix_Factorizer(K, "rookPivoting");
-    Matrix_Factorizer* F2 = new Matrix_Factorizer(K, "queenPivoting");
-    Matrix_Factorizer* F3 = new Matrix_Factorizer(K, "SVD");
-    Matrix_Factorizer* F4 = new Matrix_Factorizer(K, "RRQR");
-    Matrix_Factorizer* F5 = new Matrix_Factorizer(K, "rSVD");
+    Kernel* K   = new Kernel(N);
+    LowRank* F1 = new LowRank(K, "rookPivoting");
+    LowRank* F2 = new LowRank(K, "queenPivoting");
+    LowRank* F3 = new LowRank(K, "SVD");
+    LowRank* F4 = new LowRank(K, "RRQR");
+    LowRank* F5 = new LowRank(K, "rSVD");
 
     Mat B = K->getMatrix(0, 0, N, N);
     Mat L, R, error;

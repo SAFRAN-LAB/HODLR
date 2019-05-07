@@ -20,11 +20,11 @@ include_directories("${EIGEN_PATH}"
 set(HODLRlib_SRCS
     ${HODLR_PATH}/src/HODLR_Matrix.cpp
     ${HODLR_PATH}/src/KDTree.cpp
-    ${HODLR_PATH}/src/Matrix_Factorizer.cpp
+    ${HODLR_PATH}/src/LowRank.cpp
     ${HODLR_PATH}/src/HODLR_Node.cpp
-    ${HODLR_PATH}/src/HODLR_Tree.cpp
-    ${HODLR_PATH}/src/HODLR_Tree_NonSPD.cpp
-    ${HODLR_PATH}/src/HODLR_Tree_SPD.cpp
+    ${HODLR_PATH}/src/HODLR.cpp
+    ${HODLR_PATH}/src/HODLR_NonSPD.cpp
+    ${HODLR_PATH}/src/HODLR_SPD.cpp
    )
 
 pybind11_add_module(pyhodlrlib

@@ -1,7 +1,7 @@
 // This file serves as a gentle introduction to the usage of this library:
 
 #include "HODLR_Matrix.hpp"
-#include "HODLR_Tree.hpp"
+#include "HODLR.hpp"
 #include "KDTree.hpp"
 
 // Derived class of HODLR_Matrix which is ultimately
@@ -88,14 +88,10 @@ int main(int argc, char* argv[])
     }
 
     // Declaration of HODLR_Matrix object that abstracts data in Matrix:
-    Kernel* K            = new Kernel(N, dim);
-    Matrix_Factorizer* F = new Matrix_Factorizer(K, "rookPivoting");
-    int n_levels         = log(N / M) / log(2);
-
+    Kernel* K = new Kernel(N, dim);
     std::cout << "========================= Problem Parameters =========================" << std::endl;
     std::cout << "Matrix Size                        :" << N << std::endl;
     std::cout << "Leaf Size                          :" << M << std::endl;
-    std::cout << "Number of Levels in Tree           :" << n_levels << std::endl;
     std::cout << "Dimensionality                     :" << dim << std::endl;
     std::cout << "Tolerance                          :" << tolerance << std::endl << std::endl;
 
@@ -105,9 +101,6 @@ int main(int argc, char* argv[])
     // Storing Time Taken:
     double hodlr_time, exact_time;
     std::cout << "========================= Assembly Time =========================" << std::endl;
-    start = omp_get_wtime();
-    // Creating a pointer to the HODLR Tree structure:
-    HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, F);
     // If we are assembling a symmetric matrix:
     bool is_sym = false;
     // If we know that the matrix is also PD:
@@ -115,7 +108,9 @@ int main(int argc, char* argv[])
     // we trigger the fast symmetric factorization method to be used
     // In all other cases the fast factorization method is used
     bool is_pd = false;
-    T->assembleTree(is_sym, is_pd);
+    start = omp_get_wtime();
+    // Creating a pointer to the HODLR Tree structure:
+    HODLR* T = new HODLR(N, M, tolerance, K, "rookPivoting", is_sym, is_pd);
     end = omp_get_wtime();
     hodlr_time = (end - start);
     std::cout << "Time for assembly in HODLR form    :" << hodlr_time << std::endl;

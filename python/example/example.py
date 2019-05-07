@@ -4,6 +4,8 @@ import pyhodlrlib
 # Size of the matrix:
 N = 1000
 x = np.sort(np.random.rand(N))
+# Size of leaf level:
+M = 200
 
 # Returning the Gaussian Kernel:
 class Kernel(pyhodlrlib.HODLR_Matrix):
@@ -20,15 +22,6 @@ A = K.getMatrix(0, 0, N, N)
 # Tolerance for all factorizations:
 eps = 1e-12
 
-# Declaring the Factorizer Object:
-F = pyhodlrlib.Matrix_Factorizer(K, 'rookPivoting')
-# Size of leaf level:
-M = 200
-# Number of levels:
-n_levels = int(np.log(N / M) / np.log(2))
-
-# Creating the HODLR Tree object:
-T = pyhodlrlib.HODLR_Tree(n_levels, eps, F)
 # If we are assembling a symmetric matrix:
 is_sym = True
 # If we know that the matrix is also PD:
@@ -36,7 +29,8 @@ is_sym = True
 # we trigger the fast symmetric factorization method to be used
 # In all other cases the fast factorization method is used
 is_pd = True
-T.assembleTree(is_sym, is_pd)
+# Creating the HODLR object:
+T = pyhodlrlib.HODLR(N, M, eps, K, 'rookPivoting', is_sym, is_pd)
 
 # Random vector to take product with:
 x = np.random.rand(N)

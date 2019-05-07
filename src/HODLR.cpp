@@ -1,24 +1,26 @@
-#include "HODLR_Tree.hpp"
+#include "HODLR.hpp"
 
-// Contructor for the HODLR Tree class:
-HODLR_Tree::HODLR_Tree(int n_levels, double tolerance, Matrix_Factorizer* F) 
+// Contructor for the HODLR class:
+HODLR::HODLR(int N, int M, double tolerance, HODLR_Matrix* A, 
+             std::string lowrank_type, bool is_sym, bool is_pd
+            ) 
 {
-    this->n_levels  = n_levels;
+    this->n_levels  = log(N / M) / log(2);
     this->tolerance = tolerance;
-    this->F         = F;
+    this->F         = new LowRank(A, lowrank_type);
     this->N         = F->N;
     nodes_in_level.push_back(1);
-
     for (int j = 1; j <= n_levels; j++) 
     {
         nodes_in_level.push_back(2 * nodes_in_level.back());
     }
     
     this->createTree();
+    this->assembleTree(is_sym, is_pd);
 }
 
 // Destructor:
-HODLR_Tree::~HODLR_Tree() 
+HODLR::~HODLR() 
 {
     for(int j = 0; j <= n_levels; j++) 
     {
@@ -31,7 +33,7 @@ HODLR_Tree::~HODLR_Tree()
 }
 
 // Creates the node at the root level:
-void HODLR_Tree::createRoot() 
+void HODLR::createRoot() 
 {
     HODLR_Node* root = new HODLR_Node(0, 0, 0, 0, N, tolerance);
     std::vector<HODLR_Node*> level;
@@ -40,7 +42,7 @@ void HODLR_Tree::createRoot()
 }
 
 // Function that adds on children for the given level and node number:
-void HODLR_Tree::createChildren(int level_number, int node_number) 
+void HODLR::createChildren(int level_number, int node_number) 
 {
     //  Adding left child:
     HODLR_Node* left = new HODLR_Node(level_number + 1, 2 * node_number, 0, 
@@ -62,7 +64,7 @@ void HODLR_Tree::createChildren(int level_number, int node_number)
 // Creates the tree structure:
 // Depending upon the parameters set by the user, this function
 // creates a tree having required number of nodes in the tree
-void HODLR_Tree::createTree() 
+void HODLR::createTree() 
 {
     this->createRoot();
     
@@ -82,7 +84,7 @@ void HODLR_Tree::createTree()
 // That is:
 // For leaf nodes, it directly evaluates the matrix entries:
 // For nonleaf nodes, it gets the low rank representation of the underlying matrix:
-void HODLR_Tree::assembleTree(bool is_sym, bool is_pd) 
+void HODLR::assembleTree(bool is_sym, bool is_pd) 
 {
     this->is_sym = is_sym;
     this->is_pd  = is_pd;
@@ -106,14 +108,14 @@ void HODLR_Tree::assembleTree(bool is_sym, bool is_pd)
 
 // Used mainly to debug:
 // Prints the details of the considered nodes:
-void HODLR_Tree::printNodeDetails(int level_number, int node_number)
+void HODLR::printNodeDetails(int level_number, int node_number)
 {
     tree[level_number][node_number]->printNodeDetails();
 }
 
 // Used mainly to debug:
 // Prints details of all the nodes in the tree:
-void HODLR_Tree::printTreeDetails()
+void HODLR::printTreeDetails()
 {
     for(int j = 0; j <= n_levels; j++)
     {
@@ -127,7 +129,7 @@ void HODLR_Tree::printTreeDetails()
 }
 
 // Performs a MatMat product with the given matrix X.
-Mat HODLR_Tree::matmatProduct(Mat x) 
+Mat HODLR::matmatProduct(Mat x) 
 {
     // Initializing matrix b:
     Mat b = Mat::Zero(N, x.cols());
@@ -154,7 +156,7 @@ Mat HODLR_Tree::matmatProduct(Mat x)
 
 // Factorizes the matrix to get LU for each block in case of the nonSPD
 // and L for each block in case the matrix is SPD
-void HODLR_Tree::factorize()
+void HODLR::factorize()
 {
     if(is_sym == true && is_pd == true)
         this->factorizeSPD();
@@ -163,7 +165,7 @@ void HODLR_Tree::factorize()
 }
 
 // Returns x, by solving Ax = b, where A is the matrix represented by the HODLR structure
-Mat HODLR_Tree::solve(Mat b)
+Mat HODLR::solve(Mat b)
 {
     if(is_sym == true && is_pd == true)
         return this->solveSPD(b);
@@ -172,7 +174,7 @@ Mat HODLR_Tree::solve(Mat b)
 }
 
 // Returns the log determinant of the matrix represented by the HODLR structure
-dtype HODLR_Tree::logDeterminant()
+dtype HODLR::logDeterminant()
 {
     if(is_sym == true && is_pd == true)
         return this->logDeterminantSPD();
@@ -184,7 +186,7 @@ dtype HODLR_Tree::logDeterminant()
 // Basically, this function shows the extent of "lowrankness" through
 // different intensity of colors in the plots.
 // Additionally, it also shows the ranks of the blocks. Again useful to debug:
-void HODLR_Tree::plotTree(std::string image_name)
+void HODLR::plotTree(std::string image_name)
 {
     std::string hodlr_path = std::getenv("HODLR_PATH");
     std::string file       = hodlr_path + "/src/plot_tree.py ";

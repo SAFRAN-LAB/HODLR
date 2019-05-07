@@ -1,21 +1,22 @@
-#ifndef __HODLR_Tree__
-#define __HODLR_Tree__
+#ifndef __HODLR__
+#define __HODLR__
 
 #include <Eigen/Dense>
-#include "Matrix_Factorizer.hpp"
+#include "LowRank.hpp"
 #include "HODLR_Node.hpp"
 
-class HODLR_Tree 
+class HODLR 
 {
 private:
     int n_levels;
     double tolerance;
-    Matrix_Factorizer* F;
+    LowRank* F;
     std::vector<int> nodes_in_level;
     bool is_sym, is_pd;
     
     // Vector of levels(which contain nodes) thereby giving the tree:
     std::vector<std::vector<HODLR_Node*>> tree;
+    void assembleTree(bool is_sym = false, bool is_pd = false);
     void createTree();
     void createRoot();
     void createChildren(int level_number, int node_number);
@@ -51,11 +52,14 @@ public:
     // Size of the matrix considered:
     int N;
 
-    HODLR_Tree(int n_levels, double tolerance, Matrix_Factorizer* F);
-    ~HODLR_Tree();
+    HODLR(int N, int M, double tolerance, HODLR_Matrix* A, 
+          std::string lowrank_type = "rookPivoting", 
+          bool is_sym = false, bool is_pd = false
+         );
+    
+    ~HODLR();
 
     //  Methods for HODLR solver
-    void assembleTree(bool is_sym = false, bool is_pd = false);
     // Gives the box details of the prescribed box and level number:
     void printNodeDetails(int level_number, int node_number);
     // Lists details of all boxes in the tree
@@ -70,4 +74,4 @@ public:
     dtype logDeterminant();
 };
 
-#endif /*__HODLR_Tree__*/
+#endif /*__HODLR__*/

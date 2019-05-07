@@ -31,70 +31,69 @@ module hodlr_mod
     end interface
 
     interface
-        subroutine initialize_matrix_factorizer(kernel, factorization_method, factorizer) &
-        bind(c, name = "initialize_matrix_factorizer_c")
+        subroutine initialize_lowrank(kernel, lowrank_method, lowrank) &
+        bind(c, name = "initialize_lowrank_c")
         
             use iso_c_binding
 
             type(c_ptr) :: kernel
-            character(c_char) :: factorization_method(*)
-            type(c_ptr) :: factorizer
+            character(c_char) :: lowrank_method(*)
+            type(c_ptr) :: lowrank
 
         end subroutine
     end interface
 
     interface
-        subroutine get_factorization(factorizer, eps, l, r, rank) &
-        bind(c, name = "get_factorization_c")
+        subroutine get_rank(lowrank, eps, rank) &
+        bind(c, name = "get_rank_c")
 
             use iso_c_binding
 
-            type(c_ptr) :: factorizer
-
+            type(c_ptr) :: lowrank
             real(c_double), value :: eps
-            real(c_double) :: l(*)
-            real(c_double) :: r(*)
             integer(c_int) :: rank
 
         end subroutine
     end interface
 
     interface
-        subroutine initialize_hodlr_tree(n_levels, eps, factorizer, tree) &
-        bind(c, name = "initialize_hodlr_tree_c")
+        subroutine get_lr(lowrank, l, r) &
+        bind(c, name = "get_lr_c")
+
+            use iso_c_binding
+
+            type(c_ptr) :: lowrank
+            real(c_double) :: l(*)
+            real(c_double) :: r(*)
+
+        end subroutine
+    end interface
+
+    interface
+        subroutine initialize_hodlr(N, M, eps, kernel, lowrank_method, is_sym, is_pd, hodlr) &
+        bind(c, name = "initialize_hodlr_c")
             
             use iso_c_binding
 
-            integer(c_int), value :: n_levels
+            integer(c_int), value :: N
+            integer(c_int), value :: M
             real(c_double), value :: eps
-            type(c_ptr) :: factorizer
-
-            type(c_ptr) :: tree
-
-        end subroutine
-    end interface
-
-    interface
-        subroutine assemble_tree(tree, is_sym, is_pd) &
-        bind(c, name = "assemble_tree_c")
-
-            use iso_c_binding
-
-            type(c_ptr) ::tree
-
+            type(c_ptr) :: kernel
+            character(c_char) :: lowrank_method(*)
             logical(c_bool), value :: is_sym
             logical(c_bool), value :: is_pd
+            type(c_ptr) :: hodlr
 
         end subroutine
     end interface
 
     interface
-        subroutine matmat_product(tree, x, b) &
+        subroutine matmat_product(hodlr, x, b) &
         bind(c, name = "matmat_product_c")
 
             use iso_c_binding
 
-            type(c_ptr) ::tree
+            type(c_ptr) :: hodlr
             real(c_double) :: x(*)
             real(c_double) :: b(*)
 
@@ -102,22 +101,22 @@ module hodlr_mod
     end interface
 
     interface
-        subroutine factorize(tree) &
+        subroutine factorize(hodlr) &
         bind(c, name = "factorize_c")
 
             use iso_c_binding
-            type(c_ptr) ::tree
+            type(c_ptr) :: hodlr
 
         end subroutine
     end interface
 
     interface
-        subroutine solve(tree, b, x) &
+        subroutine solve(hodlr, b, x) &
         bind(c, name = "solve_c")
 
             use iso_c_binding
 
-            type(c_ptr) :: tree
+            type(c_ptr) :: hodlr
             real(c_double) :: b(*)
             real(c_double) :: x(*)
 
@@ -125,24 +124,24 @@ module hodlr_mod
     end interface
 
     interface
-        subroutine logdeterminant(tree, log_det) &
+        subroutine logdeterminant(hodlr, log_det) &
         bind(c, name = "logdeterminant_c")
 
             use iso_c_binding
 
-            type(c_ptr) :: tree
+            type(c_ptr) :: hodlr
             real(c_double) :: log_det
 
         end subroutine
     end interface
 
     interface
-        subroutine symmetric_factor_transpose_product(tree, x, b) &
+        subroutine symmetric_factor_transpose_product(hodlr, x, b) &
         bind(c, name = "symm_factor_transpose_prod_c")
 
             use iso_c_binding
 
-            type(c_ptr) ::tree
+            type(c_ptr) ::hodlr
             real(c_double) :: x(*)
             real(c_double) :: b(*)
 
@@ -150,12 +149,12 @@ module hodlr_mod
     end interface
 
     interface
-        subroutine symmetric_factor_product(tree, x, b) &
+        subroutine symmetric_factor_product(hodlr, x, b) &
         bind(c, name = "symm_factor_prod_c")
 
             use iso_c_binding
 
-            type(c_ptr) ::tree
+            type(c_ptr) ::hodlr
             real(c_double) :: x(*)
             real(c_double) :: b(*)
 
@@ -163,12 +162,12 @@ module hodlr_mod
     end interface
 
     interface
-        subroutine get_symmetric_factor(tree, W_matrix) &
+        subroutine get_symmetric_factor(hodlr, W_matrix) &
         bind(c, name = "get_symm_factor_c")
 
             use iso_c_binding
 
-            type(c_ptr) ::tree
+            type(c_ptr) :: hodlr
             real(c_double) :: W_matrix(*)
 
         end subroutine

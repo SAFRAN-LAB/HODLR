@@ -29,45 +29,41 @@ void get_matrix_c(Kernel** kernel, int row_start, int col_start, int row_end, in
     return;
 }
 
-void initialize_matrix_factorizer_c(Kernel** kernel, char* factorization_type, Matrix_Factorizer** factorizer)
+void initialize_lowrank_c(Kernel** kernel, char* factorization_type, LowRank** lowrank)
 {   
     removeEndSpaces(factorization_type);
-    (*factorizer) = new Matrix_Factorizer((*kernel), factorization_type);
+    (*lowrank) = new LowRank((*kernel), factorization_type);
     return;
 }
 
-void get_factorization_c(Matrix_Factorizer** factorizer, double eps, double* l, double* r, int& rank)
+void get_rank_c(LowRank** lowrank, double eps, int& rank)
 {
-    Mat U, V;
-    (*factorizer)->getFactorization(U, V, eps);
+    (*lowrank)->factorize(eps);
+    rank = ((*lowrank)->L).cols();
+}
 
-    rank = U.cols();
+void get_lr_c(LowRank** lowrank, double* l, double* r)
+{
     // Counter variables:
     int i, j;
-    for(i = 0; i < U.cols(); i++)
-        for(j = 0; j < U.rows(); j++)
-            l[U.rows() * i + j] = U(j, i);
+    for(i = 0; i < ((*lowrank)->L).cols(); i++)
+        for(j = 0; j < ((*lowrank)->L).rows(); j++)
+            l[((*lowrank)->L).rows() * i + j] = ((*lowrank)->L)(j, i);
 
-    for(i = 0; i < V.cols(); i++)
-        for(j = 0; j < V.rows(); j++)
-            r[V.rows() * i + j] = V(j, i);
+    for(i = 0; i < ((*lowrank)->R).cols(); i++)
+        for(j = 0; j < ((*lowrank)->R).rows(); j++)
+            r[((*lowrank)->R).rows() * i + j] = ((*lowrank)->R)(j, i);
 
     return;
 }
 
-void initialize_hodlr_tree_c(int n_levels, double eps, Matrix_Factorizer** factorizer, HODLR_Tree** tree)
+void initialize_hodlr_c(int N, int M, double eps, Kernel** kernel, char* lowrank_method, bool is_sym, bool is_pd, HODLR** tree)
 {
-    (*tree) = new HODLR_Tree(n_levels, eps, (*factorizer));
+    (*tree) = new HODLR(N, M, eps, (*kernel), lowrank_method, is_sym, is_pd);
     return;
 }
 
-void assemble_tree_c(HODLR_Tree** tree, bool is_sym, bool is_pd)
-{
-    (*tree)->assembleTree(is_sym, is_pd);
-    return;
-}
-
-void matmat_product_c(HODLR_Tree** tree, double* x, double* b)
+void matmat_product_c(HODLR** tree, double* x, double* b)
 {
     Mat b_eig, x_eig;
     x_eig = Eigen::Map<Mat>(x, (*tree)->N, 1);
@@ -79,13 +75,13 @@ void matmat_product_c(HODLR_Tree** tree, double* x, double* b)
     return;
 }
 
-void factorize_c(HODLR_Tree** tree)
+void factorize_c(HODLR** tree)
 {
     (*tree)->factorize();
     return;
 }
 
-void solve_c(HODLR_Tree** tree, double* b, double* x)
+void solve_c(HODLR** tree, double* b, double* x)
 {
     Mat b_eig, x_eig;
 
@@ -98,13 +94,13 @@ void solve_c(HODLR_Tree** tree, double* b, double* x)
     return;
 }
 
-void logdeterminant_c(HODLR_Tree** tree, double &log_det)
+void logdeterminant_c(HODLR** tree, double &log_det)
 {
     log_det = (*tree)->logDeterminant();
     return;
 }
 
-void symm_factor_transpose_prod_c(HODLR_Tree** tree, double* x, double* b)
+void symm_factor_transpose_prod_c(HODLR** tree, double* x, double* b)
 {
     Mat b_eig, x_eig;
     x_eig = Eigen::Map<Mat>(x, (*tree)->N, 1);
@@ -116,7 +112,7 @@ void symm_factor_transpose_prod_c(HODLR_Tree** tree, double* x, double* b)
     return;
 }
 
-void symm_factor_prod_c(HODLR_Tree** tree, double* x, double* b)
+void symm_factor_prod_c(HODLR** tree, double* x, double* b)
 {
     Mat b_eig, x_eig;
     x_eig = Eigen::Map<Mat>(x, (*tree)->N, 1);
@@ -128,7 +124,7 @@ void symm_factor_prod_c(HODLR_Tree** tree, double* x, double* b)
     return;
 }
 
-void get_symm_factor_c(HODLR_Tree** tree, double* W_matrix)
+void get_symm_factor_c(HODLR** tree, double* W_matrix)
 {
     Mat temp = (*tree)->getSymmetricFactor();
     // Counter variables:

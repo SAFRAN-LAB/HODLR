@@ -17,7 +17,7 @@ program main
 
     ! The following objects are used to refer to the C++ objects
     type(c_ptr) :: kernel
-    type(c_ptr) :: factorizer
+    type(c_ptr) :: lowrank
 
     ! Size of the matrix:
     integer, parameter :: N = 100
@@ -30,8 +30,8 @@ program main
     real(c_double) :: matrix(N, N)
 
     ! The following arrays are used in getting the direct factorization of the array:
-    real(c_double) :: l_flat(N * N)
-    real(c_double) :: r_flat(N * N)
+    real(c_double), dimension (:), allocatable :: l_flat
+    real(c_double), dimension (:), allocatable :: r_flat
     real(c_double), dimension (:,:), allocatable :: l
     real(c_double), dimension (:,:), allocatable :: r
     
@@ -48,22 +48,30 @@ program main
     matrix = reshape(flattened_matrix, (/ N, N /))
 
     ! Building the matrix factorizer object:
-    call initialize_matrix_factorizer(kernel, factorization_method, factorizer)
+    call initialize_lowrank(kernel, factorization_method, lowrank)
 
-    ! ! Example of directly getting the factorization:
-    call get_factorization(factorizer, eps, l_flat, r_flat, rank)
+    ! Example of directly getting the factorization:
+    call get_rank(lowrank, eps, rank)
+
+    allocate(l_flat(N * rank))
+    allocate(r_flat(N * rank))
+
+    call get_lr(lowrank, l_flat, r_flat)
 
     allocate(l(N, rank))
     allocate(r(N, rank))
 
     ! Reshaping the flattened matrices:
-    l = reshape(l_flat(1:N * rank), (/ N, rank /))
-    r = reshape(r_flat(1:N * rank), (/ N, rank /))
+    l = reshape(l_flat, (/ N, rank /))
+    r = reshape(r_flat, (/ N, rank /))
 
     ! Printing the error:
     print *, "Error in Factorization:", SUM(ABS(matrix - matmul(l, transpose(r))))
 
     deallocate(l)
     deallocate(r)
+
+    deallocate(l_flat)
+    deallocate(r_flat)
 
 end

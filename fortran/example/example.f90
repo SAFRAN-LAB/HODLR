@@ -5,7 +5,7 @@ function get_matrix_entry(i, j) bind(c, name="get_matrix_entry")
     integer, intent(in) :: j
 
     ! It needs to be ensured that this is the same as N set below:
-    integer, parameter :: N = 5000
+    integer, parameter :: N = 1000
     double precision :: get_matrix_entry
 
     if(i == j) then
@@ -25,17 +25,14 @@ program main
 
     ! The following objects are used to refer to the C++ objects
     type(c_ptr) :: kernel
-    type(c_ptr) :: factorizer
-    type(c_ptr) :: tree
+    type(c_ptr) :: hodlr
 
     ! Size of the matrix:
-    integer, parameter :: N = 5000
+    integer, parameter :: N = 1000
     ! Size of the matrix at leaf level:
     integer, parameter :: M = 200
     ! Number of digits of tolerance required:
     real(c_double), parameter :: eps = 1.0d-15
-    ! Number of levels in the tree:
-    integer :: n_levels = LOG(REAL(N) / REAL(M)) / LOG(2.)
 
     ! Whether matrix encoded is symmetric:
     logical(c_bool) :: is_sym = .true.
@@ -76,13 +73,8 @@ program main
     ! print *, "Printing the Encoded Matrix A:"
     ! call print_matrix(matrix, N)
 
-    ! Building the matrix factorizer object:
-    call initialize_matrix_factorizer(kernel, factorization_method, factorizer)
-
-    ! Building the HODLR tree object:
-    call initialize_hodlr_tree(n_levels, eps, factorizer, tree)
-    ! Assembling the tree under awareness of positive definite and symmetric nature:
-    call assemble_tree(tree, is_sym, is_pd)
+    ! Building the HODLR object:
+    call initialize_hodlr(N, M, eps, kernel, "rookPivoting", is_sym, is_pd, hodlr)
 
     ! Populating the vector x with random elements:
     do i = 1, N
@@ -90,34 +82,34 @@ program main
     end do
     
     ! Performing matrix multiplication using HODLR:
-    call matmat_product(tree, x, b)
+    call matmat_product(hodlr, x, b)
     ! Performing the matrix multiplication directly:
     b_exact = matmul(matrix, x)
     ! Printing the error of matmul:
     print *, "Error in Matrix Multiplication:", (sum(abs(b_exact - b)) / sum(abs(b_exact)))
 
     ! Factorizing the elements of the tree:
-    call factorize(tree)
+    call factorize(hodlr)
 
     ! Solve for x in the equation Ax = b:
-    call solve(tree, b_exact, x_approx)
+    call solve(hodlr, b_exact, x_approx)
 
     ! Printing the error of solve:
     print *, "Error in Solve(Forward):", sum((x_approx - x)**2) / sum(x**2)
     print *, "Error in Solve(Backward):", sum((matmul(matrix, x) - b_exact)**2) / sum(b_exact**2)
 
     ! Getting the determinant of the matrix encoded:
-    call logdeterminant(tree, log_det)
+    call logdeterminant(hodlr, log_det)
     print *, "Log Determinant of Matrix:", log_det
 
     ! We set y = W^T x
-    call symmetric_factor_transpose_product(tree, x, y)
+    call symmetric_factor_transpose_product(hodlr, x, y)
     ! b = W y = W W^T x = B * x
-    call symmetric_factor_product(tree, y, b)
+    call symmetric_factor_product(hodlr, y, b)
     print *, "Error in Matrix Multiplication(using Symmetric Factor Products):", sum((b_exact - b)**2) / sum(b_exact**2)
 
     ! Getting the matrix encoded by the kernel object:
-    call get_symmetric_factor(tree, flattened_W_matrix)
+    call get_symmetric_factor(hodlr, flattened_W_matrix)
     W_matrix = reshape(flattened_W_matrix, (/ N, N /))
     print *, "Error in recovering A from W", sum(abs(matrix - matmul(W_matrix, transpose(W_matrix)))) / sum(matrix)
     

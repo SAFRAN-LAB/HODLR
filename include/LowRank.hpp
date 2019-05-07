@@ -7,7 +7,6 @@
 class LowRank
 {
 private:
-    Mat L, R;
     // Used by the rook-pivoting routine:
     void maxAbsVector(const Vec& v, 
                       const std::set<int>& allowed_indices, 
@@ -46,6 +45,8 @@ public:
     int N;
     // Type for the factorization:
     std::string type;
+    // Matrices in which the factorization is stored
+    Mat L, R;
 
     // Constructor:
     LowRank(HODLR_Matrix* A, std::string type = "rookPivoting")

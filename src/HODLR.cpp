@@ -30,6 +30,8 @@ HODLR::~HODLR()
             delete tree[j][k];
         }
     }
+
+    delete F;
 }
 
 // Creates the node at the root level:

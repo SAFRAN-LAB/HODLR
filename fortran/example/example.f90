@@ -4,8 +4,16 @@ function get_matrix_entry(i, j) bind(c, name="get_matrix_entry")
     integer, intent(in) :: i
     integer, intent(in) :: j
 
+    ! It needs to be ensured that this is the same as N set below:
+    integer, parameter :: N = 5000
     double precision :: get_matrix_entry
-    get_matrix_entry = 1 / DFLOAT(i + j + 1)
+
+    if(i == j) then
+        get_matrix_entry = 100
+    else
+        get_matrix_entry = exp(-(DBLE(i)/N - DBLE(j)/N)**2)
+    end if
+
 end function
 
 program main
@@ -21,9 +29,9 @@ program main
     type(c_ptr) :: tree
 
     ! Size of the matrix:
-    integer, parameter :: N = 5
-    ! Size of the matrix as 5 at leaf level:
-    integer, parameter :: M = 5
+    integer, parameter :: N = 5000
+    ! Size of the matrix at leaf level:
+    integer, parameter :: M = 200
     ! Number of digits of tolerance required:
     real(c_double), parameter :: eps = 1.0d-15
     ! Number of levels in the tree:
@@ -41,11 +49,6 @@ program main
     ! Variables used to store the symmetric factor matrix:
     real(c_double) :: flattened_W_matrix(N * N)
     real(c_double) :: W_matrix(N, N)
-    ! The following arrays are used in getting the direct factorization of the array:
-    real(c_double) :: l_flat(N * N)
-    real(c_double) :: r_flat(N * N)
-    real(c_double) :: l(N, N)
-    real(c_double) :: r(N, N)
 
     integer :: i, j
 
@@ -60,7 +63,7 @@ program main
     real(c_double) :: log_det
 
     ! Method used for low-rank matrix decomposition:
-    character(len = 20) :: factorization_method = "rookPivoting"
+    character(len = 20) :: factorization_method = "SVD"
 
     ! Creating the kernel object:
     call initialize_kernel_object(N, kernel)
@@ -70,26 +73,11 @@ program main
     matrix = reshape(flattened_matrix, (/ N, N /))
 
     ! Printing the Matrix to observe the structure:
-    print *, "Printing the Encoded Matrix A:"
-    call print_matrix(matrix, N)
+    ! print *, "Printing the Encoded Matrix A:"
+    ! call print_matrix(matrix, N)
 
     ! Building the matrix factorizer object:
     call initialize_matrix_factorizer(kernel, factorization_method, factorizer)
-
-    ! ! Example of directly getting the factorization:
-    call get_factorization(factorizer, eps, l_flat, r_flat)
-
-    ! Reshaping the flattened matrices:
-    l = reshape(l_flat, (/ N, N /))
-    r = reshape(r_flat, (/ N, N /))
-
-    ! Printing the Matrices and the error matrix:
-    print *, "Printing Matrix L:"
-    call print_matrix(l, N)
-    print *, "Printing Matrix R:"
-    call print_matrix(r, N)
-    print *, "Printing Error Matrix (A - L * R):"
-    call print_matrix(matrix - matmul(l, r), N)
 
     ! Building the HODLR tree object:
     call initialize_hodlr_tree(n_levels, eps, factorizer, tree)
@@ -106,7 +94,7 @@ program main
     ! Performing the matrix multiplication directly:
     b_exact = matmul(matrix, x)
     ! Printing the error of matmul:
-    print *, "Error in Matrix Multiplication:", sum(abs(b_exact - b))
+    print *, "Error in Matrix Multiplication:", (sum(abs(b_exact - b)) / sum(abs(b_exact)))
 
     ! Factorizing the elements of the tree:
     call factorize(tree)
@@ -115,7 +103,8 @@ program main
     call solve(tree, b_exact, x_approx)
 
     ! Printing the error of solve:
-    print *, "Error in Solve:", sum(abs(x_approx - x))
+    print *, "Error in Solve(Forward):", sum((x_approx - x)**2) / sum(x**2)
+    print *, "Error in Solve(Backward):", sum((matmul(matrix, x) - b_exact)**2) / sum(b_exact**2)
 
     ! Getting the determinant of the matrix encoded:
     call logdeterminant(tree, log_det)
@@ -125,12 +114,12 @@ program main
     call symmetric_factor_transpose_product(tree, x, y)
     ! b = W y = W W^T x = B * x
     call symmetric_factor_product(tree, y, b)
-    print *, "Error in Matrix Multiplication(using Symmetric Factor Products):", sum(abs(b_exact - b))
+    print *, "Error in Matrix Multiplication(using Symmetric Factor Products):", sum((b_exact - b)**2) / sum(b_exact**2)
 
     ! Getting the matrix encoded by the kernel object:
     call get_symmetric_factor(tree, flattened_W_matrix)
     W_matrix = reshape(flattened_W_matrix, (/ N, N /))
-    print *, "Error in recovering A from W", sum(matrix - matmul(W_matrix, transpose(W_matrix)))
+    print *, "Error in recovering A from W", sum(abs(matrix - matmul(W_matrix, transpose(W_matrix)))) / sum(matrix)
     
     contains
         ! Use this subroutine to print and check the matrix:

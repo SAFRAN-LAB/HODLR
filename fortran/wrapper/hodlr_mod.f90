@@ -44,7 +44,7 @@ module hodlr_mod
     end interface
 
     interface
-        subroutine get_factorization(factorizer, eps, l, r) &
+        subroutine get_factorization(factorizer, eps, l, r, rank) &
         bind(c, name = "get_factorization_c")
 
             use iso_c_binding
@@ -54,6 +54,7 @@ module hodlr_mod
             real(c_double), value :: eps
             real(c_double) :: l(*)
             real(c_double) :: r(*)
+            integer(c_int) :: rank
 
         end subroutine
     end interface

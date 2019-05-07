@@ -6,7 +6,7 @@ enable_language(Fortran)
 # Provide the input file that you want to solve for:
 # This can also be passed as a command line argument:
 if(NOT INPUT_FILE)
-    set (INPUT_FILE "example/example_factorization.f90")
+    set (INPUT_FILE "example/example.f90")
 endif()
 # Here set the name for the output executable:
 # This can also be passed as a command line argument:

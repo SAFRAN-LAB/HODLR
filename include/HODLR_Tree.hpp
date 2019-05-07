@@ -10,8 +10,8 @@ class HODLR_Tree
 private:
     int n_levels;
     double tolerance;
-    std::vector<int> nodes_in_level;
     Matrix_Factorizer* F;
+    std::vector<int> nodes_in_level;
     bool is_sym, is_pd;
     
     // Vector of levels(which contain nodes) thereby giving the tree:

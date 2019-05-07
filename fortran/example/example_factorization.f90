@@ -20,9 +20,11 @@ program main
     type(c_ptr) :: factorizer
 
     ! Size of the matrix:
-    integer, parameter :: N = 5
+    integer, parameter :: N = 100
+    ! Rank of the factorization performed:
+    integer :: rank
     ! Number of digits of tolerance required:
-    real(c_double), parameter :: eps = 1.0d-15
+    real(c_double), parameter :: eps = 1.0d-14
     ! Used to store the complete matrix:
     real(c_double) :: flattened_matrix(N * N)
     real(c_double) :: matrix(N, N)
@@ -30,13 +32,13 @@ program main
     ! The following arrays are used in getting the direct factorization of the array:
     real(c_double) :: l_flat(N * N)
     real(c_double) :: r_flat(N * N)
-    real(c_double) :: l(N, N)
-    real(c_double) :: r(N, N)
-
+    real(c_double), dimension (:,:), allocatable :: l
+    real(c_double), dimension (:,:), allocatable :: r
+    
     integer :: i, j
 
     ! Method used for low-rank matrix decomposition:
-    character(len = 20) :: factorization_method = "rookPivoting"
+    character(len = 20) :: factorization_method = "SVD"
 
     ! Creating the kernel object:
     call initialize_kernel_object(N, kernel)
@@ -49,12 +51,19 @@ program main
     call initialize_matrix_factorizer(kernel, factorization_method, factorizer)
 
     ! ! Example of directly getting the factorization:
-    call get_factorization(factorizer, eps, l_flat, r_flat)
+    call get_factorization(factorizer, eps, l_flat, r_flat, rank)
+
+    allocate(l(N, rank))
+    allocate(r(N, rank))
 
     ! Reshaping the flattened matrices:
-    l = reshape(l_flat, (/ N, N /))
-    r = reshape(r_flat, (/ N, N /))
+    l = reshape(l_flat(1:N * rank), (/ N, rank /))
+    r = reshape(r_flat(1:N * rank), (/ N, rank /))
 
-    ! Printing the Matrices and the error matrix:
-    print *, SUM(ABS(matrix - matmul(l, transpose(r))))
+    ! Printing the error:
+    print *, "Error in Factorization:", SUM(ABS(matrix - matmul(l, transpose(r))))
+
+    deallocate(l)
+    deallocate(r)
+
 end

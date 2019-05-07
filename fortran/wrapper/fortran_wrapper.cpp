@@ -36,20 +36,21 @@ void initialize_matrix_factorizer_c(Kernel** kernel, char* factorization_type, M
     return;
 }
 
-void get_factorization_c(Matrix_Factorizer** factorizer, double eps, double* l, double* r)
+void get_factorization_c(Matrix_Factorizer** factorizer, double eps, double* l, double* r, int& rank)
 {
     Mat U, V;
     (*factorizer)->getFactorization(U, V, eps);
 
+    rank = U.cols();
     // Counter variables:
     int i, j;
     for(i = 0; i < U.cols(); i++)
         for(j = 0; j < U.rows(); j++)
             l[U.rows() * i + j] = U(j, i);
 
-    for(i = 0; i < V.rows(); i++)
-        for(j = 0; j < V.cols(); j++)
-            r[V.cols() * i + j] = V(i, j);
+    for(i = 0; i < V.cols(); i++)
+        for(j = 0; j < V.rows(); j++)
+            r[V.rows() * i + j] = V(j, i);
 
     return;
 }

@@ -30,20 +30,23 @@ void HODLR_Node::matmatProductLeaf(Mat x, Mat& b)
     b.block(n_start, 0, n_size, x.cols()) += K * x.block(n_start, 0, n_size, x.cols());
 }
 
-void HODLR_Node::assembleNonLeafNode(HODLR_Matrix* A, bool is_sym) 
+void HODLR_Node::assembleNonLeafNode(LowRank* F, bool is_sym) 
 {
     if(is_sym == true)
     {
-        A->rookPiv(c_start[0], c_start[1], c_size[0], c_size[1], tolerance, U[0], V[1], rank[0]);
+        F->getFactorization(U[0], V[1], tolerance, c_start[0], c_start[1], c_size[0], c_size[1]);
         V[0]    = U[0];
         U[1]    = V[1];
+        rank[0] = U[0].cols();
         rank[1] = rank[0];
     }
 
     else
     {
-        A->rookPiv(c_start[0], c_start[1], c_size[0], c_size[1], tolerance, U[0], V[1], rank[0]);
-        A->rookPiv(c_start[1], c_start[0], c_size[1], c_size[0], tolerance, U[1], V[0], rank[1]);
+        F->getFactorization(U[0], V[1], tolerance, c_start[0], c_start[1], c_size[0], c_size[1]);
+        rank[0] = U[0].cols();
+        F->getFactorization(U[1], V[0], tolerance, c_start[1], c_start[0], c_size[1], c_size[0]);
+        rank[1] = U[1].cols();
     }
 }
 

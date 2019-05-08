@@ -20,6 +20,7 @@
 *.a
 *.la
 *.lo
+*.mod
 
 # Packages #
 ############
@@ -60,6 +61,7 @@ Thumbs.db
 # build directory #
 ###################
 build/
+fortran/build/
 
 # dependency directory #
 ########################

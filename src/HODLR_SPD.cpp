@@ -1,9 +1,9 @@
-#include "HODLR_Tree.hpp"
+#include "HODLR.hpp"
 
 // Factorizing out the leaf level matrices:
 // This is the first step of the process of factoring out:
 // That is we are making K = K_κ * K^(κ-1) * K_κ^T
-void HODLR_Tree::factorizeLeafSPD(int k) 
+void HODLR::factorizeLeafSPD(int k) 
 {
     int child;
     int parent = k;
@@ -29,7 +29,7 @@ void HODLR_Tree::factorizeLeafSPD(int k)
 // Logic here is that, we have express U0 * V1T instead as:
 // U0 * (V1)^T = (Q0 * R0) * (Q1 * R1)^T = Q0 * R0 * R1^T * Q1^T 
 // = Q0 * K * Q1^T; where K = R0 * R1^T 
-void HODLR_Tree::qr(int j, int k)
+void HODLR::qr(int j, int k)
 {   
     // We are finding the minimum size along the dimension since we want to
     // get the thinQ of the QR factorization for U1 and V2:
@@ -66,7 +66,7 @@ void HODLR_Tree::qr(int j, int k)
 }
 
 // Obtains the QR decomposition of all nodes at this level:
-void HODLR_Tree::qrForLevel(int level)
+void HODLR::qrForLevel(int level)
 {
     #pragma omp parallel for
     for(int k = 0; k < nodes_in_level[level]; k++)
@@ -75,7 +75,7 @@ void HODLR_Tree::qrForLevel(int level)
     }
 }
 
-void HODLR_Tree::factorizeNonLeafSPD(int j, int k) 
+void HODLR::factorizeNonLeafSPD(int j, int k) 
 {
     int r0 = tree[j][k]->rank[0];
     int r1 = tree[j][k]->rank[1];
@@ -107,7 +107,7 @@ void HODLR_Tree::factorizeNonLeafSPD(int j, int k)
     }
 }
 
-void HODLR_Tree::factorizeSPD()
+void HODLR::factorizeSPD()
 {
     // Initializing for the non-leaf levels:
     for(int j = 0; j < n_levels; j++) 
@@ -152,20 +152,20 @@ void HODLR_Tree::factorizeSPD()
 }
 
 // Returns inv(L) * b 
-Mat HODLR_Tree::solveLeafSymmetricFactor(int k, Mat b) 
+Mat HODLR::solveLeafSymmetricFactor(int k, Mat b) 
 {
     Mat x = tree[n_levels][k]->K_factor_LLT.matrixL().solve(b);
     return x;
 }
 
 // Returns inv(LT) * b 
-Mat HODLR_Tree::solveLeafSymmetricFactorTranspose(int k, Mat b) 
+Mat HODLR::solveLeafSymmetricFactorTranspose(int k, Mat b) 
 {
     Mat x = tree[n_levels][k]->K_factor_LLT.matrixL().transpose().solve(b);
     return x;
 }
 
-Mat HODLR_Tree::solveNonLeafSymmetricFactor(int j, int k, Mat b) 
+Mat HODLR::solveNonLeafSymmetricFactor(int j, int k, Mat b) 
 {
     int n0 = tree[j][k]->U[0].rows();
     int n1 = tree[j][k]->V[1].rows();
@@ -184,7 +184,7 @@ Mat HODLR_Tree::solveNonLeafSymmetricFactor(int j, int k, Mat b)
     return(b);
 }
 
-Mat HODLR_Tree::solveNonLeafSymmetricFactorTranspose(int j, int k, Mat b)
+Mat HODLR::solveNonLeafSymmetricFactorTranspose(int j, int k, Mat b)
 {
     int n0 = tree[j][k]->U[0].rows();
     int n1 = tree[j][k]->V[1].rows();
@@ -203,7 +203,7 @@ Mat HODLR_Tree::solveNonLeafSymmetricFactorTranspose(int j, int k, Mat b)
     return(b);
 }
 
-Mat HODLR_Tree::solveSymmetricFactor(Mat b)
+Mat HODLR::solveSymmetricFactor(Mat b)
 {
     int start, size;
     Mat x = Mat::Zero(b.rows(),b.cols());
@@ -240,7 +240,7 @@ Mat HODLR_Tree::solveSymmetricFactor(Mat b)
     return x;
 } 
 
-Mat HODLR_Tree::solveSymmetricFactorTranspose(Mat b) 
+Mat HODLR::solveSymmetricFactorTranspose(Mat b) 
 {
     int start, size;
     Mat x = Mat::Zero(b.rows(),b.cols());
@@ -275,12 +275,12 @@ Mat HODLR_Tree::solveSymmetricFactorTranspose(Mat b)
     return x;
 }
 
-Mat HODLR_Tree::solveSPD(Mat b) 
+Mat HODLR::solveSPD(Mat b) 
 {   
     return(solveSymmetricFactorTranspose(solveSymmetricFactor(b)));
 }
 
-Mat HODLR_Tree::SymmetricFactorNonLeafProduct(int j, int k, Mat b) 
+Mat HODLR::SymmetricFactorNonLeafProduct(int j, int k, Mat b) 
 {
     int n0                        = tree[j][k]->U[0].rows();
     int n1                        = tree[j][k]->V[1].rows();
@@ -297,7 +297,7 @@ Mat HODLR_Tree::SymmetricFactorNonLeafProduct(int j, int k, Mat b)
     return(b);
 }
 
-Mat HODLR_Tree::SymmetricFactorTransposeNonLeafProduct(int j, int k, Mat b)
+Mat HODLR::SymmetricFactorTransposeNonLeafProduct(int j, int k, Mat b)
 {
     int n0                        = tree[j][k]->U[0].rows();
     int n1                        = tree[j][k]->V[1].rows();
@@ -311,7 +311,7 @@ Mat HODLR_Tree::SymmetricFactorTransposeNonLeafProduct(int j, int k, Mat b)
     return(b);
 }
 
-Mat HODLR_Tree::symmetricFactorProduct(Mat b)
+Mat HODLR::symmetricFactorProduct(Mat b)
 {
     int start, size;
     Mat x = Mat::Zero(b.rows(),b.cols());
@@ -344,7 +344,7 @@ Mat HODLR_Tree::symmetricFactorProduct(Mat b)
     return x;
 }
 
-Mat HODLR_Tree::symmetricFactorTransposeProduct(Mat b)
+Mat HODLR::symmetricFactorTransposeProduct(Mat b)
 {
     int start, size;
     Mat x = Mat::Zero(b.rows(),b.cols());
@@ -380,7 +380,7 @@ Mat HODLR_Tree::symmetricFactorTransposeProduct(Mat b)
     return x;
 }
 
-Mat HODLR_Tree::getSymmetricFactor()
+Mat HODLR::getSymmetricFactor()
 {
     if(n_levels == 0)
         return tree[0][0]->K_factor_LLT.matrixL();
@@ -431,7 +431,7 @@ Mat HODLR_Tree::getSymmetricFactor()
     return Rc;
 }
 
-dtype HODLR_Tree::logDeterminantSPD()
+dtype HODLR::logDeterminantSPD()
 {
     dtype log_det = 0.0;
 

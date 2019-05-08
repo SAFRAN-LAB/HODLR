@@ -1,8 +1,7 @@
 // File used in CI testing
-
-#include "HODLR_Tree.hpp"
 #include "HODLR_Matrix.hpp"
 #include "KDTree.hpp"
+#include "HODLR.hpp"
 
 // Derived class of HODLR_Matrix which is ultimately
 // passed to the HODLR_Tree class:
@@ -80,8 +79,8 @@ public:
     ~Random_Matrix() {};
 };
 
-template<class kernel>
-void testHODLR(int N, int n_levels, double tolerance, kernel K, std::string image_name)
+template<class HODLR_Matrix>
+void testHODLR(int N, int M, double tolerance, HODLR_Matrix* K, std::string lowrank_method, std::string image_name)
 {
     // Througout, we have ensured that the error in the method is lesser than 
     // N X tolerance that was requested for ACA. It is not always necessary
@@ -93,10 +92,11 @@ void testHODLR(int N, int n_levels, double tolerance, kernel K, std::string imag
     Mat y_fast, b_fast;
 
     // Testing fast factorization:
-    HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, K);
     bool is_sym = false;
-    bool is_pd = false;
-    T->assembleTree(is_sym, is_pd);
+    bool is_pd  = false;
+
+    HODLR* T = new HODLR(N, M, tolerance);
+    T->assemble(K, lowrank_method, is_sym, is_pd);
     T->printTreeDetails();
     T->plotTree(image_name);
     
@@ -124,12 +124,12 @@ void testHODLR(int N, int n_levels, double tolerance, kernel K, std::string imag
     delete T;
 
     // Testing fast symmetric factorization:
-    T = new HODLR_Tree(n_levels, tolerance, K);
     is_sym = true;
-    is_pd = true;
-    T->assembleTree(is_sym, is_pd);
+    is_pd  = true;
+    T      = new HODLR(N, M, tolerance);
 
-    b_fast      = T->matmatProduct(x);
+    T->assemble(K, lowrank_method, is_sym, is_pd);
+    b_fast = T->matmatProduct(x);
     // Computing the relative error in the solution obtained:
     assert((b_fast-b_exact).norm() / (b_exact.norm()) < N * tolerance);
 
@@ -165,37 +165,40 @@ void testHODLR(int N, int n_levels, double tolerance, kernel K, std::string imag
 int main(int argc, char* argv[]) 
 {
     // Size of the Matrix in consideration:
-    int N              = 1000;
+    int N            = 1000;
     // Size of Matrices at leaf level:
-    int M              = 100;
+    int M            = 100;
     // Dimensionality of the problem:
-    int dim            = 1;
+    int dim          = 1;
     // Tolerance of problem
-    double tolerance   = pow(10, -12);
-    // Number of levels in the tree:
-    int n_levels       = log(N / M) / log(2);
+    double tolerance = pow(10, -12);
 
     // Dummy check to ensure that zeros are returned when HODLR_Matrix is directly used:
     HODLR_Matrix* K_dummy = new HODLR_Matrix(N);
     assert(K_dummy->getMatrixEntry(rand() % N, rand() % N) == 0);
     delete K_dummy;
-    
+
     Kernel_Gaussian* K = new Kernel_Gaussian(N, dim);
-    testHODLR(N, n_levels, tolerance, K, "gaussian_kernel.svg");
+    testHODLR(N, M, tolerance, K, "rookPivoting", "gaussian_kernel.svg");
     delete K;
 
     // Setting lower tolerance since this is a harsh test to reproduce at higher tolerances:
     tolerance = pow(10, -7);
-    Random_Matrix* K2  = new Random_Matrix(N);
-    testHODLR(N, n_levels, tolerance, K2, "random_matrix_N_1000.svg");
+    Random_Matrix* K2 = new Random_Matrix(N);
+    testHODLR(N, M, tolerance, K2, "rookPivoting", "random_matrix_N_1000.svg");
+    testHODLR(N, M, tolerance, K2, "queenPivoting", "random_matrix_N_1000.svg");
+    testHODLR(N, M, tolerance, K2, "SVD", "random_matrix_N_1000.svg");
+    testHODLR(N, M, tolerance, K2, "RRQR", "random_matrix_N_1000.svg");
+    // Setting 20 as the rank for all the factorizations carried out:
+    testHODLR(N, M, 20, K2, "rSVD", "random_matrix_N_1000.svg");
     delete K2;
 
     // Trying out odd sizes:
-    N        = 1943;
-    M        = 123;
-    n_levels = log(N / M) / log(2);
-    Random_Matrix* K3  = new Random_Matrix(N);
-    testHODLR(N, n_levels, tolerance, K3, "random_matrix_N_1943.svg");
+    N = 1943;
+    M = 123;
+    
+    Random_Matrix* K3 = new Random_Matrix(N);
+    testHODLR(N, M, tolerance, K3, "rookPivoting", "random_matrix_N_1943.svg");
     delete K3;
 
     std::cout << "Reached End of Test File Successfully! All functions work as intended!" << std::endl;

@@ -1,5 +1,5 @@
-#include "HODLR_Tree.hpp"
 #include "HODLR_Matrix.hpp"
+#include "HODLR.hpp"
 
 using std::setprecision;
 
@@ -54,20 +54,15 @@ int main(int argc, char *argv[])
     // tolerance
     const double tolerance = 1e-11;
 
-    // nLeaf is the size (number of rows of the matrix) of the smallest block
-    // at the leaf level. The number of levels in the tree is given by
-    // n_levels=log_2(N/nLeaf) where N denotes the dimension of the matrix.
+    // nLeaf is the size (number of rows of the matrix) of 
+    // the smallest block at the leaf level. 
     const int nLeaf = 100;
-    int n_levels  = log(dim / nLeaf) / log(2);
 
     kernel K(dim, RbyL);
-
-    HODLR_Tree* T = new HODLR_Tree(n_levels, tolerance, &K);
 
     std::cout << "========================= Problem Parameters =========================" << std::endl;
     std::cout << "Matrix Size                        :" << dim << std::endl;
     std::cout << "Leaf Size                          :" << nLeaf << std::endl;
-    std::cout << "Number of Levels in Tree           :" << n_levels << std::endl;
     std::cout << "Tolerance                          :" << tolerance << std::endl << std::endl;
 
     // Assemble symmetric matrix 
@@ -78,7 +73,8 @@ int main(int argc, char *argv[])
     // Useful when you want the factorization as WW^T 
     bool is_pd = true;
 
-    T->assembleTree(is_sym, is_pd);
+    HODLR* T = new HODLR(dim, nLeaf, tolerance);
+    T->assemble(&K, "rookPivoting", is_sym, is_pd);
     // T->plotTree("plot.svg");
 
     // Compute factorization 

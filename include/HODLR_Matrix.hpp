@@ -46,15 +46,18 @@
 
 class HODLR_Matrix 
 {
-// By declaring HODLR_Tree as a friend, the object
-// can access private members of this particular class
-friend class HODLR_Tree;
+public:
 
-private:
     // Size of the matrix:
     int N;
 
-public:
+    // Modulo operator:
+    // This is separately defined to make sure 
+    // that positive values are always returned
+    int mod(int a, int b)
+    {
+        return ((a % b + b) % b);
+    }
 
     // Constructor:
     explicit HODLR_Matrix(int N)
@@ -73,17 +76,10 @@ public:
 
     Vec getRow(int j, int n_col_start, int n_cols);
     Vec getCol(int k, int n_row_start, int n_rows);
+    Vec getDiag1(int j, int k, int n_rows, int n_cols);
+    Vec getDiag2(int j, int k, int n_rows, int n_cols);
     Mat getMatrix(int j, int k, int n_rows, int n_cols);
 
-    void maxAbsVector(const Vec& v, 
-                      const std::set<int>& allowed_indices, 
-                      dtype& max, int& index
-                     );
-
-    void rookPiv(int n_row_start, int n_col_start, int n_rows, int n_cols, double tolerance, 
-                 Mat& L,  Mat& R, int& computed_rank
-                );
-  
     // Destructor:
     ~HODLR_Matrix() {};
 };

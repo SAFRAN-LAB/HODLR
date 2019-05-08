@@ -30,7 +30,8 @@ is_sym = True
 # In all other cases the fast factorization method is used
 is_pd = True
 # Creating the HODLR object:
-T = pyhodlrlib.HODLR(N, M, eps, K, 'rookPivoting', is_sym, is_pd)
+T = pyhodlrlib.HODLR(N, M, eps)
+T.assemble(K, 'rookPivoting', is_sym, is_pd)
 
 # Random vector to take product with:
 x = np.random.rand(N)

@@ -24,7 +24,8 @@ def test_functions(factorization_type, is_sym, is_pd):
     M = 50
 
     # Creating the HODLR Tree object:
-    T = pyhodlrlib.HODLR(N, M, eps, K, factorization_type, is_sym, is_pd)
+    T = pyhodlrlib.HODLR(N, M, eps)
+    T.assemble(K, factorization_type, is_sym, is_pd)
 
     # Random vector to take product with:
     x = np.random.rand(N)

@@ -70,7 +70,7 @@ module hodlr_mod
     end interface
 
     interface
-        subroutine initialize_hodlr(N, M, eps, kernel, lowrank_method, is_sym, is_pd, hodlr) &
+        subroutine initialize_hodlr(N, M, eps, hodlr) &
         bind(c, name = "initialize_hodlr_c")
             
             use iso_c_binding
@@ -78,11 +78,22 @@ module hodlr_mod
             integer(c_int), value :: N
             integer(c_int), value :: M
             real(c_double), value :: eps
+            type(c_ptr) :: hodlr
+
+        end subroutine
+    end interface
+
+    interface
+        subroutine assemble(hodlr, kernel, lowrank_method, is_sym, is_pd) &
+        bind(c, name = "assemble_c")
+            
+            use iso_c_binding
+
+            type(c_ptr) :: hodlr
             type(c_ptr) :: kernel
             character(c_char) :: lowrank_method(*)
             logical(c_bool), value :: is_sym
             logical(c_bool), value :: is_pd
-            type(c_ptr) :: hodlr
 
         end subroutine
     end interface

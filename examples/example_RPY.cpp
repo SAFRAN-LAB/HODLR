@@ -131,10 +131,12 @@ int main(int argc, char* argv[])
     bool is_sym = true;
     bool is_pd  = true;
 
+    // Creating a pointer to the HODLR Tree structure:
+    HODLR* T = new HODLR(N * dim, M, tolerance);
+
     std::cout << "Fast method..." << std::endl;
     start = omp_get_wtime();
-    // Creating a pointer to the HODLR Tree structure:
-    HODLR* T = new HODLR(N * dim, M, tolerance, K, "rookPivoting", is_sym, is_pd);
+    T->assemble(K, "rookPivoting", is_sym, is_pd);
     end = omp_get_wtime();
     std::cout << "Time for assembly in HODLR form:" << (end - start) << std::endl;
 

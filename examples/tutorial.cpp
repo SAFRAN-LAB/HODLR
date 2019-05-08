@@ -110,7 +110,8 @@ int main(int argc, char* argv[])
     bool is_pd = false;
     start = omp_get_wtime();
     // Creating a pointer to the HODLR Tree structure:
-    HODLR* T = new HODLR(N, M, tolerance, K, "rookPivoting", is_sym, is_pd);
+    HODLR* T = new HODLR(N, M, tolerance);
+    T->assemble(K, "rookPivoting", is_sym, is_pd);
     end = omp_get_wtime();
     hodlr_time = (end - start);
     std::cout << "Time for assembly in HODLR form    :" << hodlr_time << std::endl;

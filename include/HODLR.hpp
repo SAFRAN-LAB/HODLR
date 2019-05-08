@@ -16,7 +16,6 @@ private:
     
     // Vector of levels(which contain nodes) thereby giving the tree:
     std::vector<std::vector<HODLR_Node*>> tree;
-    void assembleTree(bool is_sym = false, bool is_pd = false);
     void createTree();
     void createRoot();
     void createChildren(int level_number, int node_number);
@@ -52,10 +51,7 @@ public:
     // Size of the matrix considered:
     int N;
 
-    HODLR(int N, int M, double tolerance, HODLR_Matrix* A, 
-          std::string lowrank_type = "rookPivoting", 
-          bool is_sym = false, bool is_pd = false
-         );
+    HODLR(int N, int M, double tolerance);
     
     ~HODLR();
 
@@ -65,6 +61,9 @@ public:
     // Lists details of all boxes in the tree
     void printTreeDetails();
     void plotTree(std::string image_name);
+    void assemble(HODLR_Matrix* A, std::string lowrank_type = "rookPivoting", 
+                  bool is_sym = false, bool is_pd = false
+                 );
     Mat matmatProduct(Mat x);
     void factorize();
     Mat solve(Mat b);

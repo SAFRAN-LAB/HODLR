@@ -43,7 +43,8 @@ PYBIND11_MODULE(pyhodlrlib, m)
 
     py::class_<HODLR> hodlr(m, "HODLR");
     hodlr
-        .def(py::init<int, int, double, HODLR_Matrix*, std::string, bool, bool>())
+        .def(py::init<int, int, double>())
+        .def("assemble", &HODLR::assemble)
         .def("matmatProduct", &HODLR::matmatProduct)
         .def("factorize", &HODLR::factorize)
         .def("solve", &HODLR::solve)

@@ -72,7 +72,8 @@ program main
     matrix = reshape(flattened_matrix, (/ N, N /))
 
     ! Building the HODLR object:
-    call initialize_hodlr(N, M, eps, kernel, "rookPivoting", is_sym, is_pd, hodlr)
+    call initialize_hodlr(N, M, eps, hodlr)
+    call assemble(hodlr, kernel, "rookPivoting", is_sym, is_pd)
 
     ! Populating the vector x with random elements:
     do i = 1, N

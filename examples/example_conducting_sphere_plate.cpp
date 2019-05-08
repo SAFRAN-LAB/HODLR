@@ -73,7 +73,8 @@ int main(int argc, char *argv[])
     // Useful when you want the factorization as WW^T 
     bool is_pd = true;
 
-    HODLR* T = new HODLR(dim, nLeaf, tolerance, &K, "rookPivoting", is_sym, is_pd);
+    HODLR* T = new HODLR(dim, nLeaf, tolerance);
+    T->assemble(&K, "rookPivoting", is_sym, is_pd);
     // T->plotTree("plot.svg");
 
     // Compute factorization 

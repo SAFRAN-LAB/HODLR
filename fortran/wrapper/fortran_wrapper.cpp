@@ -57,10 +57,15 @@ void get_lr_c(LowRank** lowrank, double* l, double* r)
     return;
 }
 
-void initialize_hodlr_c(int N, int M, double eps, Kernel** kernel, char* lowrank_method, bool is_sym, bool is_pd, HODLR** tree)
+void initialize_hodlr_c(int N, int M, double eps, HODLR** tree)
 {
-    (*tree) = new HODLR(N, M, eps, (*kernel), lowrank_method, is_sym, is_pd);
+    (*tree) = new HODLR(N, M, eps);
     return;
+}
+
+void assemble_c(HODLR**tree, Kernel** kernel, char* lowrank_method, bool is_sym, bool is_pd)
+{
+    (*tree)->assemble((*kernel), lowrank_method, is_sym, is_pd);
 }
 
 void matmat_product_c(HODLR** tree, double* x, double* b)

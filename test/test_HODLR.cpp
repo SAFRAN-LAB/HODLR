@@ -95,7 +95,8 @@ void testHODLR(int N, int M, double tolerance, HODLR_Matrix* K, std::string lowr
     bool is_sym = false;
     bool is_pd  = false;
 
-    HODLR* T = new HODLR(N, M, tolerance, K, lowrank_method, is_sym, is_pd);
+    HODLR* T = new HODLR(N, M, tolerance);
+    T->assemble(K, lowrank_method, is_sym, is_pd);
     T->printTreeDetails();
     T->plotTree(image_name);
     
@@ -125,8 +126,9 @@ void testHODLR(int N, int M, double tolerance, HODLR_Matrix* K, std::string lowr
     // Testing fast symmetric factorization:
     is_sym = true;
     is_pd  = true;
-    T      = new HODLR(N, M, tolerance, K, lowrank_method, is_sym, is_pd);
+    T      = new HODLR(N, M, tolerance);
 
+    T->assemble(K, lowrank_method, is_sym, is_pd);
     b_fast = T->matmatProduct(x);
     // Computing the relative error in the solution obtained:
     assert((b_fast-b_exact).norm() / (b_exact.norm()) < N * tolerance);

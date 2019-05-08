@@ -75,7 +75,8 @@ int main(int argc, char *argv[])
     std::cout << "Leaf Size                          :" << nLeaf << std::endl;
     std::cout << "Tolerance                          :" << tolerance << std::endl << std::endl;
 
-    HODLR* T = new HODLR(dim, nLeaf, tolerance, &K, "rookPivoting", true, false);
+    HODLR* T = new HODLR(dim, nLeaf, tolerance);
+    T->assemble(&K, "rookPivoting", true, false);
 
     double logdet_exact = -33.22918044445708; // computed using Python script logdet.py
     double logdet_hodlr = 0;

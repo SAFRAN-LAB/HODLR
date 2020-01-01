@@ -112,7 +112,7 @@ void LowRank::rookPiv(Mat& L, Mat& R, double tolerance_or_rank,
             {
                 if(eval_at_end == true)
                 {
-                    new_row_ind = *remaining_row_ind.end();
+                    new_row_ind = *--remaining_row_ind.end();
                 }
 
                 else

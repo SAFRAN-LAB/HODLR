@@ -16,8 +16,8 @@
 [![Version 3.1415](https://img.shields.io/badge/version-3.1415-brightgreen.svg)](https://github.com/sivaramambikasaran/HODLR)
 [![arXiv](https://img.shields.io/badge/math.NA-arXiv%3A1405.0223-%23B31B1B.svg)](https://arxiv.org/abs/1405.0223)
 
-[![star this repo](http://githubbadges.com/star.svg?user=sivaramambikasaran&repo=HODLR&style=flat)](https://github.com/sivaramambikasaran/HODLR)
-[![fork this repo](http://githubbadges.com/fork.svg?user=sivaramambikasaran&repo=HODLR&style=flat)](https://github.com/sivaramambikasaran/HODLR/fork)
+[![GitHub forks](https://img.shields.io/github/forks/sivaramambikasaran/HODLR)](https://github.com/sivaramambikasaran/HODLR/network)
+[![GitHub stars](https://img.shields.io/github/stars/sivaramambikasaran/HODLR)](https://github.com/sivaramambikasaran/HODLR/stargazers)
 
 [![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/sivaramambikasaran/HODLR/)
 [![PR Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com) 

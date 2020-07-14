@@ -15,6 +15,7 @@
 
 [![Version 3.1415](https://img.shields.io/badge/version-3.1415-brightgreen.svg)](https://github.com/sivaramambikasaran/HODLR)
 [![arXiv](https://img.shields.io/badge/math.NA-arXiv%3A1405.0223-%23B31B1B.svg)](https://arxiv.org/abs/1405.0223)
+[![arXiv](https://img.shields.io/badge/math.NA-arXiv%3A1403.6015-%23B31B1B.svg)](https://arxiv.org/abs/1403.6015)
 
 [![GitHub forks](https://img.shields.io/github/forks/sivaramambikasaran/HODLR)](https://github.com/sivaramambikasaran/HODLR/network)
 [![GitHub stars](https://img.shields.io/github/stars/sivaramambikasaran/HODLR)](https://github.com/sivaramambikasaran/HODLR/stargazers)

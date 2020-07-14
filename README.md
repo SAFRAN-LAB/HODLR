@@ -24,6 +24,8 @@
 
 [![Built by SAFRAN](https://img.shields.io/badge/built%20by-SAFRAN-orange.svg)](http://sivaramambikasaran.com/research/)
 
+[![HitCount](http://hits.dwyl.com/sivaramambikasaran/ sivaramambikasaran / HODLR .svg)](http://hits.dwyl.com/sivaramambikasaran/ sivaramambikasaran / HODLR )
+
 [![DOI](https://zenodo.org/badge/12858603.svg)](https://zenodo.org/badge/latestdoi/12858603)
 
 [![DOI](http://joss.theoj.org/papers/10.21105/joss.01167/status.svg)](https://doi.org/10.21105/joss.01167)

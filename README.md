@@ -21,6 +21,7 @@
 
 [![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/sivaramambikasaran/HODLR/)
 [![PR Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com) 
+[![Twitter](https://img.shields.io/twitter/url?style=social)](https://twitter.com/intent/tweet?text=Wow:&url=https%3A%2F%2Fgithub.com%2Fsivaramambikasaran%2FHODLR)
 
 [![Built by SAFRAN](https://img.shields.io/badge/built%20by-SAFRAN-orange.svg)](http://sivaramambikasaran.com/research/)
 

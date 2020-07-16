@@ -24,7 +24,7 @@
 [![PR Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com) 
 [![Twitter](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fgithub.com%2Fsivaramambikasaran%2FHODLR)](https://twitter.com/intent/tweet?text=Wow:&url=https%3A%2F%2Fgithub.com%2Fsivaramambikasaran%2FHODLR)
 
-[![Built by SAFRAN](https://img.shields.io/badge/built%20by-SAFRAN-orange.svg)](http://sivaramambikasaran.com/research/)
+[![Built by SAFRAN](https://img.shields.io/badge/built%20by-SAFRAN-orange.svg)](https://sivaramambikasaran.com/research/)
 
 [![HitCount](http://hits.dwyl.com/sivaramambikasaran/sivaramambikasaran/HODLR.svg)](http://hits.dwyl.com/sivaramambikasaran/sivaramambikasaran/HODLR)
 

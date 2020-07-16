@@ -20,7 +20,7 @@
 [![GitHub forks](https://img.shields.io/github/forks/sivaramambikasaran/HODLR)](https://github.com/sivaramambikasaran/HODLR/network)
 [![GitHub stars](https://img.shields.io/github/stars/sivaramambikasaran/HODLR)](https://github.com/sivaramambikasaran/HODLR/stargazers)
 
-[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source-150x25.png?v=103)](https://github.com/ellerbrock/open-source-badges/)
+[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.png?v=103)](https://github.com/ellerbrock/open-source-badges/)
 [![PR Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com) 
 [![Twitter](https://img.shields.io/twitter/url?style=social&url=https%3A%2F%2Fgithub.com%2Fsivaramambikasaran%2FHODLR)](https://twitter.com/intent/tweet?text=Wow:&url=https%3A%2F%2Fgithub.com%2Fsivaramambikasaran%2FHODLR)
 

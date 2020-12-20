@@ -132,6 +132,6 @@ install(EXPORT HODLRTargets
 )
 # Copy headers to install directory
 install(
-  DIRECTORY ${CMAKE_SOURCE_DIR}/include/
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/HODLR
+  DIRECTORY ${CMAKE_SOURCE_DIR}/include/HODLR
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/include
 )

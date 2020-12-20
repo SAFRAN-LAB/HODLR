@@ -1,6 +1,6 @@
 // Example provided by Michael-Hartmann:
-#include "HODLR_Matrix.hpp"
-#include "HODLR.hpp"
+#include "HODLR/HODLR_Matrix.hpp"
+#include "HODLR/HODLR.hpp"
 
 #define LMAX 6000
 #define GAMMA 0.57721566490153286 // Euler-Mascheroni constant
@@ -27,7 +27,7 @@ double logKn(int n, double x)
 class Test_Kernel : public HODLR_Matrix
 {
 public:
-    explicit Test_Kernel (unsigned N) : HODLR_Matrix(N) 
+    explicit Test_Kernel (unsigned N) : HODLR_Matrix(N)
     {};
 
     dtype getMatrixEntry(int i, int j)
@@ -42,13 +42,13 @@ public:
         double term3 = logKn(abs(m + n), b);
 
         // Value on the diagonal:
-        if(i == j) 
+        if(i == j)
         {
             return (1-exp(0.5*(term1+term2)+term3));
         }
-        
+
         // Otherwise:
-        else 
+        else
         {
             return -exp(0.5*(term1+term2)+term3);
         }
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
     double logdet_exact = -33.22918044445708; // computed using Python script logdet.py
     double logdet_hodlr = 0;
 
-    // Compute factorization 
+    // Compute factorization
     T->factorize();
     // Compute log det(Id+M)
     logdet_hodlr = T->logDeterminant();

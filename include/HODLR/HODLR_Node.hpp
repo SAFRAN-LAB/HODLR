@@ -2,19 +2,19 @@
 #define __HODLR_Node__
 
 #include <Eigen/Dense>
-#include "HODLR_Matrix.hpp"
-#include "LowRank.hpp"
+#include "HODLR/HODLR_Matrix.hpp"
+#include "HODLR/LowRank.hpp"
 
-class HODLR_Node 
+class HODLR_Node
 {
 friend class HODLR;
 
 // All methods are declared as private since all usage happens from
 // the friend class HODLR_Tree:
 private:
-    HODLR_Node(int node_number, int level_number, int local_number, 
+    HODLR_Node(int node_number, int level_number, int local_number,
                int n_start, int n_size, double tolerance);
-    
+
     // Storing the information passed to constructor as attribute:
     int node_number, level_number, local_number;
     int n_start, n_size;

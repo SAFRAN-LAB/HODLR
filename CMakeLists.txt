@@ -80,6 +80,8 @@ set(HODLRlib_SRCS
 
 add_library(HODLR ${HODLRlib_SRCS})
 
+option(HODLR_BUILD_TESTS "Build tests for the HODLR library" ON)
+if(NOT("${CMAKE_BUILD_TYPE}" STREQUAL "COVERAGE") AND ${HODLR_BUILD_TESTS})
     add_subdirectory(examples)
     add_subdirectory(test)
 endif()

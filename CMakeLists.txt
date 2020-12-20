@@ -50,9 +50,9 @@ endif()
 
 # Toggle this to 1 when Intel Compilers are available:
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${DTYPE_FLAG} ${MKL_FLAGS} --std=c++11 -O3 -ipo -qopenmp -xHost -funroll-loops -ffast-math -ffinite-math-only -g -liomp5 -lpthread -ldl")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MKL_FLAGS} --std=c++11 -O3 -ipo -qopenmp -xHost -funroll-loops -ffast-math -ffinite-math-only -g -liomp5 -lpthread -ldl")
 else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${DTYPE_FLAG} ${MKL_FLAGS} --std=c++11 -O3 -funroll-loops -ffast-math -ffinite-math-only -g -fopenmp -lpthread -ldl")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MKL_FLAGS} --std=c++11 -O3 -funroll-loops -ffast-math -ffinite-math-only -g -fopenmp -lpthread -ldl")
 endif ()
 
 # Flags for testing coverage information
@@ -84,8 +84,9 @@ target_include_directories(HODLR
   PUBLIC ${EIGEN_PATH}
   PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include/HODLR>
+    $<INSTALL_INTERFACE:include>
 )
+target_compile_definitions(HODLR PUBLIC ${DTYPE_FLAG})
 
 option(HODLR_BUILD_TESTS "Build tests for the HODLR library" ON)
 if(NOT("${CMAKE_BUILD_TYPE}" STREQUAL "COVERAGE") AND ${HODLR_BUILD_TESTS})

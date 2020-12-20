@@ -1,21 +1,6 @@
-project (HODLRlib)
-cmake_minimum_required (VERSION 3.0)
-set (CMAKE_CXX_STANDARD 11)
-# Provide the input file that you want to solve for:
-# This can also be passed as a command line argument:
-if(NOT INPUT_FILE)
-    set (INPUT_FILE "")
-endif()
-# Here set the name for the output executable:
-# This can also be passed as a command line argument:
-if(NOT OUTPUT_EXECUTABLE)
-    set (OUTPUT_EXECUTABLE "")
-endif()
-# Set this to: "float", "double", "complex32" and "complex64"
-set (DTYPE "double")
-# Change this accordingly to point to the Eigen root folder
-# By default, it will pick up the environment variable EIGEN_PATH
-set(EIGEN_PATH "$ENV{EIGEN_PATH}")
+project(HODLRlib)
+cmake_minimum_required(VERSION 3.0)
+set(CMAKE_CXX_STANDARD 11)
 
 ################ FINDING MKL ####################
 
@@ -30,11 +15,24 @@ set(EIGEN_PATH "$ENV{EIGEN_PATH}")
 #endif ()
 
 ################ FINDING EIGEN ####################
+
+# Change this accordingly to point to the Eigen root folder
+# By default, it will pick up the environment variable EIGEN_PATH
+set(EIGEN_PATH "$ENV{EIGEN_PATH}")
+
 if(NOT EIGEN_PATH)
     message ( FATAL_ERROR "Please point the environment variable EIGEN_PATH to the root directory of your Eigen3 installation.")
 endif()
 
 ################ SETTING DATATYPE TO USE:FLOAT, DOUBLE AND COMPLEX ####################
+
+# Set this to: "float", "double", "complex32" and "complex64"
+set(DTYPE
+    "double" CACHE STRING
+    "Matrix entry type: \"float\", \"double\", \"complex32\" or \"complex64\""
+   )
+set_property(CACHE DTYPE PROPERTY STRINGS float double complex32 complex64)
+
 if(DTYPE STREQUAL "float")
     set(DTYPE_FLAG "-DUSE_FLOAT")
 elseif(DTYPE STREQUAL "double")
@@ -64,7 +62,7 @@ set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "${CMAKE_SHARED_LINKER_FLAGS} --coverage"
 
 ################ ADDING OF THE NECESSARY HEADER FOLDERS ####################
 # Adding folders which contain necessary header files:
-include_directories("${EIGEN_PATH}" 
+include_directories("${EIGEN_PATH}"
                     "include"
                    )
 
@@ -80,16 +78,10 @@ set(HODLRlib_SRCS
     ${PROJECT_SOURCE_DIR}/src/KDTree.cpp
    )
 
-if(NOT("${CMAKE_BUILD_TYPE}" STREQUAL "COVERAGE"))
+add_library(HODLR ${HODLRlib_SRCS})
+
     add_subdirectory(examples)
     add_subdirectory(test)
-endif()
-
-if(INPUT_FILE)
-  add_executable(${OUTPUT_EXECUTABLE}
-                 ${INPUT_FILE}
-                 ${HODLRlib_SRCS}
-                )
 endif()
 
 ################ SUMMARY OF BUILD INFORMATION ################

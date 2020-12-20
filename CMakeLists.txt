@@ -1,4 +1,5 @@
-project(HODLRlib)
+cmake_policy(SET CMP0048 NEW)
+project(HODLRlib VERSION 3.1415)
 cmake_minimum_required(VERSION 3.0)
 set(CMAKE_CXX_STANDARD 11)
 
@@ -79,6 +80,12 @@ set(HODLRlib_SRCS
    )
 
 add_library(HODLR ${HODLRlib_SRCS})
+target_include_directories(HODLR
+  PUBLIC ${EIGEN_PATH}
+  PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include/HODLR>
+)
 
 option(HODLR_BUILD_TESTS "Build tests for the HODLR library" ON)
 if(NOT("${CMAKE_BUILD_TYPE}" STREQUAL "COVERAGE") AND ${HODLR_BUILD_TESTS})
@@ -101,3 +108,29 @@ message("Eigen dir        : " ${EIGEN_PATH})
 # message("MKL dir          : " ${MKLROOT})
 message("Build dir        : " ${CMAKE_BINARY_DIR})
 message("")
+
+################ Install instruction ################
+# Create version file for cmake package
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+  HODLRConfigVersion.cmake
+  VERSION ${PACKAGE_VERSION}
+  COMPATIBILITY SameMajorVersion
+)
+install(FILES
+  "${CMAKE_CURRENT_BINARY_DIR}/HODLRConfigVersion.cmake"
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/HODLR
+)
+# Create config file of HODLR
+# No public dependencies so a Config file with the targets is enough
+install(TARGETS HODLR EXPORT HODLRTargets DESTINATION lib)
+install(EXPORT HODLRTargets
+  FILE HODLRConfig.cmake
+  NAMESPACE HODLR::
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/HODLR
+)
+# Copy headers to install directory
+install(
+  DIRECTORY ${CMAKE_SOURCE_DIR}/include/
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/include/HODLR
+)

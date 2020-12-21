@@ -5,7 +5,7 @@ ExternalProject_Add(${PROJECT_NAME}
   GIT_REPOSITORY      https://gitlab.com/libeigen/eigen.git
   GIT_TAG             master
   @ADDITIONAL_GIT_SETTINGS@
-  SOURCE_DIR          "@CMAKE_SOURCE_DIR@/dependencies/${PROJECT_NAME}"
+  SOURCE_DIR          "@CMAKE_SOURCE_DIR@/dependencies/sources/${PROJECT_NAME}"
   BINARY_DIR          "@CMAKE_CURRENT_BINARY_DIR@/${PROJECT_NAME}_build"
   INSTALL_DIR         @DEPENDENCY_INSTALL_PREFIX@
   CMAKE_ARGS          -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>

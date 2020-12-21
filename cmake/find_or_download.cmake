@@ -1,9 +1,9 @@
 macro(find_or_download PACKAGE)
-  set(DEPENDENCY_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/dependencies)
+  set(DEPENDENCY_INSTALL_PREFIX ${CMAKE_SOURCE_DIR}/dependencies/${PACKAGE})
   # Update search path and use regular find_package to add dependency
   find_package(
     ${PACKAGE} QUIET
-    HINTS ${CMAKE_SOURCE_DIR}/dependencies ${CMAKE_INSTALL_PREFIX}
+    HINTS ${DEPENDENCY_INSTALL_PREFIX} ${CMAKE_INSTALL_PREFIX}
   )
 
   if(${${PACKAGE}_FOUND})
@@ -44,5 +44,8 @@ macro(find_or_download PACKAGE)
       PATHS "${DEPENDENCY_INSTALL_PREFIX}"
     )
     message(STATUS "Using ${PACKAGE} from ${DEPENDENCY_INSTALL_PREFIX}.")
+    install(
+      DIRECTORY ${DEPENDENCY_INSTALL_PREFIX}/
+      DESTINATION ${CMAKE_INSTALL_PREFIX})
   endif()
 endmacro()

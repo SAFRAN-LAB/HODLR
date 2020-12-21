@@ -16,7 +16,6 @@ find_package(Threads REQUIRED)
 find_package(OpenMP REQUIRED)
 
 if(${USE_MKL})
-  add_compile_definitions(MKL_ENABLED)
   set(BLA_VENDOR Intel10_64lp)
   find_package(BLAS REQUIRED)
   find_package(LAPACK REQUIRED)
@@ -86,7 +85,9 @@ target_include_directories(HODLR
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
-target_compile_definitions(HODLR PUBLIC ${DTYPE_FLAG})
+target_compile_definitions(HODLR
+  PUBLIC ${DTYPE_FLAG} $<$<BOOL:${USE_MKL}>:MKL_ENABLED>
+)
 
 if(${HODLR_BUILD_TESTS})
   add_subdirectory(examples)
@@ -109,8 +110,31 @@ message("Build dir        : " ${CMAKE_BINARY_DIR})
 message("")
 
 #################### Install instruction                    ####################
-# Create version file for cmake package
+# Copy headers to install directory
+install(
+  DIRECTORY ${CMAKE_SOURCE_DIR}/include/HODLR
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/include
+)
+# Create targets file of HODLR
+# No public dependencies so a Config file with the targets is enough
+install(TARGETS HODLR EXPORT HODLRTargets DESTINATION lib)
+install(EXPORT HODLRTargets
+  FILE HODLRTargets.cmake
+  NAMESPACE HODLR::
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/HODLR
+)
+# Create config file that organizes dependencies
 include(CMakePackageConfigHelpers)
+configure_package_config_file(
+  ${PROJECT_SOURCE_DIR}/cmake/HODLRConfig.cmake.in
+  ${CMAKE_BINARY_DIR}/HODLRConfig.cmake
+  INSTALL_DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/HODLR
+)
+install(FILES
+  "${CMAKE_CURRENT_BINARY_DIR}/HODLRConfig.cmake"
+  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/HODLR
+)
+# Create version file for cmake package
 write_basic_package_version_file(
   HODLRConfigVersion.cmake
   VERSION ${PACKAGE_VERSION}
@@ -119,17 +143,4 @@ write_basic_package_version_file(
 install(FILES
   "${CMAKE_CURRENT_BINARY_DIR}/HODLRConfigVersion.cmake"
   DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/HODLR
-)
-# Create config file of HODLR
-# No public dependencies so a Config file with the targets is enough
-install(TARGETS HODLR EXPORT HODLRTargets DESTINATION lib)
-install(EXPORT HODLRTargets
-  FILE HODLRConfig.cmake
-  NAMESPACE HODLR::
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/cmake/HODLR
-)
-# Copy headers to install directory
-install(
-  DIRECTORY ${CMAKE_SOURCE_DIR}/include/HODLR
-  DESTINATION ${CMAKE_INSTALL_PREFIX}/include
 )

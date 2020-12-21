@@ -1,11 +1,11 @@
 // File used in CI testing
-#include "HODLR_Matrix.hpp"
-#include "KDTree.hpp"
-#include "HODLR.hpp"
+#include "HODLR/HODLR_Matrix.hpp"
+#include "HODLR/KDTree.hpp"
+#include "HODLR/HODLR.hpp"
 
 // Derived class of HODLR_Matrix which is ultimately
 // passed to the HODLR_Tree class:
-class Kernel_Gaussian : public HODLR_Matrix 
+class Kernel_Gaussian : public HODLR_Matrix
 {
 
 private:
@@ -14,17 +14,17 @@ private:
 public:
 
     // Constructor:
-    explicit Kernel_Gaussian(int N, int dim) : HODLR_Matrix(N) 
+    explicit Kernel_Gaussian(int N, int dim) : HODLR_Matrix(N)
     {
         x = (Mat::Random(N, dim)).real();
         // This is being sorted to ensure that we get
         // optimal low rank structure:
         getKDTreeSorted(x, 0);
     };
-    
+
     // In this example, we are illustrating usage using
     // the gaussian kernel:
-    dtype getMatrixEntry(int i, int j) 
+    dtype getMatrixEntry(int i, int j)
     {
         size_t dim = x.cols();
 
@@ -33,13 +33,13 @@ public:
         {
             return 100;
         }
-        
+
         // Otherwise:
         else
-        {   
+        {
             dtype R2 = 0;
 
-            for(int k = 0; k < dim; k++) 
+            for(int k = 0; k < dim; k++)
             {
                 R2 += (x(i,k) - x(j,k)) * (x(i,k) - x(j,k));
             }
@@ -52,7 +52,7 @@ public:
     ~Kernel_Gaussian() {};
 };
 
-class Random_Matrix : public HODLR_Matrix 
+class Random_Matrix : public HODLR_Matrix
 {
 
 private:
@@ -61,16 +61,16 @@ private:
 public:
 
     // Constructor:
-    explicit Random_Matrix(int N) : HODLR_Matrix(N) 
+    explicit Random_Matrix(int N) : HODLR_Matrix(N)
     {
         x = (Mat::Random(N, N)).real().cwiseAbs();
         x = 0.5 * (x + x.transpose());
         x = x + N * N * Mat::Identity(N, N);
     };
-    
+
     // In this example, we are illustrating usage using
     // the gaussian kernel:
-    dtype getMatrixEntry(int i, int j) 
+    dtype getMatrixEntry(int i, int j)
     {
         return x(i, j);
     }
@@ -82,7 +82,7 @@ public:
 template<class HODLR_Matrix>
 void testHODLR(int N, int M, double tolerance, HODLR_Matrix* K, std::string lowrank_method, std::string image_name)
 {
-    // Througout, we have ensured that the error in the method is lesser than 
+    // Througout, we have ensured that the error in the method is lesser than
     // N X tolerance that was requested for ACA. It is not always necessary
     // for the error for all methods to be exactly equal to the tolerance of ACA
     // Upper bound of error is ~ N * ε
@@ -99,7 +99,7 @@ void testHODLR(int N, int M, double tolerance, HODLR_Matrix* K, std::string lowr
     T->assemble(K, lowrank_method, is_sym, is_pd);
     T->printTreeDetails();
     T->plotTree(image_name);
-    
+
     b_fast      = T->matmatProduct(x);
     Mat B       = K->getMatrix(0, 0, N, N);
     Mat b_exact = B * x;
@@ -162,7 +162,7 @@ void testHODLR(int N, int M, double tolerance, HODLR_Matrix* K, std::string lowr
     delete T;
 }
 
-int main(int argc, char* argv[]) 
+int main(int argc, char* argv[])
 {
     // Size of the Matrix in consideration:
     int N            = 1000;
@@ -196,7 +196,7 @@ int main(int argc, char* argv[])
     // Trying out odd sizes:
     N = 1943;
     M = 123;
-    
+
     Random_Matrix* K3 = new Random_Matrix(N);
     testHODLR(N, M, tolerance, K3, "rookPivoting", "random_matrix_N_1943.svg");
     delete K3;

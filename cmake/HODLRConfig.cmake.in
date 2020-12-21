@@ -1,0 +1,12 @@
+include(CMakeFindDependencyMacro)
+find_dependency(Eigen3)
+
+if(@USE_MKL@)
+  set(BLA_VENDOR Intel10_64lp)
+  find_dependency(BLAS REQUIRED)
+  find_dependency(LAPACK REQUIRED)
+endif()
+
+if(NOT TARGET HODLR::HODLR)
+  include("${CMAKE_CURRENT_LIST_DIR}/HODLRTargets.cmake")
+endif()

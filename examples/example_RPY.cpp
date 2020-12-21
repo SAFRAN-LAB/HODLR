@@ -1,13 +1,13 @@
-#include "HODLR_Matrix.hpp"
-#include "KDTree.hpp"
-#include "HODLR.hpp"
+#include "HODLR/HODLR_Matrix.hpp"
+#include "HODLR/KDTree.hpp"
+#include "HODLR/HODLR.hpp"
 
 #define PI 3.141592653589793238462643383
 
 // RPY Tensor:
 // K(r) = ((kT) / (6πηa))     * ((1 - 9 * ||r|| / (32a))I + 3 / (32a) (r ⊗ r) / ||r|| if ||r|| <  2a
 // K(r) = ((kT) / (8πη||r||)) * (I + (r ⊗ r) / ||r|| + (2a**2 / 3||r||**2) * (I - 3 (r ⊗ r) / ||r||))  if ||r|| >= 2a
-class Kernel : public HODLR_Matrix 
+class Kernel : public HODLR_Matrix
 {
 
 private:
@@ -18,7 +18,7 @@ private:
 public:
 
     // Constructor:
-    Kernel(int N, int dim, double k, double T, double eta) : HODLR_Matrix(dim * N) 
+    Kernel(int N, int dim, double k, double T, double eta) : HODLR_Matrix(dim * N)
     {
         x         = (Mat::Random(N, dim)).real();
         this->dim = dim;
@@ -37,11 +37,11 @@ public:
             for(int j = i; j < N; j++)
             {
                 double R2 = 0;
-                for(int k = 0; k < dim; k++) 
+                for(int k = 0; k < dim; k++)
                 {
                     R2 += (x(i,k) - x(j,k)) * (x(i,k) - x(j,k));
                 }
-                
+
                 if(i != j && sqrt(R2) < min_r)
                     min_r = sqrt(R2);
             }
@@ -50,8 +50,8 @@ public:
         // We will set a as the minimum of the distances between particles / 2:
         this->a = min_r / 2;
     };
-    
-    dtype getMatrixEntry(int i, int j) 
+
+    dtype getMatrixEntry(int i, int j)
     {
         if(i / dim == j / dim)
         {
@@ -61,18 +61,18 @@ public:
                 return 0;
         }
 
-        else 
+        else
         {
             dtype R2 = 0;
             Vec r(dim);
-            for(int k = 0; k < dim; k++) 
+            for(int k = 0; k < dim; k++)
             {
                 r(k) = x(i / dim, k) - x(j / dim, k);
                 R2  += r(k) * r(k);
             }
             dtype R = sqrt(R2);
-            Mat tensor = ((this->k * T) / (8 * PI * eta * R)) * (  Mat::Identity(dim, dim) + r * r.transpose() / R2 
-                                                                 + (2 * a * a / (3 * R2)) * (  Mat::Identity(dim, dim) 
+            Mat tensor = ((this->k * T) / (8 * PI * eta * R)) * (  Mat::Identity(dim, dim) + r * r.transpose() / R2
+                                                                 + (2 * a * a / (3 * R2)) * (  Mat::Identity(dim, dim)
                                                                                              - 3 * r * r.transpose() / R2
                                                                                             )
                                                                 );
@@ -84,7 +84,7 @@ public:
     ~Kernel() {};
 };
 
-int main(int argc, char* argv[]) 
+int main(int argc, char* argv[])
 {
     int N, M, dim;
     double tolerance;
@@ -144,11 +144,11 @@ int main(int argc, char* argv[])
     Mat x = (Mat::Random(N * dim, 1)).real();
     // Stores the result after multiplication:
     Mat y_fast, b_fast;
-    
+
     start  = omp_get_wtime();
     b_fast = T->matmatProduct(x);
     end    = omp_get_wtime();
-    
+
     std::cout << "Time for matrix-vector product:" << (end - start) << std::endl << std::endl;
 
     start = omp_get_wtime();
@@ -169,13 +169,13 @@ int main(int argc, char* argv[])
         y_fast = T->symmetricFactorTransposeProduct(x);
         end    = omp_get_wtime();
         std::cout << "Time to calculate product of factor transpose with given vector:" << (end - start) << std::endl;
-        
+
         start  = omp_get_wtime();
         b_fast = T->symmetricFactorProduct(y_fast);
         end    = omp_get_wtime();
-        std::cout << "Time to calculate product of factor with given vector:" << (end - start) << std::endl;        
+        std::cout << "Time to calculate product of factor with given vector:" << (end - start) << std::endl;
     }
-        
+
     start = omp_get_wtime();
     dtype log_det_hodlr = T->logDeterminant();
     end = omp_get_wtime();
@@ -201,7 +201,7 @@ int main(int argc, char* argv[])
         Eigen::PartialPivLU<Mat> lu;
         lu.compute(B);
         end = omp_get_wtime();
-        std::cout << "Time to calculate LU Factorization:" << (end-start) << std::endl;        
+        std::cout << "Time to calculate LU Factorization:" << (end-start) << std::endl;
     }
 
     delete K;

@@ -1,5 +1,5 @@
-#include "HODLR_Matrix.hpp"
-#include "HODLR.hpp"
+#include "HODLR/HODLR_Matrix.hpp"
+#include "HODLR/HODLR.hpp"
 
 using std::setprecision;
 
@@ -11,15 +11,15 @@ using std::setprecision;
 // [1] Giuseppe Bimonte, Classical Casimir interaction of a perfectly
 //     conducting sphere and plate, Phys. Rev. D 95, 065004 (2017)
 //     https://doi.org/10.1103/PhysRevD.95.065004
-class kernel : public HODLR_Matrix 
+class kernel : public HODLR_Matrix
 {
 private:
     double y;
 
 public:
-    kernel(unsigned N, double RbyL) : HODLR_Matrix(N) 
+    kernel(unsigned N, double RbyL) : HODLR_Matrix(N)
     {
-        // y = 0.5*R/(R+L) 
+        // y = 0.5*R/(R+L)
         this->y = log(0.5/(1+1./RbyL));
     };
 
@@ -29,7 +29,7 @@ public:
     //       M_ij = y^(i+j+1) * (i+j)!/(i! j!)
     //  with the indices 1 <= i,j <= ldim, and
     //       y = 0.5*R/(R+L).
-    double getMatrixEntry(int i, int j) 
+    double getMatrixEntry(int i, int j)
     {
         const int l1 = i+1, l2 = j+1;
         const double delta = (i == j) ? 1 : 0; // Kronecker delta
@@ -38,7 +38,7 @@ public:
     };
 };
 
-int main(int argc, char *argv[]) 
+int main(int argc, char *argv[])
 {
     // exact (analytical) result from Ref. [1]
     const double exact = -117.00871690447;
@@ -54,8 +54,8 @@ int main(int argc, char *argv[])
     // tolerance
     const double tolerance = 1e-11;
 
-    // nLeaf is the size (number of rows of the matrix) of 
-    // the smallest block at the leaf level. 
+    // nLeaf is the size (number of rows of the matrix) of
+    // the smallest block at the leaf level.
     const int nLeaf = 100;
 
     kernel K(dim, RbyL);
@@ -65,22 +65,22 @@ int main(int argc, char *argv[])
     std::cout << "Leaf Size                          :" << nLeaf << std::endl;
     std::cout << "Tolerance                          :" << tolerance << std::endl << std::endl;
 
-    // Assemble symmetric matrix 
+    // Assemble symmetric matrix
     // If we are assembling a symmetric matrix:
     bool is_sym = true;
     // If we know that the matrix is also PD:
     // By toggling this flag to true, the factorizations are performed using Cholesky
-    // Useful when you want the factorization as WW^T 
+    // Useful when you want the factorization as WW^T
     bool is_pd = true;
 
     HODLR* T = new HODLR(dim, nLeaf, tolerance);
     T->assemble(&K, "rookPivoting", is_sym, is_pd);
     // T->plotTree("plot.svg");
 
-    // Compute factorization 
+    // Compute factorization
     T->factorize();
 
-    // Compute determinant 
+    // Compute determinant
     double logdet = T->logDeterminant();
 
     std::cout << "Log determinant(Exact):" << setprecision(16) << exact << std::endl;

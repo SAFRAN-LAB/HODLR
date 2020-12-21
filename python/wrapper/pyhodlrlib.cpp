@@ -1,6 +1,6 @@
-#include "HODLR_Matrix.hpp"
-#include "LowRank.hpp"
-#include "HODLR.hpp"
+#include "HODLR/HODLR_Matrix.hpp"
+#include "HODLR/LowRank.hpp"
+#include "HODLR/HODLR.hpp"
 
 #include <pybind11/pybind11.h>
 #include <pybind11/eigen.h>
@@ -14,7 +14,7 @@ public:
     using HODLR_Matrix::HODLR_Matrix;
 
     /* Trampoline (need one for each virtual function) */
-    dtype getMatrixEntry(int i, int j) override 
+    dtype getMatrixEntry(int i, int j) override
     {
         PYBIND11_OVERLOAD_PURE(dtype,          /* Return type */
                                HODLR_Matrix,   /* Parent class */
@@ -24,7 +24,7 @@ public:
     }
 };
 
-PYBIND11_MODULE(pyhodlrlib, m) 
+PYBIND11_MODULE(pyhodlrlib, m)
 {
     m.doc() = "This is the Python Wrapper to HODLRlib";
 

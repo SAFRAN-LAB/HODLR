@@ -1,10 +1,10 @@
-#include "HODLR_Matrix.hpp"
-#include "LowRank.hpp"
-#include "KDTree.hpp"
+#include "HODLR/HODLR_Matrix.hpp"
+#include "HODLR/LowRank.hpp"
+#include "HODLR/KDTree.hpp"
 
 // Derived class of HODLR_Matrix which is ultimately
 // passed to the HODLR_Tree class:
-class Kernel : public HODLR_Matrix 
+class Kernel : public HODLR_Matrix
 {
 
 private:
@@ -13,7 +13,7 @@ private:
 public:
 
     // Constructor:
-    Kernel(int N) : HODLR_Matrix(N) 
+    Kernel(int N) : HODLR_Matrix(N)
     {
         x = 2 * Vec::Ones(N) + Vec::Random(N);
         y = 7 * Vec::Ones(N) + Vec::Random(N);
@@ -37,8 +37,8 @@ public:
         // Closing the file:
         myfile.close();
     };
-    
-    dtype getMatrixEntry(int i, int j) 
+
+    dtype getMatrixEntry(int i, int j)
     {
         return 1 / abs((x(i)-y(j)));
     }
@@ -47,7 +47,7 @@ public:
     ~Kernel() {};
 };
 
-int main(int argc, char* argv[]) 
+int main(int argc, char* argv[])
 {
     srand(time(NULL));
     int N, M, dim;

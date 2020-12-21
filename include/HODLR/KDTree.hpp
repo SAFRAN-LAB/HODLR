@@ -2,7 +2,7 @@
 #define __KDTree__
 
 #include "Eigen/Dense"
-#include "HODLR_Matrix.hpp"
+#include "HODLR/HODLR_Matrix.hpp"
 
 void mergeSortedLists(Mat& list1, Mat& list2, unsigned index, Mat& final_list);
 void mergeSort(Mat& locations, unsigned index);

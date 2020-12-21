@@ -1,27 +1,27 @@
-#include "HODLR.hpp"
+#include "HODLR/HODLR.hpp"
 
 // Contructor for the HODLR class:
-HODLR::HODLR(int N, int M, double tolerance) 
+HODLR::HODLR(int N, int M, double tolerance)
 {
     this->N         = N;
     this->n_levels  = log(N / M) / log(2);
     this->tolerance = tolerance;
     nodes_in_level.push_back(1);
-    for (int j = 1; j <= n_levels; j++) 
+    for (int j = 1; j <= n_levels; j++)
     {
         nodes_in_level.push_back(2 * nodes_in_level.back());
     }
-    
+
     this->createTree();
 }
 
 // Destructor:
-HODLR::~HODLR() 
+HODLR::~HODLR()
 {
-    for(int j = 0; j <= n_levels; j++) 
+    for(int j = 0; j <= n_levels; j++)
     {
         #pragma omp parallel for
-        for(int k = 0; k < nodes_in_level[j]; k++) 
+        for(int k = 0; k < nodes_in_level[j]; k++)
         {
             delete tree[j][k];
         }
@@ -31,7 +31,7 @@ HODLR::~HODLR()
 }
 
 // Creates the node at the root level:
-void HODLR::createRoot() 
+void HODLR::createRoot()
 {
     HODLR_Node* root = new HODLR_Node(0, 0, 0, 0, N, tolerance);
     std::vector<HODLR_Node*> level;
@@ -40,20 +40,20 @@ void HODLR::createRoot()
 }
 
 // Function that adds on children for the given level and node number:
-void HODLR::createChildren(int level_number, int node_number) 
+void HODLR::createChildren(int level_number, int node_number)
 {
     //  Adding left child:
-    HODLR_Node* left = new HODLR_Node(level_number + 1, 2 * node_number, 0, 
-                                      tree[level_number][node_number]->c_start[0], 
-                                      tree[level_number][node_number]->c_size[0], 
+    HODLR_Node* left = new HODLR_Node(level_number + 1, 2 * node_number, 0,
+                                      tree[level_number][node_number]->c_start[0],
+                                      tree[level_number][node_number]->c_size[0],
                                       tolerance
                                      );
     tree[level_number + 1].push_back(left);
 
     //  Adding right child
-    HODLR_Node* right = new HODLR_Node(level_number + 1, 2 * node_number + 1, 1, 
-                                       tree[level_number][node_number]->c_start[1], 
-                                       tree[level_number][node_number]->c_size[1], 
+    HODLR_Node* right = new HODLR_Node(level_number + 1, 2 * node_number + 1, 1,
+                                       tree[level_number][node_number]->c_start[1],
+                                       tree[level_number][node_number]->c_size[1],
                                        tolerance
                                       );
     tree[level_number + 1].push_back(right);
@@ -62,16 +62,16 @@ void HODLR::createChildren(int level_number, int node_number)
 // Creates the tree structure:
 // Depending upon the parameters set by the user, this function
 // creates a tree having required number of nodes in the tree
-void HODLR::createTree() 
+void HODLR::createTree()
 {
     this->createRoot();
-    
-    for(int j = 0; j < n_levels; j++) 
+
+    for(int j = 0; j < n_levels; j++)
     {
         std::vector<HODLR_Node*> level;
         tree.push_back(level);
-        
-        for(int k = 0; k < nodes_in_level[j]; k++) 
+
+        for(int k = 0; k < nodes_in_level[j]; k++)
         {
             this->createChildren(j, k);
         }
@@ -82,16 +82,16 @@ void HODLR::createTree()
 // That is:
 // For leaf nodes, it directly evaluates the matrix entries:
 // For nonleaf nodes, it gets the low rank representation of the underlying matrix:
-void HODLR::assemble(HODLR_Matrix* A, std::string lowrank_type, bool is_sym, bool is_pd) 
+void HODLR::assemble(HODLR_Matrix* A, std::string lowrank_type, bool is_sym, bool is_pd)
 {
     this->F      = new LowRank(A, lowrank_type);
     this->is_sym = is_sym;
     this->is_pd  = is_pd;
     // Assembly of nonleaf nodes:
-    for(int j = 0; j < n_levels; j++) 
+    for(int j = 0; j < n_levels; j++)
     {
         #pragma omp parallel for
-        for(int k = 0; k < nodes_in_level[j]; k++) 
+        for(int k = 0; k < nodes_in_level[j]; k++)
         {
             tree[j][k]->assembleNonLeafNode(this->F, is_sym);
         }
@@ -99,7 +99,7 @@ void HODLR::assemble(HODLR_Matrix* A, std::string lowrank_type, bool is_sym, boo
 
     // Assembly of leaf nodes:
     #pragma omp parallel for
-    for (int k = 0; k < nodes_in_level[n_levels]; k++) 
+    for (int k = 0; k < nodes_in_level[n_levels]; k++)
     {
         tree[n_levels][k]->assembleLeafNode(A);
     }
@@ -128,16 +128,16 @@ void HODLR::printTreeDetails()
 }
 
 // Performs a MatMat product with the given matrix X.
-Mat HODLR::matmatProduct(Mat x) 
+Mat HODLR::matmatProduct(Mat x)
 {
     // Initializing matrix b:
     Mat b = Mat::Zero(N, x.cols());
 
     // At non-leaf levels:
-    for (int j = 0; j < n_levels; j++) 
+    for (int j = 0; j < n_levels; j++)
     {
         #pragma omp parallel for
-        for (int k = 0; k < nodes_in_level[j]; k++) 
+        for (int k = 0; k < nodes_in_level[j]; k++)
         {
             tree[j][k]->matmatProductNonLeaf(x, b);
         }
@@ -145,13 +145,13 @@ Mat HODLR::matmatProduct(Mat x)
 
     // At leaf level:
     #pragma omp parallel for
-    for(int k = 0; k < nodes_in_level[n_levels]; k++) 
+    for(int k = 0; k < nodes_in_level[n_levels]; k++)
     {
         tree[n_levels][k]->matmatProductLeaf(x, b);
     }
 
     return b;
-} 
+}
 
 // Factorizes the matrix to get LU for each block in case of the nonSPD
 // and L for each block in case the matrix is SPD

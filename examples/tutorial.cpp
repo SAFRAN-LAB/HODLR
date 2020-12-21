@@ -1,12 +1,12 @@
 // This file serves as a gentle introduction to the usage of this library:
 
-#include "HODLR_Matrix.hpp"
-#include "HODLR.hpp"
-#include "KDTree.hpp"
+#include "HODLR/HODLR_Matrix.hpp"
+#include "HODLR/HODLR.hpp"
+#include "HODLR/KDTree.hpp"
 
 // Derived class of HODLR_Matrix which is ultimately
 // passed to the HODLR_Tree class:
-class Kernel : public HODLR_Matrix 
+class Kernel : public HODLR_Matrix
 {
 
 private:
@@ -15,17 +15,17 @@ private:
 public:
 
     // Constructor:
-    Kernel(int N, int dim) : HODLR_Matrix(N) 
+    Kernel(int N, int dim) : HODLR_Matrix(N)
     {
         x = (Mat::Random(N, dim)).real();
         // This is being sorted to ensure that we get
         // optimal low rank structure:
         getKDTreeSorted(x, 0);
     };
-    
+
     // In this example, we are illustrating usage using
     // the gaussian kernel:
-    dtype getMatrixEntry(int i, int j) 
+    dtype getMatrixEntry(int i, int j)
     {
         size_t dim = x.cols();
 
@@ -34,15 +34,15 @@ public:
         {
             return 10;
         }
-        
+
         // Otherwise:
         else
-        {   
+        {
             dtype R, R2;
             // Initializing:
             R = R2 = 0;
 
-            for(int k = 0; k < dim; k++) 
+            for(int k = 0; k < dim; k++)
             {
                 R2 += (x(i,k) - x(j,k)) * (x(i,k) - x(j,k));
             }
@@ -56,7 +56,7 @@ public:
     ~Kernel() {};
 };
 
-int main(int argc, char* argv[]) 
+int main(int argc, char* argv[])
 {
     int N, M, dim;
     double tolerance;
@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
     // If we are assembling a symmetric matrix:
     bool is_sym = false;
     // If we know that the matrix is also PD:
-    // By setting the matrix to be symmetric-positive definite, 
+    // By setting the matrix to be symmetric-positive definite,
     // we trigger the fast symmetric factorization method to be used
     // In all other cases the fast factorization method is used
     bool is_pd = false;
@@ -116,7 +116,7 @@ int main(int argc, char* argv[])
     hodlr_time = (end - start);
     std::cout << "Time for assembly in HODLR form    :" << hodlr_time << std::endl;
 
-    // What we are doing here is explicitly generating 
+    // What we are doing here is explicitly generating
     // the matrix from its entries
     start = omp_get_wtime();
     Mat B = K->getMatrix(0, 0, N, N);
@@ -161,7 +161,7 @@ int main(int argc, char* argv[])
 
     Eigen::LLT<Mat> llt;
     Eigen::PartialPivLU<Mat> lu;
-    
+
     // Factorizing using Cholesky:
     if(is_sym == true && is_pd == true)
     {
@@ -261,7 +261,7 @@ int main(int argc, char* argv[])
         y_fast = T->symmetricFactorTransposeProduct(x);
         end    = omp_get_wtime();
         std::cout << "Time to calculate product of factor transpose with given vector:" << (end - start) << std::endl;
-        
+
         // b = W y = W W^T x = B * x
         start  = omp_get_wtime();
         b_fast = T->symmetricFactorProduct(y_fast);

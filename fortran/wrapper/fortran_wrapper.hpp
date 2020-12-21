@@ -2,8 +2,8 @@
 #define __fortran_wrapper__
 
 #include "Kernel.hpp"
-#include "LowRank.hpp"
-#include "HODLR.hpp"
+#include "HODLR/LowRank.hpp"
+#include "HODLR/HODLR.hpp"
 
 // Extern C needs to be used to prevent name mangling
 extern "C"

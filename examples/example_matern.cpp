@@ -1,9 +1,9 @@
-#include "HODLR_Matrix.hpp"
-#include "HODLR.hpp"
+#include "HODLR/HODLR_Matrix.hpp"
+#include "HODLR/HODLR.hpp"
 
 // Taking Matern Kernel for p = 2:
 // K(r) = σ^2 * (1 + sqrt(5) * r / ρ + 5/3 * (r / ρ)^2) * exp(-sqrt(5) * r / ρ)
-class Kernel : public HODLR_Matrix 
+class Kernel : public HODLR_Matrix
 {
 
 private:
@@ -13,7 +13,7 @@ private:
 public:
 
     // Constructor:
-    Kernel(int N, double sigma, double rho) : HODLR_Matrix(N) 
+    Kernel(int N, double sigma, double rho) : HODLR_Matrix(N)
     {
         x                   = (Vec::Random(N)).real();
         this->sigma_squared = sigma * sigma;
@@ -22,10 +22,10 @@ public:
         // optimal low rank structure:
         std::sort(x.data(), x.data() + x.size());
     };
-    
-    dtype getMatrixEntry(int i, int j) 
+
+    dtype getMatrixEntry(int i, int j)
     {
-        double R_by_rho = fabs(x(i) - x(j)) / rho;        
+        double R_by_rho = fabs(x(i) - x(j)) / rho;
         return sigma_squared * (1 + sqrt(5) * R_by_rho + 5/3 * (R_by_rho * R_by_rho)) * exp(-sqrt(5) * R_by_rho);
     }
 
@@ -33,7 +33,7 @@ public:
     ~Kernel() {};
 };
 
-int main(int argc, char* argv[]) 
+int main(int argc, char* argv[])
 {
     int N, M;
     double tolerance;
@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
     double start, end;
 
     std::cout << "Fast method..." << std::endl;
-    
+
     bool is_sym = true;
     bool is_pd  = true;
 
@@ -89,11 +89,11 @@ int main(int argc, char* argv[])
     Mat x = (Mat::Random(N, 1)).real();
     // Stores the result after multiplication:
     Mat y_fast, b_fast;
-    
+
     start  = omp_get_wtime();
     b_fast = T->matmatProduct(x);
     end    = omp_get_wtime();
-    
+
     std::cout << "Time for matrix-vector product:" << (end - start) << std::endl << std::endl;
 
     start = omp_get_wtime();
@@ -114,13 +114,13 @@ int main(int argc, char* argv[])
         y_fast = T->symmetricFactorTransposeProduct(x);
         end    = omp_get_wtime();
         std::cout << "Time to calculate product of factor transpose with given vector:" << (end - start) << std::endl;
-        
+
         start  = omp_get_wtime();
         b_fast = T->symmetricFactorProduct(y_fast);
         end    = omp_get_wtime();
-        std::cout << "Time to calculate product of factor with given vector:" << (end - start) << std::endl;        
+        std::cout << "Time to calculate product of factor with given vector:" << (end - start) << std::endl;
     }
-        
+
     start = omp_get_wtime();
     dtype log_det_hodlr = T->logDeterminant();
     end = omp_get_wtime();
@@ -146,7 +146,7 @@ int main(int argc, char* argv[])
         Eigen::PartialPivLU<Mat> lu;
         lu.compute(B);
         end = omp_get_wtime();
-        std::cout << "Time to calculate LU Factorization:" << (end-start) << std::endl;        
+        std::cout << "Time to calculate LU Factorization:" << (end-start) << std::endl;
     }
 
     delete K;

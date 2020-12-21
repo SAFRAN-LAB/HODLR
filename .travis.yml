@@ -2,13 +2,13 @@ sudo: required
 before_install:
   - sudo apt-get install build-essential
   - pip install --user pyyaml cpp-coveralls
-  
+
 # Enable C++ support
 language: cpp
 # Compiler selection
 compiler:
   - g++
-  
+
 install:
   - source install.sh
 
@@ -16,9 +16,9 @@ install:
 script:
   - mkdir build
   - cd build
-  - ../deps/cmake/bin/cmake .. -DCMAKE_BUILD_TYPE=COVERAGE -DINPUT_FILE=../test/test_HODLR.cpp -DOUTPUT_EXECUTABLE=test_HODLR
-  - make
-  - ./test_HODLR
+  - ../deps/cmake/bin/cmake .. -DCMAKE_BUILD_TYPE=COVERAGE
+  - make test_HODLR
+  - ./test/test_HODLR
   - cd ${TRAVIS_BUILD_DIR}
 
 after_success:

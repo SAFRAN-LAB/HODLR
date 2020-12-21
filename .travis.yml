@@ -13,7 +13,7 @@ compiler:
 script:
   - mkdir build
   - cd build
-  - ../deps/cmake/bin/cmake .. -DCMAKE_BUILD_TYPE=COVERAGE
+  - cmake .. -DCMAKE_BUILD_TYPE=COVERAGE
   - make test_HODLR
   - ./test/test_HODLR
   - cd ${TRAVIS_BUILD_DIR}

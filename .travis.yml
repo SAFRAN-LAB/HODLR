@@ -9,9 +9,6 @@ language: cpp
 compiler:
   - g++
 
-install:
-  - source install.sh
-
 # Build steps
 script:
   - mkdir build

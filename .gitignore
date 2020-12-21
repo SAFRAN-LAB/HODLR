@@ -13,7 +13,7 @@
 *.elf
 *.pyo
 *.pyc
- 
+
 # Libraries #
 #############
 *.lib
@@ -34,13 +34,13 @@
 *.rar
 *.tar
 *.zip
- 
+
 # Logs and databases #
 ######################
 *.log
 *.sql
 *.sqlite
- 
+
 # OS generated files #
 ######################
 .DS_Store
@@ -62,6 +62,7 @@ Thumbs.db
 ###################
 build/
 fortran/build/
+dependencies
 
 # dependency directory #
 ########################

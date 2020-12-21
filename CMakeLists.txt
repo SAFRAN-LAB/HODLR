@@ -3,27 +3,29 @@ project(HODLRlib VERSION 3.1415)
 cmake_minimum_required(VERSION 3.0)
 set(CMAKE_CXX_STANDARD 11)
 
-################ FINDING MKL ####################
+################ OPTIONS ####################
 
-# Checking for MKL:
-# Currently disabling MKL. Sometimes a linker error pops up
-# TODO: Look into this
-#if (DEFINED ENV{MKLROOT})
-#    add_compile_definitions(MKL_ENABLED)
-#    set (MKLROOT "$ENV{MKLROOT}")
-#    set (LDFLAGS "${LDFLAGS} -DMKL_ENABLED -Wl,--start-group ${MKLROOT}/lib/intel64/libmkl_intel_lp64.a ${MKLROOT}/lib/intel64/libmkl_intel_thread.a ${MKLROOT}/lib/intel64/libmkl_core.a -Wl,--end-group")
-#    set (MKL_FLAGS "-DMKL_LP64 -DMKL_ENABLED -I${MKLROOT}/include")
-#endif ()
+option(HODLR_BUILD_TESTS "Build tests for the HODLR library" ON)
+option(USE_MKL "Use Intel MKL with Eigen." OFF)
 
-################ FINDING EIGEN ####################
+################ FIND DEPENDENCIES ####################
 
-# Change this accordingly to point to the Eigen root folder
-# By default, it will pick up the environment variable EIGEN_PATH
-set(EIGEN_PATH "$ENV{EIGEN_PATH}")
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 
-if(NOT EIGEN_PATH)
-    message ( FATAL_ERROR "Please point the environment variable EIGEN_PATH to the root directory of your Eigen3 installation.")
-endif()
+find_package(OpenMP REQUIRED)
+
+if(${USE_MKL})
+  add_compile_definitions(MKL_ENABLED)
+  set(BLA_VENDOR Intel10_64lp)
+  find_package(BLAS REQUIRED)
+  find_package(LAPACK REQUIRED)
+endif ()
+
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(find_or_download)
+
+find_or_download(Eigen3)
 
 ################ SETTING DATATYPE TO USE:FLOAT, DOUBLE AND COMPLEX ####################
 
@@ -49,10 +51,14 @@ endif()
 ################ COMPILERS: APPROPRIATELY USE INTEL OR GNU ####################
 
 # Toggle this to 1 when Intel Compilers are available:
+set(CMAKE_CXX_FLAGS)
+add_compile_options(
+  --std=c++11
+  $<$<CONFIG:>:-O3>
+  -funroll-loops -ffast-math -ffinite-math-only
+)
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Intel")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MKL_FLAGS} --std=c++11 -O3 -ipo -qopenmp -xHost -funroll-loops -ffast-math -ffinite-math-only -g -liomp5 -lpthread -ldl")
-else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MKL_FLAGS} --std=c++11 -O3 -funroll-loops -ffast-math -ffinite-math-only -g -fopenmp -lpthread -ldl")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ipo -xHost -liomp5")
 endif ()
 
 # Flags for testing coverage information
@@ -61,15 +67,9 @@ set(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS} --coverage")
 set(CMAKE_EXE_LINKER_FLAGS_COVERAGE "${CMAKE_EXE_LINKER_FLAGS} --coverage")
 set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "${CMAKE_SHARED_LINKER_FLAGS} --coverage")
 
-################ ADDING OF THE NECESSARY HEADER FOLDERS ####################
-# Adding folders which contain necessary header files:
-include_directories("${EIGEN_PATH}"
-                    "include"
-                   )
+################ MAIN BUILD INSTRUCTIONS ####################
 
-################ MENTIONING C++ FILES TO LINK WITH HEADERS + FILE TO BUILD ####################
-
-set(HODLRlib_SRCS
+add_library(HODLR
     ${PROJECT_SOURCE_DIR}/src/HODLR_Matrix.cpp
     ${PROJECT_SOURCE_DIR}/src/LowRank.cpp
     ${PROJECT_SOURCE_DIR}/src/HODLR_Node.cpp
@@ -78,17 +78,17 @@ set(HODLRlib_SRCS
     ${PROJECT_SOURCE_DIR}/src/HODLR_SPD.cpp
     ${PROJECT_SOURCE_DIR}/src/KDTree.cpp
    )
-
-add_library(HODLR ${HODLRlib_SRCS})
+target_link_libraries(HODLR
+  PUBLIC Eigen3::Eigen $<$<BOOL:USE_MKL>:${BLAS_LIBRARIES} ${LAPACK_LIBRARIES}>
+  PRIVATE Threads::Threads OpenMP::OpenMP_CXX
+)
 target_include_directories(HODLR
-  PUBLIC ${EIGEN_PATH}
   PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
 )
 target_compile_definitions(HODLR PUBLIC ${DTYPE_FLAG})
 
-option(HODLR_BUILD_TESTS "Build tests for the HODLR library" ON)
 if(${HODLR_BUILD_TESTS})
     add_subdirectory(examples)
     add_subdirectory(test)
@@ -101,12 +101,11 @@ message("#################")
 message("# Build options #")
 message("#################")
 message("")
-message("Input File       : " ${INPUT_FILE})
 message("Data Type        : " ${DTYPE})
 message("CXX Compiler     : " ${CMAKE_CXX_COMPILER})
 message("CXX_FLAGS        : " ${CMAKE_CXX_FLAGS})
-message("Eigen dir        : " ${EIGEN_PATH})
-# message("MKL dir          : " ${MKLROOT})
+message("Eigen dir        : " ${EIGEN3_ROOT_DIR})
+message("MKL dir          : " $ENV{MKLROOT})
 message("Build dir        : " ${CMAKE_BINARY_DIR})
 message("")
 

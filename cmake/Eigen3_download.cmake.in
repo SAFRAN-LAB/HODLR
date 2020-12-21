@@ -1,0 +1,18 @@
+cmake_minimum_required(VERSION 3.5)
+include(ExternalProject)
+project(Eigen3)
+ExternalProject_Add(${PROJECT_NAME}
+  GIT_REPOSITORY      https://gitlab.com/libeigen/eigen.git
+  GIT_TAG             master
+  @ADDITIONAL_GIT_SETTINGS@
+  SOURCE_DIR          "@CMAKE_SOURCE_DIR@/dependencies/${PROJECT_NAME}"
+  BINARY_DIR          "@CMAKE_CURRENT_BINARY_DIR@/${PROJECT_NAME}_build"
+  INSTALL_DIR         @DEPENDENCY_INSTALL_PREFIX@
+  CMAKE_ARGS          -DCMAKE_INSTALL_PREFIX=<INSTALL_DIR>
+                      -DCMAKE_BUILD_TYPE=Release
+                      -DEIGEN_BUILD_BTL=OFF
+                      -DEIGEN_BUILD_DOC=OFF
+                      -DBUILD_TESTING=OFF
+                      -DCMAKEPACKAGE_INSTALL_DIR=lib/cmake/${PROJECT_NAME}
+                      -DPKGCONFIG_INSTALL_DIR=lib/pkgconfig
+)

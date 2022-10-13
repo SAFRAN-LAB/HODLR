@@ -38,9 +38,9 @@ fi
 # Getting Eigen:
 if [ ! -d "eigen/" ]; then
     printf "\nDOWNLOADING EIGEN...\n"
-    wget http://bitbucket.org/eigen/eigen/get/3.3.7.tar.bz2
-    tar xjf 3.3.7.tar.bz2
-    mv eigen-eigen-323c052e1731 eigen
+    wget https://gitlab.com/libeigen/eigen/-/archive/3.3.7/eigen-3.3.7.tar.bz2
+    tar xjf eigen-3.3.7.tar.bz2
+    mv eigen-3.3.7 eigen
     EIGEN_PATH=$PWD/eigen/
     printf "\nCOMPLETED EIGEN INSTALLATION.\n"
 fi

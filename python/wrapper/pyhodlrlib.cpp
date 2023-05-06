@@ -51,5 +51,7 @@ PYBIND11_MODULE(pyhodlrlib, m)
         .def("symmetricFactorProduct", &HODLR::symmetricFactorProduct)
         .def("symmetricFactorTransposeProduct", &HODLR::symmetricFactorTransposeProduct)
         .def("getSymmetricFactor", &HODLR::getSymmetricFactor)
-        .def("logDeterminant", &HODLR::logDeterminant);
+        .def("logDeterminant", &HODLR::logDeterminant)
+        .def("plotTree", &HODLR::plotTree)
+        .def("printTreeDetails", &HODLR::printTreeDetails);
 }

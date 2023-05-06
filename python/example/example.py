@@ -66,3 +66,8 @@ if(is_sym and is_pd):
     # Directly obtaining the symmetric factor matrix:
     W = T.getSymmetricFactor()
     print('Error in Getting Symmetric Factor:', np.mean(abs(W @ W.T - A)))
+
+print('Tree Details:')
+T.printTreeDetails()
+T.plotTree('plot.png')
+print('Done!')
